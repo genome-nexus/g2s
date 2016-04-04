@@ -2,13 +2,18 @@ package org.cbioportal.pdb_annotation.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * @author Selcuk Onur Sumer
  */
 @Entity
-public class PdbUniprotResidueMapping
+@Table(name="pdb_uniprot_residue_mapping")
+public class PdbUniprotResidueMapping implements Serializable
 {
+	@Id
 	@Column(name="alignment_id")
 	private long alignmentId;
 
@@ -18,6 +23,7 @@ public class PdbUniprotResidueMapping
 	@Column(name="pdb_insertion_code")
 	private String pdbInsertionCode;
 
+	@Id
 	@Column(name="uniprot_position")
 	private long uniprotPosition;
 

@@ -7,6 +7,7 @@ import javax.persistence.*;
  * @author Selcuk Onur Sumer
  */
 @Entity
+@Table(name="pdb_uniprot_alignment")
 public class PdbUniprotAlignment
 {
 	@Id
