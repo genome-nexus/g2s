@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface PdbUniprotAlignmentRepository extends CrudRepository<PdbUniprotAlignment, Long>
 {
-	List<PdbUniprotAlignment> findByPdbId(String pdbId);
+    List<PdbUniprotAlignment> findByPdbId(String pdbId);
     List<PdbUniprotAlignment> findByUniprotId(String uniprotId);
 }
