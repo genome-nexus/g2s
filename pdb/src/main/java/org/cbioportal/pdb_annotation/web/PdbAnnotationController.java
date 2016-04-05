@@ -36,17 +36,17 @@ public class PdbAnnotationController
     }
 
     @ApiOperation(value = "get pdb uniprot alignments by pdb id",
-        nickname = "getPdbAlignments")
+        nickname = "getPdbAlignmentByPdb")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success",
             response = PdbUniprotAlignment.class,
             responseContainer = "List"),
         @ApiResponse(code = 400, message = "Bad Request")
     })
-    @RequestMapping(value = "/alignment/{pdbIds:.+}",
+    @RequestMapping(value = "/alignment/byPdb/{pdbIds:.+}",
         method = RequestMethod.GET,
         produces = "application/json")
-    public List<PdbUniprotAlignment> getPdbUniprotAlignment(
+    public List<PdbUniprotAlignment> getPdbUniprotAlignmentByPdbId(
         @PathVariable
         @ApiParam(value = "Comma separated list of pdb ids. For example 1a37,1a4o",
             required = true,
@@ -57,7 +57,41 @@ public class PdbAnnotationController
 
         for (String pdbId : pdbIds)
         {
-            List<PdbUniprotAlignment> alignment = getPdbUniprotAlignment(pdbId);
+            List<PdbUniprotAlignment> alignment = getPdbUniprotAlignmentByPdbId(pdbId);
+
+            if (alignment != null)
+            {
+                //postEnrichmentService.enrichAnnotation(annotation);
+                uniprotAlignments.addAll(alignment);
+            }
+        }
+
+        return uniprotAlignments;
+    }
+
+    @ApiOperation(value = "get pdb uniprot alignments by uniprot id",
+        nickname = "getPdbAlignmentByUniprot")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success",
+            response = PdbUniprotAlignment.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/alignment/byUniprot/{uniprotIds:.+}",
+        method = RequestMethod.GET,
+        produces = "application/json")
+    public List<PdbUniprotAlignment> getPdbUniprotAlignmentByUniprotId(
+        @PathVariable
+        @ApiParam(value = "Comma separated list of uniprot ids. For example P53_HUMAN,RASK_HUMAN",
+            required = true,
+            allowMultiple = true)
+        List<String> uniprotIds)
+    {
+        List<PdbUniprotAlignment> uniprotAlignments = new ArrayList<>();
+
+        for (String uniprotId : uniprotIds)
+        {
+            List<PdbUniprotAlignment> alignment = getPdbUniprotAlignmentByUniprotId(uniprotId);
 
             if (alignment != null)
             {
@@ -155,7 +189,12 @@ public class PdbAnnotationController
         return summary;
     }
 
-    public List<PdbUniprotAlignment> getPdbUniprotAlignment(String pdbId)
+    public List<PdbUniprotAlignment> getPdbUniprotAlignmentByUniprotId(String uniprotId)
+    {
+        return pdbUniprotAlignmentRepository.findByUniprotId(uniprotId);
+    }
+
+    public List<PdbUniprotAlignment> getPdbUniprotAlignmentByPdbId(String pdbId)
     {
         return pdbUniprotAlignmentRepository.findByPdbId(pdbId);
     }
