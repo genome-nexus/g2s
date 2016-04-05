@@ -1,9 +1,8 @@
 package org.cbioportal.pdb_annotation.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -11,14 +10,20 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name="pdb_uniprot_residue_mapping")
+@IdClass(PdbUniprotResidueMappingPK.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PdbUniprotResidueMapping implements Serializable
 {
-    @Id
     @Column(name = "alignment_id")
     private long alignmentId;
 
+//    @ManyToOne
+//    @Id
+//    @JoinColumn(name="alignment_id", referencedColumnName="alignment_id")
+//    private PdbUniprotAlignment alignment;
+
     @Column(name = "pdb_position")
-    private long pdbPosition;
+    private Long pdbPosition;
 
     @Column(name = "pdb_insertion_code")
     private String pdbInsertionCode;
@@ -44,12 +49,23 @@ public class PdbUniprotResidueMapping implements Serializable
         this.alignmentId = alignmentId;
     }
 
-    public long getPdbPosition()
+
+//    public PdbUniprotAlignment getAlignment()
+//    {
+//        return alignment;
+//    }
+//
+//    public void setAlignment(PdbUniprotAlignment alignment)
+//    {
+//        this.alignment = alignment;
+//    }
+
+    public Long getPdbPosition()
     {
         return pdbPosition;
     }
 
-    public void setPdbPosition(long pdbPosition)
+    public void setPdbPosition(Long pdbPosition)
     {
         this.pdbPosition = pdbPosition;
     }

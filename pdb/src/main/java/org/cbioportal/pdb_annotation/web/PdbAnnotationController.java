@@ -4,10 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.cbioportal.pdb_annotation.domain.AlignmentSummary;
-import org.cbioportal.pdb_annotation.domain.PdbHeader;
-import org.cbioportal.pdb_annotation.domain.PdbUniprotAlignment;
-import org.cbioportal.pdb_annotation.domain.PdbUniprotAlignmentRepository;
+import org.cbioportal.pdb_annotation.domain.*;
 import org.cbioportal.pdb_annotation.service.PdbDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,15 +20,17 @@ import java.util.*;
 public class PdbAnnotationController
 {
     private PdbUniprotAlignmentRepository pdbUniprotAlignmentRepository;
-
+    private PdbUniprotResidueMappingRepository pdbUniprotResidueMappingRepository;
     private PdbDataService pdbDataService;
 
     @Autowired
     public PdbAnnotationController(
         PdbUniprotAlignmentRepository pdbUniprotAlignmentRepository,
+        PdbUniprotResidueMappingRepository pdbUniprotResidueMappingRepository,
         PdbDataService pdbDataService)
     {
         this.pdbUniprotAlignmentRepository = pdbUniprotAlignmentRepository;
+        this.pdbUniprotResidueMappingRepository = pdbUniprotResidueMappingRepository;
         this.pdbDataService = pdbDataService;
     }
 
@@ -139,6 +138,69 @@ public class PdbAnnotationController
         return pdbHeaderList;
     }
 
+    @ApiOperation(value = "get position mapping for alignments",
+        nickname = "getPositionMap")
+    @ApiResponses(value = {
+        // TODO this corresponds to List of PdbUniprotResidueMappings, not to the actual model
+        @ApiResponse(code = 200, message = "Success",
+            response = PdbUniprotResidueMapping.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/header/{positions}/{alignments}",
+        method = RequestMethod.GET,
+        produces = "application/json")
+    public Map<Long, Set<PdbUniprotResidueMapping>> getPositionMap(
+        @PathVariable
+        @ApiParam(value = "Comma separated list of uniprot positions. For example 97,100,105",
+            required = true,
+            allowMultiple = true)
+        List<Long> positions,
+        @PathVariable
+        @ApiParam(value = "Comma separated list of alignment ids. For example 3412121,3412119",
+            required = true,
+            allowMultiple = true)
+        List<Long> alignments)
+    {
+        Map<Long, Set<PdbUniprotResidueMapping>> map = new HashMap<>();
+        List<PdbUniprotResidueMapping> mappings = new LinkedList<>();
+
+        // remove duplicates
+        Set<Long> positionSet = new LinkedHashSet<>(positions);
+        Set<Long> alignmentSet = new LinkedHashSet<>(alignments);
+
+        for (Long alignmentId : alignmentSet)
+        {
+            // get the matching mapping for this alignment id
+            List<PdbUniprotResidueMapping> mapping =
+                getPdbUniprotResidueMapping(alignmentId, positionSet);
+
+            if (mapping != null)
+            {
+                mappings.addAll(mapping);
+            }
+        }
+
+        // create a map of
+        // <uniprot position, set of PdbUniprotResidueMapping instances> pairs
+        for (PdbUniprotResidueMapping mapping : mappings)
+        {
+            Set<PdbUniprotResidueMapping> mappingSet =
+                map.get(mapping.getUniprotPosition());
+
+            // init the set if not initialized yet
+            if (mappingSet == null)
+            {
+                mappingSet = new LinkedHashSet<>();
+                map.put(mapping.getUniprotPosition(), mappingSet);
+            }
+
+            mappingSet.add(mapping);
+        }
+
+        return map;
+    }
+
     @ApiOperation(value = "get alignment summary by uniprot id",
         nickname = "getAlignmentSummary")
     @ApiResponses(value = {
@@ -197,5 +259,28 @@ public class PdbAnnotationController
     public List<PdbUniprotAlignment> getPdbUniprotAlignmentByPdbId(String pdbId)
     {
         return pdbUniprotAlignmentRepository.findByPdbId(pdbId);
+    }
+
+    public List<PdbUniprotResidueMapping> getPdbUniprotResidueMapping(
+        long alignmentId, Set<Long> positions)
+    {
+        List<PdbUniprotResidueMapping> list = new LinkedList<>();
+
+        // first, get all PdbUniprotResidueMappings matching the given alignment id
+        // TODO do we need to sort the list by ascending uniprot positions?
+        List<PdbUniprotResidueMapping> mappings =
+            pdbUniprotResidueMappingRepository.findByAlignmentId(alignmentId);
+
+        // then, filter by provided uniprot positions
+        for (PdbUniprotResidueMapping mapping : mappings)
+        {
+            // only add positions matching the ones in the provided set
+            if (positions.contains(mapping.getUniprotPosition()))
+            {
+                list.add(mapping);
+            }
+        }
+
+        return list;
     }
 }

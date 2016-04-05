@@ -1,6 +1,8 @@
 package org.cbioportal.pdb_annotation.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import javax.persistence.*;
 
 /**
@@ -8,6 +10,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="pdb_uniprot_alignment")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PdbUniprotAlignment
 {
     @Id

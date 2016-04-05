@@ -1,10 +1,13 @@
 package org.cbioportal.pdb_annotation.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Map;
 
 /**
  * @author Selcuk Onur Sumer
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PdbHeader
 {
     // TODO define a better model!
