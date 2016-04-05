@@ -30,19 +30,19 @@ public class PdbUniprotAlignment
 	private String pdbTo;
 
 	@Column(name="uniprot_from")
-	private long uniprotFrom;
+	private Long uniprotFrom;
 
 	@Column(name="uniprot_to")
-	private long uniprotTo;
+	private Long uniprotTo;
 
 	@Column(name="evalue")
-	private double eValue;
+	private Double eValue;
 
 	@Column(name="identity")
-	private double identity;
+	private Double identity;
 
 	@Column(name="identp")
-	private double identityP;
+	private Double identityP;
 
 	@Column(name="uniprot_align")
 	private String uniprotAlign;
@@ -115,7 +115,7 @@ public class PdbUniprotAlignment
 		this.pdbTo = pdbTo;
 	}
 
-	public long getUniprotFrom()
+	public Long getUniprotFrom()
 	{
 		return uniprotFrom;
 	}
@@ -125,7 +125,7 @@ public class PdbUniprotAlignment
 		this.uniprotFrom = uniprotFrom;
 	}
 
-	public long getUniprotTo()
+	public Long getUniprotTo()
 	{
 		return uniprotTo;
 	}
@@ -135,7 +135,7 @@ public class PdbUniprotAlignment
 		this.uniprotTo = uniprotTo;
 	}
 
-	public double geteValue()
+	public Double geteValue()
 	{
 		return eValue;
 	}
@@ -145,7 +145,7 @@ public class PdbUniprotAlignment
 		this.eValue = eValue;
 	}
 
-	public double getIdentity()
+	public Double getIdentity()
 	{
 		return identity;
 	}
@@ -155,7 +155,7 @@ public class PdbUniprotAlignment
 		this.identity = identity;
 	}
 
-	public double getIdentityP()
+	public Double getIdentityP()
 	{
 		return identityP;
 	}
