@@ -35,8 +35,25 @@ public class PdbUniprotResidueMapping implements Serializable
     @Column(name = "match")
     private String match;
 
-    protected PdbUniprotResidueMapping()
+    protected PdbUniprotResidueMapping() {}
+
+    public PdbUniprotResidueMapping(long alignmentId, long uniprotPosition)
     {
+        this.alignmentId = alignmentId;
+        this.uniprotPosition = uniprotPosition;
+    }
+
+    public PdbUniprotResidueMapping(long alignmentId,
+        Long pdbPosition,
+        String pdbInsertionCode,
+        long uniprotPosition,
+        String match)
+    {
+        this.alignmentId = alignmentId;
+        this.pdbPosition = pdbPosition;
+        this.pdbInsertionCode = pdbInsertionCode;
+        this.uniprotPosition = uniprotPosition;
+        this.match = match;
     }
 
     public long getAlignmentId()

@@ -56,8 +56,11 @@ public class PdbUniprotAlignment
     @Column(name = "midline_align")
     private String midlineAlign;
 
-    protected PdbUniprotAlignment()
+    protected PdbUniprotAlignment() {}
+
+    public PdbUniprotAlignment(long alignmentId)
     {
+        this.alignmentId = alignmentId;
     }
 
     public long getAlignmentId()
