@@ -14,6 +14,7 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PdbUniprotResidueMapping implements Serializable
 {
+    @Id
     @Column(name = "alignment_id")
     private long alignmentId;
 
@@ -32,7 +33,7 @@ public class PdbUniprotResidueMapping implements Serializable
     @Column(name = "uniprot_position")
     private long uniprotPosition;
 
-    @Column(name = "match")
+    @Column(name = "`match`") // match is a reserved word, need to escape!
     private String match;
 
     protected PdbUniprotResidueMapping() {}

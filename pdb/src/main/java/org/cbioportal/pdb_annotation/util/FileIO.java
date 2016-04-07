@@ -1,12 +1,10 @@
 package org.cbioportal.pdb_annotation.util;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 /**
  * @author Selcuk Onur Sumer
@@ -21,7 +19,13 @@ public class FileIO
      */
     public static Reader getReader(String resourceURI)
     {
+        // first try class path
         Resource resource = new ClassPathResource(resourceURI);
+
+        // if not exists then try absolute path
+        if (!resource.exists()) {
+            resource = new PathResource(resourceURI);
+        }
 
         try {
             return new InputStreamReader(resource.getInputStream(), "UTF-8");

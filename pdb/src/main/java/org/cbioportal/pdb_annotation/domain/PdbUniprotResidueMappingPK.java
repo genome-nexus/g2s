@@ -28,6 +28,30 @@ public class PdbUniprotResidueMappingPK implements Serializable
     }
 
     public int hashCode() {
-        return (alignmentId + "_" +uniprotPosition).hashCode();
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (alignmentId ^ (alignmentId >>> 32));
+        result = prime * result + (int) (uniprotPosition ^ (uniprotPosition >>> 32));
+        return result;
+    }
+
+    public long getAlignmentId()
+    {
+        return alignmentId;
+    }
+
+    public void setAlignmentId(long alignmentId)
+    {
+        this.alignmentId = alignmentId;
+    }
+
+    public long getUniprotPosition()
+    {
+        return uniprotPosition;
+    }
+
+    public void setUniprotPosition(long uniprotPosition)
+    {
+        this.uniprotPosition = uniprotPosition;
     }
 }

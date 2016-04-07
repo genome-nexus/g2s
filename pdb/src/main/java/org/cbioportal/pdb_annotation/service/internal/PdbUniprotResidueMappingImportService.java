@@ -66,7 +66,12 @@ public class PdbUniprotResidueMappingImportService implements PdbDataImportServi
     {
         BufferedReader buf = new BufferedReader(FileIO.getReader(resourceURI));
         String line = buf.readLine();
-        long alignId = pdbUniprotResidueMappingRepository.getMaxId();
+        Long alignId = pdbUniprotResidueMappingRepository.getMaxId();
+
+        if (alignId == null) {
+            alignId = 0L;
+        }
+
         PdbUniprotAlignment pdbUniprotAlignment = new PdbUniprotAlignment(Integer.MIN_VALUE);
         List<PdbUniprotResidueMapping> pdbUniprotResidueMappings = Collections.emptyList();
         Map<Integer, Integer> mappingUniPdbProtein = Collections.emptyMap();
