@@ -68,6 +68,27 @@ public class PdbAnnotationController
         return uniprotAlignments;
     }
 
+    @ApiOperation(value = "get pdb uniprot alignments by pdb id",
+        nickname = "postPdbAlignmentByPdb")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success",
+            response = PdbUniprotAlignment.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/alignment/byPdb",
+        method = RequestMethod.POST,
+        produces = "application/json")
+    public List<PdbUniprotAlignment> postPdbUniprotAlignmentByPdbId(
+        @RequestParam
+        @ApiParam(value = "Comma separated list of pdb ids. For example 1a37,1a4o",
+            required = true,
+            allowMultiple = true)
+        List<String> pdbIds)
+    {
+        return getPdbUniprotAlignmentByPdbId(pdbIds);
+    }
+
     @ApiOperation(value = "get pdb uniprot alignments by uniprot id",
         nickname = "getPdbAlignmentByUniprot")
     @ApiResponses(value = {
@@ -100,6 +121,27 @@ public class PdbAnnotationController
         }
 
         return uniprotAlignments;
+    }
+
+    @ApiOperation(value = "get pdb uniprot alignments by uniprot id",
+        nickname = "postPdbAlignmentByUniprot")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success",
+            response = PdbUniprotAlignment.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/alignment/byUniprot",
+        method = RequestMethod.POST,
+        produces = "application/json")
+    public List<PdbUniprotAlignment> postPdbUniprotAlignmentByUniprotId(
+        @RequestParam
+        @ApiParam(value = "Comma separated list of uniprot ids. For example P53_HUMAN,RASK_HUMAN",
+            required = true,
+            allowMultiple = true)
+        List<String> uniprotIds)
+    {
+        return getPdbUniprotAlignmentByUniprotId(uniprotIds);
     }
 
     @ApiOperation(value = "get pdb header info by pdb id",
@@ -138,6 +180,27 @@ public class PdbAnnotationController
         return pdbHeaderList;
     }
 
+    @ApiOperation(value = "get pdb header info by pdb id",
+        nickname = "postPdbHeader")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success",
+            response = PdbHeader.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/header",
+        method = RequestMethod.POST,
+        produces = "application/json")
+    public List<PdbHeader> postPdbHeader(
+        @RequestParam
+        @ApiParam(value = "Comma separated list of pdb ids. For example 1a37,1a4o",
+            required = true,
+            allowMultiple = true)
+        List<String> pdbIds)
+    {
+        return getPdbHeader(pdbIds);
+    }
+
     @ApiOperation(value = "get position mapping for alignments",
         nickname = "getPositionMap")
     @ApiResponses(value = {
@@ -147,7 +210,7 @@ public class PdbAnnotationController
             responseContainer = "List"),
         @ApiResponse(code = 400, message = "Bad Request")
     })
-    @RequestMapping(value = "/header/{positions}/{alignments}",
+    @RequestMapping(value = "/map/{positions}/{alignments}",
         method = RequestMethod.GET,
         produces = "application/json")
     public Map<Long, Set<PdbUniprotResidueMapping>> getPositionMap(
@@ -201,6 +264,33 @@ public class PdbAnnotationController
         return map;
     }
 
+    @ApiOperation(value = "get position mapping for alignments",
+        nickname = "postPositionMap")
+    @ApiResponses(value = {
+        // TODO this corresponds to List of PdbUniprotResidueMappings, not to the actual model
+        @ApiResponse(code = 200, message = "Success",
+            response = PdbUniprotResidueMapping.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/map",
+        method = RequestMethod.POST,
+        produces = "application/json")
+    public Map<Long, Set<PdbUniprotResidueMapping>> postPositionMap(
+        @RequestParam
+        @ApiParam(value = "Comma separated list of uniprot positions. For example 97,100,105",
+            required = true,
+            allowMultiple = true)
+        List<Long> positions,
+        @RequestParam
+        @ApiParam(value = "Comma separated list of alignment ids. For example 3412121,3412119",
+            required = true,
+            allowMultiple = true)
+        List<Long> alignments)
+    {
+        return getPositionMap(positions, alignments);
+    }
+
     @ApiOperation(value = "get alignment summary by uniprot id",
         nickname = "getAlignmentSummary")
     @ApiResponses(value = {
@@ -232,6 +322,27 @@ public class PdbAnnotationController
         }
 
         return summaryList;
+    }
+
+    @ApiOperation(value = "get alignment summary by uniprot id",
+        nickname = "postAlignmentSummary")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success",
+            response = AlignmentSummary.class,
+            responseContainer = "List"),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    @RequestMapping(value = "/summary",
+        method = RequestMethod.POST,
+        produces = "application/json")
+    public List<AlignmentSummary> postAlignmentSummary(
+        @RequestParam
+        @ApiParam(value = "Comma separated list of uniprot ids. For example P53_HUMAN,RASK_HUMAN",
+            required = true,
+            allowMultiple = true)
+        List<String> uniprotIds)
+    {
+        return getAlignmentSummary(uniprotIds);
     }
 
     public AlignmentSummary getAlignmentSummary(String uniprotId)
