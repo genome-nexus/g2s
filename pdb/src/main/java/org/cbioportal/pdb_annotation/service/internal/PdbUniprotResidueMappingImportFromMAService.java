@@ -20,7 +20,7 @@ import java.util.*;
  * @author Selcuk Onur Sumer
  */
 @Service
-public class PdbUniprotResidueMappingImportService implements PdbDataImportService
+public class PdbUniprotResidueMappingImportFromMAService implements PdbDataImportService
 {
     private String residueMappingURI;
     @Value("${pdb.uniprot_residue_mapping_uri}")
@@ -40,7 +40,7 @@ public class PdbUniprotResidueMappingImportService implements PdbDataImportServi
     private PdbUniprotAlignmentRepository pdbUniprotAlignmentRepository;
 
     @Autowired
-    public PdbUniprotResidueMappingImportService(
+    public PdbUniprotResidueMappingImportFromMAService(
         PdbUniprotResidueMappingRepository pdbUniprotResidueMappingRepository,
         PdbUniprotAlignmentRepository pdbUniprotAlignmentRepository)
     {
@@ -168,5 +168,7 @@ public class PdbUniprotResidueMappingImportService implements PdbDataImportServi
                 }
             }
         }
+
+        buf.close();
     }
 }
