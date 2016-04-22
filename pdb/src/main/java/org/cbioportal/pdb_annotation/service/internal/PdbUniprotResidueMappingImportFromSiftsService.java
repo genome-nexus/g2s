@@ -15,12 +15,16 @@ import org.biojava.nbio.structure.align.util.AtomCache;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.biojava.nbio.core.sequence.compound.*;
 import org.biojava.nbio.core.sequence.loader.UniprotProxySequenceReader;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author jgao
  * @author Selcuk Onur Sumer
  */
+@Component("residueMappingFromSifts")
+@Service
 public class PdbUniprotResidueMappingImportFromSiftsService implements PdbDataImportService
 {
     private String residueMappingURI;

@@ -8,6 +8,7 @@ import org.cbioportal.pdb_annotation.service.PdbDataImportService;
 import org.cbioportal.pdb_annotation.util.FileIO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ import java.util.*;
  * @author jgao
  * @author Selcuk Onur Sumer
  */
+@Component("residueMappingFromMA")
 @Service
 public class PdbUniprotResidueMappingImportFromMAService implements PdbDataImportService
 {
