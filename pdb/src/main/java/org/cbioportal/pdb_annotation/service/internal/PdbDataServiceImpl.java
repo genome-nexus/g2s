@@ -1,8 +1,11 @@
 package org.cbioportal.pdb_annotation.service.internal;
 
 import org.cbioportal.pdb_annotation.domain.PdbHeader;
+import org.cbioportal.pdb_annotation.domain.SimpleCacheEntity;
+import org.cbioportal.pdb_annotation.domain.SimpleCacheRepository;
 import org.cbioportal.pdb_annotation.service.PdbDataService;
 import org.cbioportal.pdb_annotation.util.PdbFileParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,12 +25,13 @@ public class PdbDataServiceImpl implements PdbDataService
         this.headerServiceURL = headerServiceURL;
     }
 
+    @Autowired
+    private SimpleCacheRepository cacheRepository;
+
     @Override
     public PdbHeader getPdbHeader(String pdbId)
     {
         PdbHeader info = null;
-
-        // TODO implement a JSON cache! (mongo db)
 
         if (pdbId != null &&
             pdbId.length() > 0)
@@ -53,14 +57,29 @@ public class PdbDataServiceImpl implements PdbDataService
 
     public String getRawInfo(String pdbId)
     {
+        // try to get the data from database first
+        SimpleCacheEntity entity = cacheRepository.findOne(pdbId);
+
+        // we have the information in the cache already!
+        if (entity != null)
+        {
+            return entity.getValue();
+        }
+
         //http://www.rcsb.org/pdb/files/PDB_ID.pdb?headerOnly=YES
         //http://files.rcsb.org/header/PDB_ID.pdb
-
         String uri = headerServiceURL.replace("PDB_ID", pdbId.toUpperCase());
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-            return restTemplate.getForObject(uri, String.class);
+            String value = restTemplate.getForObject(uri, String.class);
+            // cache the retrieved value
+            if (value != null && value.length() > 0)
+            {
+                // TODO sanitize value before caching
+                cacheRepository.save(new SimpleCacheEntity(pdbId, value));
+            }
+            return value;
         } catch (Exception e) {
             //e.printStackTrace();
             return null;
