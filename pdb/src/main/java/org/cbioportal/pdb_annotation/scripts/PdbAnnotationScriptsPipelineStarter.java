@@ -554,8 +554,6 @@ public class PdbAnnotationScriptsPipelineStarter {
     	long startTime = System.currentTimeMillis();
     	//ob.test();
     	
-    	
-    	
     	//ob.dealPDB("/home/wangjue/gsoc/pdb_seqres.txt","/home/wangjue/gsoc/pdb_seqres.fasta");
     	
     	//ob.run("makeblastdb");
