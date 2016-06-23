@@ -34,6 +34,11 @@ package org.cbioportal.pdb_annotation.util;
 
 import java.util.*;
 
+import org.biojava.nbio.structure.Chain;
+import org.biojava.nbio.structure.DBRef;
+import org.biojava.nbio.structure.Structure;
+import org.biojava.nbio.structure.StructureIO;
+
 /**
  * Class designed to parse raw text files returned from PDB data service,
  * and to convert data into JSON objects.
@@ -221,5 +226,49 @@ public class PdbFileParser
 		}
 
 		return sb.toString().trim();
+	}
+	
+	/**
+	 * test output essential structure information of input pdb 
+	 * @param pdbname
+	 */
+	void outputPDB(String pdbname){
+		try {
+
+			//test "4cof"
+            Structure s = StructureIO.getStructure(pdbname);
+            
+            for(DBRef db : s.getDBRefs()){
+            	System.out.println("**");
+            	System.out.println(db.getChainId());
+            	System.out.println(db.getDatabase());
+            	System.out.println(db.getDbAccession());
+            	System.out.println(db.getDbIdCode());
+            	System.out.println(db.getInsertBegin());
+            	System.out.println(db.getInsertEnd());
+            	System.out.println(db.getDbSeqBegin());
+            	System.out.println(db.getDbSeqEnd());
+            	System.out.println(db.getIdbnsBegin());
+            	System.out.println(db.getIdbnsEnd());
+            	System.out.println(db.getIdCode());
+            	System.out.println(db.getId());
+            }
+
+            for ( Chain c : s.getChains()) {
+            	
+            	System.out.println(c.getChainID()+"\t"+c.getAtomLength()+"\t"+c.getAtomSequence().length()+"\t"+c.getSeqResLength());
+
+                // only the observed residues
+                System.out.println(c.getAtomSequence());
+                              
+
+                // print biological sequence
+                System.out.println(c.getSeqResSequence());
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        } 
 	}
 }

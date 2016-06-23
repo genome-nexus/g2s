@@ -1,1 +1,21 @@
-Juexin's pull request test
+Tutorial of Running this project (Beta)
+
+Prerequest:
+OS: Linux 64bit
+java: openjdk_1.8.0
+maven: 3.3.9
+mysql: Ver 15.1 Distrib 10.0.21-MariaDB
+blast: 2.4.0+
+
+Before you run this project:
+1. Create database schema pdb, username cbio, password cbio in mysql
+2. Download sequences are downloaded from (ftp://ftp.rcsb.org/pub/pdb/derived_data/pdb_seqres.txt.gz) and gunzip it to ${workdir}
+3. Download gene sequences from Ensembl (ftp://ftp.ensembl.org/pub/release-84/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz) and gunzip it to ${workdir}
+4. In your code workspace, git clone https://github.com/cBioPortal/pdb-annotation.git
+5. Change settings in org/cbioportal/pdb_annotation/util/Constants.java. (i)Change workspace to the input sequences located ${workdir}. (ii)Change resource_dir to "~/pdb-annotation/pdb/src/main/resources/"  (iii) you may also change ensembl_input_interval for memory performance consideration
+6. If you want to use other test ensembl sequences, please change both ensembl_download_file and ensembl_fasta_file in your workspace
+7. mvn package
+8. in pdb-annotation/pdb/target/ java -jar -Xmx7000m pdb-0.1.0.jar
+9. Go to mysql to check the results 
+
+Please let me know if you have questions.

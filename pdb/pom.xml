@@ -18,15 +18,18 @@
 	<profiles>
 		<profile>
 			<id>war</id>
-			<activation>
+			<!--activation>
 				<activeByDefault>true</activeByDefault>
-			</activation>
+			</activation-->
 			<properties>
 				<packaging.type>war</packaging.type>
 			</properties>
 		</profile>
 		<profile>
 			<id>jar</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<packaging.type>jar</packaging.type>
 			</properties>
@@ -95,8 +98,12 @@
 			<artifactId>univocity-parsers</artifactId>
 			<version>2.0.0</version>
 		</dependency-->
+	<dependency>
+    		<groupId>commons-io</groupId>
+    		<artifactId>commons-io</artifactId>
+    		<version>2.4</version>
+	</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<!-- required to build an executable jar -->
@@ -114,6 +121,8 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<properties>
+		<start-class>org.cbioportal.pdb_annotation.scripts.PdbAnnotationScriptsPipelineStarter</start-class>
+	</properties>
 </project>
 
