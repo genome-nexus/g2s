@@ -16,7 +16,7 @@ Before you run this project:
 	(i) Change workspace to the input sequences located ${workdir}. 
 	(ii)Change resource_dir to "~/pdb-annotation/pdb/src/main/resources/"  
 	(iii)Change ensembl_input_interval for memory performance consideration
-    (iv) * If you want to use other test ensembl sequences, please change both ensembl_download_file and ensembl_fasta_file in your workspace
+	(iv) * If you want to use other test ensembl sequences, please change both ensembl_download_file and ensembl_fasta_file in your workspace
 6. mvn package
 7. in pdb-annotation/pdb/target/ java -jar -Xmx7000m pdb-0.1.0.jar
 8. Go to mysql to check the results 

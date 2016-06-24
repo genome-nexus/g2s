@@ -1,7 +1,7 @@
 package org.cbioportal.pdb_annotation.util;
 
 /**
- * 
+ * Static Contents
  * @author Juexin Wang
  *
  */
