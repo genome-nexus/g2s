@@ -680,8 +680,7 @@ public class PdbAnnotationScriptsPipelineStarter {
 		long startTime = System.currentTimeMillis();
 
 		// Step 1: choose only protein entries of all pdb
-		app.preprocessPDBsequences(Constants.workspace + Constants.pdb_seqres_download_file,
-				Constants.workspace + Constants.pdb_seqres_fasta_file);
+		//app.preprocessPDBsequences(Constants.workspace + Constants.pdb_seqres_download_file,Constants.workspace + Constants.pdb_seqres_fasta_file);
 
 		// Step 2: preprocess ensembl files, split into small files to save the
 		// memory
