@@ -24,7 +24,7 @@ public final class Constants {
     public static String blast_para_threads="6";
     
     // intervals to split the input files
-    public static int ensembl_input_interval = 5000;
+    public static int ensembl_input_interval = 3000;
     public static int sql_insert_output_interval = 10000;
     
     // mysql
