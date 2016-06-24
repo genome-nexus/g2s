@@ -12,7 +12,7 @@ Before you run this project:
 1. Create an empty database schema named as "pdb", username as "cbio", password as "cbio" in mysql:
 	In mysql prompt,type:
 	CREATE USER 'cbio'@'localhost' IDENTIFIED BY 'cbio';
-	GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+	GRANT ALL PRIVILEGES ON * . * TO 'cbio'@'localhost';
 	FLUSH PRIVILEGES;
 	create database pdb;
 2. Download PDB sequences from (ftp://ftp.rcsb.org/pub/pdb/derived_data/pdb_seqres.txt.gz) and gunzip it to ${workdir}
