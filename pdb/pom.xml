@@ -122,7 +122,7 @@
 		</plugins>
 	</build>
 	<properties>
-		<start-class>org.cbioportal.pdb_annotation.scripts.PdbAnnotationScriptsPipelineStarter</start-class>
+		<start-class>org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineStarter</start-class>
 	</properties>
 </project>
 
