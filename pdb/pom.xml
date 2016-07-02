@@ -18,18 +18,18 @@
 	<profiles>
 		<profile>
 			<id>war</id>
-			<!--activation>
+			<activation>
 				<activeByDefault>true</activeByDefault>
-			</activation-->
+			</activation>
 			<properties>
 				<packaging.type>war</packaging.type>
 			</properties>
 		</profile>
 		<profile>
 			<id>jar</id>
-			<activation>
+			<!--activation>
 				<activeByDefault>true</activeByDefault>
-			</activation>
+			</activation-->
 			<properties>
 				<packaging.type>jar</packaging.type>
 			</properties>
@@ -121,8 +121,8 @@
 			</plugin>
 		</plugins>
 	</build>
-	<properties>
+	<!--properties>
 		<start-class>org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineStarter</start-class>
-	</properties>
+	</properties-->
 </project>
 

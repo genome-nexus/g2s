@@ -263,7 +263,7 @@ public class PdbScriptsPipelineStarter {
 		
 		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing();
 		// Step 1: choose only protein entries of all pdb
-		preprocess.preprocessPDBsequences(Constants.workspace + Constants.pdb_seqres_download_file,Constants.workspace + Constants.pdb_seqres_fasta_file);
+		//preprocess.preprocessPDBsequences(Constants.workspace + Constants.pdb_seqres_download_file,Constants.workspace + Constants.pdb_seqres_fasta_file);
 
 		// Step 2: preprocess ensembl files, split into small files to save the memory
 		app.ensembl_file_count=preprocess.preprocessGENEsequences(Constants.workspace + Constants.ensembl_download_file,Constants.workspace + Constants.ensembl_fasta_file);

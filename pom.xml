@@ -11,6 +11,7 @@
 
     <modules>
       <module>pdb</module>
+      <module>pdb-alignment-init</module>
     </modules>
 
     <!-- inherit defaults from spring boot -->
