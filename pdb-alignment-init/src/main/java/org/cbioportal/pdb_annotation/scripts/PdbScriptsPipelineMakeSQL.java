@@ -172,7 +172,7 @@ public class PdbScriptsPipelineMakeSQL {
 	 */
 	public String makeTable_ensembl_entry_insert(BlastResult br){
 		String[] strarrayQ = br.getQseqid().split("\\s+");
-		String str = "INSERT INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
+		String str = "INSERT INTO `ensembl_entry`(`ensemblid`,`ensemblgene`,`ensembltranscript`) VALUES('"
 				+ strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
 				+ "');\n";
 		return str;		 
@@ -185,7 +185,7 @@ public class PdbScriptsPipelineMakeSQL {
 	 */
 	public String makeTable_pdb_entry_insert(BlastResult br){
 		String[] strarrayS = br.getSseqid().split("_");
-		String str = "INSERT INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`) VALUES ('" + br.getSseqid() + "', '"
+		String str = "INSERT INTO `pdb_entry` (`pdbno`,`pdbid`,`chain`) VALUES ('" + br.getSseqid() + "', '"
 				+ strarrayS[0] + "', '" + strarrayS[1] + "');\n";
 		return str;
 	}
@@ -198,7 +198,7 @@ public class PdbScriptsPipelineMakeSQL {
 	public String makeTable_pdb_ensembl_insert(BlastResult br){
 		String[] strarrayQ = br.getQseqid().split("\\s+");
 		String[] strarrayS = br.getSseqid().split("_");
-		String str = "INSERT INTO `pdb_ensembl_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`ENSEMBL_ID`,`PDB_FROM`,`PDB_TO`,`ENSEMBL_FROM`,`ENSEMBL_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`ENSEMBL_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`)VALUES ('"
+		String str = "INSERT INTO `pdb_ensembl_alignment` (`pdbno`,`pdbid`,`chain`,`ensemblid`,`pdbfrom`,`pdbto`,`ensemblfrom`,`ensemblto`,`evalue`,`bitscore`,`identity`,`identp`,`ensemblalign`,`pdbalign`,`midlinealign`)VALUES ('"
 				+ br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayQ[0] + "',"
 				+ br.getqStart() + "," + br.getqEnd() + "," + br.getsStart() + "," + br.getsEnd() + ",'"
 				+ br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"

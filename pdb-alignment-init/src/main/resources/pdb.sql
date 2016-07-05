@@ -6,41 +6,41 @@ drop table IF EXISTS ensembl_entry;
 drop table IF EXISTS pdb_entry;
 
 CREATE TABLE `ensembl_entry` (
-    `ENSEMBL_ID` VARCHAR(20) NOT NULL,
-    `ENSEMBL_GENE` VARCHAR(20),
-    `ENSEMBL_TRANSCRIPT` VARCHAR(20),
-    `ENTREZ_GENE_ID` int(255),
-    PRIMARY KEY(`ENSEMBL_ID`)
-    -- FOREIGN KEY(`ENTREZ_GENE_ID`) REFERENCES `gene` (`ENTREZ_GENE_ID`)
+    `ensemblid` VARCHAR(20) NOT NULL,
+    `ensemblgene` VARCHAR(20),
+    `ensembltranscript` VARCHAR(20),
+    `entrezid` int(255),
+    PRIMARY KEY(`ensemblid`)
+    -- FOREIGN KEY(`ENTREZID`) REFERENCES `gene` (`ENTREZ_GENE_ID`)
 );
 CREATE TABLE `pdb_entry` (
-    `PDB_NO` VARCHAR(9) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-    `PDB_ID` VARCHAR(4) NOT NULL,
-    `CHAIN` VARCHAR(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-    `DBREF` VARCHAR(255),
-    PRIMARY KEY(`PDB_NO`)
+    `pdbno` VARCHAR(9) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+    `pdbid` VARCHAR(4) NOT NULL,
+    `chain` VARCHAR(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+    `dbref` VARCHAR(255),
+    PRIMARY KEY(`pdbno`)
 );
 CREATE TABLE `pdb_ensembl_alignment` (
-  `ALIGNMENT_ID` int NOT NULL AUTO_INCREMENT,
-  `PDB_NO` VARCHAR(9) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `PDB_ID` VARCHAR(4) NOT NULL,
-  `CHAIN` VARCHAR(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  `ENSEMBL_ID` VARCHAR(20) NOT NULL,
-  `PDB_FROM` int NOT NULL,
-  `PDB_TO` int NOT NULL,
-  `ENSEMBL_FROM` int NOT NULL,
-  `ENSEMBL_TO` int NOT NULL,
-  `EVALUE` VARCHAR(10),
-  `BITSCORE` float,
-  `IDENTITY` float,
-  `IDENTP` float,
-  `ENSEMBL_ALIGN` text,
-  `PDB_ALIGN` text,
-  `MIDLINE_ALIGN` text,
-  PRIMARY KEY (`ALIGNMENT_ID`),
-  KEY(`ENSEMBL_ID`),
-  KEY(`PDB_ID`, `CHAIN`),
-  FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
-  FOREIGN KEY(`ENSEMBL_ID`) REFERENCES `ensembl_entry` (`ENSEMBL_ID`)
+  `alignmentid` int NOT NULL AUTO_INCREMENT,
+  `pdbno` VARCHAR(9) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `pdbid` VARCHAR(4) NOT NULL,
+  `chain` VARCHAR(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `ensemblid` VARCHAR(20) NOT NULL,
+  `pdbfrom` int NOT NULL,
+  `pdbto` int NOT NULL,
+  `ensemblfrom` int NOT NULL,
+  `ensemblto` int NOT NULL,
+  `evalue` VARCHAR(10),
+  `bitscore` float,
+  `identity` float,
+  `identp` float,
+  `ensemblalign` text,
+  `pdbalign` text,
+  `midlinealign` text,
+  PRIMARY KEY (`alignmentid`),
+  KEY(`ensemblid`),
+  KEY(`pdbno`),
+  FOREIGN KEY(`pdbno`) REFERENCES `pdb_entry` (`pdbno`),
+  FOREIGN KEY(`ensemblid`) REFERENCES `ensembl_entry` (`ensemblid`)
 );
 
