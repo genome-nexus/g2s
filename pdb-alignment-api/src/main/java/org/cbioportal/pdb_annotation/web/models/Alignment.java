@@ -1,5 +1,6 @@
 package org.cbioportal.pdb_annotation.web.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,34 +16,61 @@ public class Alignment {
 	  // ------------------------
 	 @Id  
 	 @GeneratedValue(strategy = GenerationType.AUTO)
-	  private int alignmentid;		 
-	  private String pdbno;	  
+	 @Column(name = "ALIGNMENT_ID") 
+	 private int alignmentid;	
+	 
+	 @Column(name = "PDB_NO")
+	  private String pdbno;
+	 
+	 @Column(name = "PDB_ID")
 	  private String pdbid;
+	 
+	 @Column(name = "CHAIN")
 	  private String chain;
-	  private String ensemblid;
-	  private int pdbfrom;
-	  private int pdbto;
-	  private int ensemblfrom;
-	  private int ensemblto;
-	  private String evalue;
-	  private float bitscore;
-	  private float identity;
-	  private float identp;
-	  private String ensemblalign;
-	  private String pdbalign;
-	  private String midlinealign;
 	  
+	  @Column(name = "ENSEMBL_ID")
+	  private String ensemblid;
+	  
+	  @Column(name = "PDB_FROM")
+	  private int pdbfrom;
+	  
+	  @Column(name = "PDB_TO")
+	  private int pdbto;
+	  
+	  @Column(name = "ENSEMBL_FROM")
+	  private int ensemblfrom;
+	  
+	  @Column(name = "ENSEMBL_TO")
+	  private int ensemblto;
+	  
+	  @Column(name = "EVALUE")
+	  private String evalue;
+	  
+	  @Column(name = "BITSCORE")
+	  private float bitscore;
+	  
+	  @Column(name = "IDENTITY")
+	  private float identity;
+	  
+	  @Column(name = "IDENTP")
+	  private float identp;
+	  
+	  /*
+	  @Column(name = "ENSEMBL_ALIGN")
+	  private String ensemblalign;
+	  
+	  @Column(name = "PDB_ALIGN")
+	  private String pdbalign;
+	  
+	  @Column(name = "MIDLINE_ALIGN")
+	  private String midlinealign;
+	  */
 	  
 
 	  // ------------------------
 	  // PUBLIC METHODS
 	  // ------------------------
 	  
-
-
-	
-	
-	public Alignment() { }
 
 	  public int getAlignmentid() {
 		return alignmentid;
@@ -148,6 +176,7 @@ public class Alignment {
 		this.identp = identp;
 	}
 
+	/*
 	public String getEnsemblalign() {
 		return ensemblalign;
 	}
@@ -171,6 +200,12 @@ public class Alignment {
 	public void setMidlinealign(String midlinealign) {
 		this.midlinealign = midlinealign;
 	}
+	*/
+	
+	/**
+	 * Construction Function
+	 */
+	public Alignment() { }
 
 	public Alignment(int alignmentid) { 
 	    this.alignmentid = alignmentid;

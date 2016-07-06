@@ -9,7 +9,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
-import org.cbioportal.pdb_annotation.util.Constants;
+import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
 import org.cbioportal.pdb_annotation.util.blast.BlastOutput;
 import org.cbioportal.pdb_annotation.util.blast.BlastOutputIterations;
@@ -18,6 +18,8 @@ import org.cbioportal.pdb_annotation.util.blast.Hit;
 import org.cbioportal.pdb_annotation.util.blast.Hsp;
 import org.cbioportal.pdb_annotation.util.blast.Iteration;
 import org.cbioportal.pdb_annotation.util.blast.IterationHits;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * SQL Insert statments Generation
@@ -25,15 +27,25 @@ import org.cbioportal.pdb_annotation.util.blast.IterationHits;
  * @author Juexin Wang
  *
  */
+@Component
 public class PdbScriptsPipelineMakeSQL {
 	private BlastDataBase db;
 	private int matches;
 	private int ensembl_file_count;
 	
-	PdbScriptsPipelineMakeSQL(PdbScriptsPipelineStarter app){
+    
+    private String workspace;
+    private String sql_insert_file;
+    private String sql_insert_output_interval;
+	
+	PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, ReadConfig rc){
 		this.db = app.db;
 		this.matches=app.matches;
 		this.ensembl_file_count=app.ensembl_file_count;
+		
+		this.workspace = rc.workspace;
+		this.sql_insert_file = rc.sql_insert_file;
+		this.sql_insert_output_interval = rc.sql_insert_output_interval;
 	}
 	
 	/**
@@ -81,8 +93,8 @@ public class PdbScriptsPipelineMakeSQL {
 		try {
 			System.out.println("[BLAST] Read blast results from xml file...");
 
-			File blastresults = new File(Constants.workspace + this.db.resultfileName);
-			File outputfile = new File(Constants.workspace + Constants.sql_insert_file);
+			File blastresults = new File(this.workspace + this.db.resultfileName);
+			File outputfile = new File(this.workspace + this.sql_insert_file);
 			HashMap ensemblHm = new HashMap();
 			HashMap pdbHm = new HashMap();
 			int count = parsexml(blastresults, outputfile, ensemblHm, pdbHm);
@@ -107,13 +119,13 @@ public class PdbScriptsPipelineMakeSQL {
 	public boolean parseblastresultsSmallMem(int filecount, HashMap ensemblHm, HashMap pdbHm) {
 		try {
 			System.out.println("[BLAST] Read blast results from " + filecount + "th xml file...");
-			File blastresults = new File(Constants.workspace + this.db.resultfileName + "." + filecount);
+			File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
 			File outputfile;
 			// Check whether multiple files existed
 			if (this.ensembl_file_count != -1) {
-				outputfile = new File(Constants.workspace + Constants.sql_insert_file + "." + filecount);
+				outputfile = new File(this.workspace + this.sql_insert_file + "." + filecount);
 			} else {
-				outputfile = new File(Constants.workspace + Constants.sql_insert_file);
+				outputfile = new File(this.workspace + this.sql_insert_file);
 			}
 			int count = parsexml(blastresults, outputfile, ensemblHm, pdbHm);			
 			this.matches = this.matches + count;
@@ -142,13 +154,14 @@ public class PdbScriptsPipelineMakeSQL {
 			BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
 			List<BlastResult> results = new ArrayList<BlastResult>();
 			BlastOutputIterations iterations = blast.getBlastOutputIterations();
-			System.out.println("[BLAST] Start parsing results...");			
+			System.out.println("[BLAST] Start parsing results...");	
+			int sql_insert_output_interval = Integer.parseInt(this.sql_insert_output_interval);
 			for (Iteration iteration : iterations.getIteration()) {
 				String querytext = iteration.getIterationQueryDef();
 				IterationHits hits = iteration.getIterationHits();
 				for (Hit hit : hits.getHit()) {
 					results.add(parseSingleAlignment(querytext, hit, count));
-					if (count % Constants.sql_insert_output_interval == 0) {
+					if (count % sql_insert_output_interval == 0) {
 						// Once get the criteria, output contents to the SQL file
 						genereateSQLstatementsSmallMem(results, ensemblHm, pdbHm, count, outputfile);
 						results.clear();
@@ -172,7 +185,7 @@ public class PdbScriptsPipelineMakeSQL {
 	 */
 	public String makeTable_ensembl_entry_insert(BlastResult br){
 		String[] strarrayQ = br.getQseqid().split("\\s+");
-		String str = "INSERT INTO `ensembl_entry`(`ensemblid`,`ensemblgene`,`ensembltranscript`) VALUES('"
+		String str = "INSERT INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
 				+ strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
 				+ "');\n";
 		return str;		 
@@ -185,7 +198,7 @@ public class PdbScriptsPipelineMakeSQL {
 	 */
 	public String makeTable_pdb_entry_insert(BlastResult br){
 		String[] strarrayS = br.getSseqid().split("_");
-		String str = "INSERT INTO `pdb_entry` (`pdbno`,`pdbid`,`chain`) VALUES ('" + br.getSseqid() + "', '"
+		String str = "INSERT INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`) VALUES ('" + br.getSseqid() + "', '"
 				+ strarrayS[0] + "', '" + strarrayS[1] + "');\n";
 		return str;
 	}
@@ -198,7 +211,7 @@ public class PdbScriptsPipelineMakeSQL {
 	public String makeTable_pdb_ensembl_insert(BlastResult br){
 		String[] strarrayQ = br.getQseqid().split("\\s+");
 		String[] strarrayS = br.getSseqid().split("_");
-		String str = "INSERT INTO `pdb_ensembl_alignment` (`pdbno`,`pdbid`,`chain`,`ensemblid`,`pdbfrom`,`pdbto`,`ensemblfrom`,`ensemblto`,`evalue`,`bitscore`,`identity`,`identp`,`ensemblalign`,`pdbalign`,`midlinealign`)VALUES ('"
+		String str = "INSERT INTO `pdb_ensembl_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`ENSEMBL_ID`,`PDB_FROM`,`PDB_TO`,`ENSEMBL_FROM`,`ENSEMBL_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`ENSEMBL_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`)VALUES ('"
 				+ br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayQ[0] + "',"
 				+ br.getqStart() + "," + br.getqEnd() + "," + br.getsStart() + "," + br.getsEnd() + ",'"
 				+ br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
@@ -217,7 +230,7 @@ public class PdbScriptsPipelineMakeSQL {
 	boolean generateSQLstatementsSingle(List<BlastResult> results) {
 		try {
 			System.out.println("[SHELL] Start Write insert.sql File...");
-			File file = new File(Constants.workspace + Constants.sql_insert_file);
+			File file = new File(this.workspace + this.sql_insert_file);
 			FileUtils fu = new FileUtils();
 
 			// HashMap ensemblHm and pdbHm are designed to avoid duplication of
@@ -305,7 +318,7 @@ public class PdbScriptsPipelineMakeSQL {
 		List<BlastResult> results = new ArrayList<BlastResult>(this.matches);
 		try {
 			System.out.println("[BLAST] Read blast results from xml file...");
-			File blastresults = new File(Constants.workspace + this.db.resultfileName);
+			File blastresults = new File(this.workspace + this.db.resultfileName);
 			JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
 			Unmarshaller u = jc.createUnmarshaller();
 			u.setSchema(null);

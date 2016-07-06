@@ -1,58 +1,59 @@
 package org.cbioportal.pdb_annotation.web.controllers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.AlignmentDAO;
-
+import org.cbioportal.pdb_annotation.web.models.EnsemblDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
 @Controller
 public class AlignmentController {
 	
-	
-	@RequestMapping("/get-by-ensemblid")
+	@RequestMapping("/StructureMappingQuery")
 	  @ResponseBody
-	  public String findByEnsemblid(String ensemblid) {
-	    String alignmentid;
-	    String pdbno;	  
-	    String pdbid;
-		String pdbfrom;
-		String pdbto;
-		String ensemblfrom;
-		String ensemblto;
-		String ensemblalign;
-		String pdbalign;
-		String midlinealign;
+	  public List<Alignment> findByEnsemblidinAlignment(String ensemblid) {
 	    
-		String outstr="";
+		List<Alignment> list = new ArrayList<Alignment>();
 	    try {
 	      Iterator<Alignment> it = alignmentDao.findByEnsemblid(ensemblid).iterator();
 	       while(it.hasNext()){
 	    	   Alignment alignment = (Alignment)it.next();
-	    	   alignmentid = String.valueOf(alignment.getAlignmentid());
-	 	      ensemblid=alignment.getEnsemblid();
-	 	      ensemblfrom = String.valueOf(alignment.getEnsemblfrom());
-	 	      ensemblto = String.valueOf(alignment.getEnsemblto());
-	 	      pdbno = alignment.getPdbno();
-	 	      pdbfrom = String.valueOf(alignment.getPdbfrom());
-	 	      pdbto = String.valueOf(alignment.getPdbto());
-	 	      ensemblalign = alignment.getEnsemblalign();
-	 	      pdbalign = alignment.getPdbalign();  
-	 	      outstr=outstr+"The alignmentid is: " + alignmentid + "&nbsp" + ensemblid + "&nbsp" + ensemblfrom + "&nbsp" + ensemblto + "&nbsp" + pdbno + "&nbsp" 
-	 		    		+ pdbfrom + "&nbsp" + pdbto + "&nbsp" + ensemblalign + "&nbsp" + pdbalign + "<br>";
-	       }
-	        	
+	    	   list.add(alignment);
+	       }	
 	    }
 	    catch (Exception ex) {
 	    	ex.printStackTrace();
-	      return "Alignment not found\n";
 	    }
-	    return outstr;
+	    return list;
+	    
 	  }
+	
+	
+	@RequestMapping("/ProteinIdentifierRecognitionQuery")
+	  @ResponseBody
+	  public boolean isExistedEnsemblidinAlignment(String ensemblid) {
+	    try {
+	      Iterator<Alignment> it = alignmentDao.findByEnsemblid(ensemblid).iterator(); 
+	      if(it.hasNext()){
+	    	   return true;
+	       }else{
+	    	   return false;
+	       }
+	    }
+	    catch (Exception ex) {
+	    	ex.printStackTrace();
+	    }
+	    return false;
+	  }
+	  
+	  
 	  
 	  
 	  
@@ -62,6 +63,9 @@ public class AlignmentController {
 
 	  @Autowired
 	  private AlignmentDAO alignmentDao;
+	  
+	  //@Autowired
+	  //private EnsemblDAO ensemblDao;
 	  
 	
 

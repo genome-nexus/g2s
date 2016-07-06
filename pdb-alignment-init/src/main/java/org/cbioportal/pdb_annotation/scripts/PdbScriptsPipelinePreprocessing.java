@@ -10,7 +10,8 @@ import java.util.Map.Entry;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
-import org.cbioportal.pdb_annotation.util.Constants;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Preprocessing the input PDB and Ensembl files
@@ -18,12 +19,17 @@ import org.cbioportal.pdb_annotation.util.Constants;
  * @author Juexin Wang
  *
  */
+@Component
 public class PdbScriptsPipelinePreprocessing {
+	
+	
+    private String ensembl_input_interval;
 	
 	public int ensembl_file_count;
 	
-	public PdbScriptsPipelinePreprocessing(){
-		this.ensembl_file_count = -1;		
+	public PdbScriptsPipelinePreprocessing(String ensembl_input_interval){
+		this.ensembl_file_count = -1;	
+		this.ensembl_input_interval = ensembl_input_interval;
 	}
 	
 	
@@ -107,11 +113,12 @@ public class PdbScriptsPipelinePreprocessing {
 			Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
 			// line count of the original FASTA file
 			int count = 0;
+			int ensembl_input_interval_int = Integer.parseInt(ensembl_input_interval);
 
 			
 			for (Entry<String, ProteinSequence> entry : a.entrySet()) {
 				c.add(entry.getValue());
-				if (count % Constants.ensembl_input_interval == Constants.ensembl_input_interval - 1) {
+				if (count % ensembl_input_interval_int == ensembl_input_interval_int - 1) {
 					FastaWriterHelper
 							.writeProteinSequence(new File(outfilename + "." + new Integer(filecount).toString()), c);
 					c.clear();

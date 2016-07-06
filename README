@@ -27,4 +27,7 @@ Before you run this project:
 7. in pdb-annotation/pdb/target/ java -jar -Xmx7000m pdb-0.1.0.jar
 8. Go to mysql to check the results 
 
+http://localhost:8080/StructureMappingQuery?ensemblid=ENSP00000483207.2
+http://localhost:8080/ProteinIdentifierRecognitionQuery?ensemblid=ENSP00000483207.2
+
 Please let me know if you have questions.
