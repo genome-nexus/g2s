@@ -76,7 +76,8 @@ public class PdbScriptsPipelineRunCommand {
 				System.err.println("[BLAST] Fatal Error: Could not Successfully Run blastp command");
 				ee.printStackTrace();
 			}
-		} else {
+		}  
+		else {
 			System.out.println("[Shell] Error: Could not recognize Command: " + command);
 		}
 		return true;
@@ -93,7 +94,7 @@ public class PdbScriptsPipelineRunCommand {
 	 *            True for split capable files, false for non-split files
 	 * @return Success/Failure
 	 */
-	public boolean runwithRedirect(String command, String arguments, boolean checkmultipleTag) {
+	public boolean runwithRedirectFrom(String command, String arguments, boolean checkmultipleTag) {
 		if (command.equals("mysql")) {
 			try {
 				System.out.println("[DATABASE] Running mysql command...");
@@ -129,6 +130,31 @@ public class PdbScriptsPipelineRunCommand {
 		return true;
 	}
 
+	
+	public boolean runwithRedirectTo(String command, String inputname, String outputname){
+		if(command.equals("gunzip")){
+			try{
+				ProcessBuilder builder = new ProcessBuilder(makeGunzipCommand(inputname));
+				builder.redirectOutput(ProcessBuilder.Redirect.to(new File(outputname)));
+				Process mysql_standalone = builder.start();
+				mysql_standalone.waitFor();
+			}catch(Exception ee){
+				ee.printStackTrace();
+				System.err.println("[SHELL] Fatal Error: Could not Successfully Run gunzip command on "+inputname+" to " + outputname);
+			}
+			
+		}
+		return true;
+	}
+	
+	private List<String> makeGunzipCommand(String inputname){
+		List<String> list = new ArrayList<String>();
+		list.add("gunzip");
+		list.add("-c");
+		list.add("-d");
+		list.add(inputname);
+		return list;
+	}
 
 
 	
@@ -218,13 +244,46 @@ public class PdbScriptsPipelineRunCommand {
 		list.add(rc.db_schema);
 		return list;
 	}
-
 	
-	public void run(){
+	private List<String> makeDownloadCommand(String urlFilename, String localFilename) {
+		List<String> list = new ArrayList<String>();
+		// Building the following process command
+		list.add("wget");
+		list.add("-O");
+		list.add(localFilename);
+		list.add(urlFilename);
+		return list;
+	}
+	
+	
+	public boolean downloadfile(String urlFilename, String localFilename) {
+			try {
+				System.out.println("[SHELL] Download file "+urlFilename+" ...");
+				ProcessBuilder dbBuilder = new ProcessBuilder(makeDownloadCommand(urlFilename,localFilename ));
+				Process makeDB = dbBuilder.start();
+				makeDB.waitFor();
+				System.out.println("[SHELL] "+urlFilename+" completed");
+			} catch (Exception ee) {
+				System.err.println("[SHELL] Fatal Error: Could not Successfully download files");
+				ee.printStackTrace();
+			}	
+		return true;
+	}
+	
+	
+	public void runcommand(){
 		this.db = new BlastDataBase(rc.pdb_seqres_fasta_file);
 		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing(rc.ensembl_input_interval);
+		
+		downloadfile(rc.pdbwholeSource,rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1));
+		//runwithRedirectTo("gunzip", rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1), rc.workspace+rc.pdb_seqres_download_file);
+		
+		
+		downloadfile(rc.ensemblwholeSource,rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1));
+		//runwithRedirectTo("gunzip", rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1), rc.workspace+rc.ensembl_download_file);
+		
 		// Step 1: choose only protein entries of all pdb
-		//preprocess.preprocessPDBsequences(Constants.workspace + Constants.pdb_seqres_download_file,Constants.workspace + Constants.pdb_seqres_fasta_file);
+		preprocess.preprocessPDBsequences(rc.workspace + rc.pdb_seqres_download_file,rc.workspace + rc.pdb_seqres_fasta_file);
 
 		// Step 2: preprocess ensembl files, split into small files to save the memory
 		ensembl_file_count=preprocess.preprocessGENEsequences(rc.workspace + rc.ensembl_download_file,rc.workspace + rc.ensembl_fasta_file);
@@ -241,11 +300,11 @@ public class PdbScriptsPipelineRunCommand {
 		parseprocess.parse2sql(0);
 
 		// Step 6: create data schema
-		runwithRedirect("mysql", rc.resource_dir + rc.db_schema_script, false);
+		runwithRedirectFrom("mysql", rc.resource_dir + rc.db_schema_script, false);
 
 		// Step 7: import INSERT SQL statements into the database
 		// Warning: This step takes time
-		runwithRedirect("mysql", rc.workspace + rc.db_input_script, true);
+		runwithRedirectFrom("mysql", rc.workspace + rc.db_input_script, true);
 	}
 
 }

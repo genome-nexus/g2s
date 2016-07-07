@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 public class PdbScriptsPipelinePreprocessing {
 	
 	
-    private String ensembl_input_interval;
+    public String ensembl_input_interval;
 	
 	public int ensembl_file_count;
 	
@@ -113,7 +113,7 @@ public class PdbScriptsPipelinePreprocessing {
 			Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
 			// line count of the original FASTA file
 			int count = 0;
-			int ensembl_input_interval_int = Integer.parseInt(ensembl_input_interval);
+			int ensembl_input_interval_int = Integer.parseInt(this.ensembl_input_interval);
 
 			
 			for (Entry<String, ProteinSequence> entry : a.entrySet()) {

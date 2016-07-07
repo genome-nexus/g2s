@@ -81,7 +81,7 @@ public class PdbScriptsPipelineStarter {
 		//PdbScriptsPipelineRunCommand app = ctx.getBean(PdbScriptsPipelineRunCommand.class);
 		
 		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
-		app.run();
+		app.runcommand();
 		
 
 		long endTime = System.currentTimeMillis();
