@@ -37,6 +37,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String workspace;
     private String sql_insert_file;
     private String sql_insert_output_interval;
+    private String sql_delete_file;
 	
 	PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, ReadConfig rc){
 		this.db = app.db;
@@ -46,6 +47,7 @@ public class PdbScriptsPipelineMakeSQL {
 		this.workspace = rc.workspace;
 		this.sql_insert_file = rc.sql_insert_file;
 		this.sql_insert_output_interval = rc.sql_insert_output_interval;
+		this.sql_delete_file = rc.sql_delete_file;
 	}
 	
 	/**
@@ -55,7 +57,7 @@ public class PdbScriptsPipelineMakeSQL {
 	 *            0 for mem efficiency, 1 for disk efficiency
 	 * @return
 	 */
-	public boolean parse2sql(int choose) {
+	public boolean parse2sql(int choose, String currentDir) {
 		switch (choose) {
 		case 0:
 			// multiple input, multiple sql generated incrementally
@@ -71,11 +73,14 @@ public class PdbScriptsPipelineMakeSQL {
 			break;
 		case 1:
 			// test for small datasets: single input, single sql generated in one time
-			List<BlastResult> outresults = parseblastresultsSingle();
-			for (int i = 0; i <= outresults.size(); i++) {
+			List<BlastResult> outresults = parseblastresultsSingle(currentDir);
+			/*
+			for (int i = 0; i < 3; i++) {
+			//for (int i = 0; i < outresults.size(); i++) {
 				System.out.println(outresults.get(i).toString());
 			}
-			generateSQLstatementsSingle(outresults);
+			*/
+			generateSQLstatementsSingle(outresults,currentDir);
 			break;
 
 		default:
@@ -185,7 +190,7 @@ public class PdbScriptsPipelineMakeSQL {
 	 */
 	public String makeTable_ensembl_entry_insert(BlastResult br){
 		String[] strarrayQ = br.getQseqid().split("\\s+");
-		String str = "INSERT INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
+		String str = "INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
 				+ strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
 				+ "');\n";
 		return str;		 
@@ -197,8 +202,9 @@ public class PdbScriptsPipelineMakeSQL {
 	 * @return
 	 */
 	public String makeTable_pdb_entry_insert(BlastResult br){
+		//System.out.println(br.getSseqid());
 		String[] strarrayS = br.getSseqid().split("_");
-		String str = "INSERT INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`) VALUES ('" + br.getSseqid() + "', '"
+		String str = "INSERT IGNORE INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`) VALUES ('" + br.getSseqid() + "', '"
 				+ strarrayS[0] + "', '" + strarrayS[1] + "');\n";
 		return str;
 	}
@@ -227,10 +233,10 @@ public class PdbScriptsPipelineMakeSQL {
 	 *            List<BlastResult>
 	 * @return Success/Failure
 	 */
-	boolean generateSQLstatementsSingle(List<BlastResult> results) {
+	boolean generateSQLstatementsSingle(List<BlastResult> results, String currentDir) {
 		try {
 			System.out.println("[SHELL] Start Write insert.sql File...");
-			File file = new File(this.workspace + this.sql_insert_file);
+			File file = new File(currentDir + this.sql_insert_file);
 			FileUtils fu = new FileUtils();
 
 			// HashMap ensemblHm and pdbHm are designed to avoid duplication of
@@ -240,7 +246,7 @@ public class PdbScriptsPipelineMakeSQL {
 			HashMap ensemblHm = new HashMap();
 			HashMap pdbHm = new HashMap();
 			List<String> outputlist=makeSQLText(results, ensemblHm, pdbHm);
-			fu.writeLines(file, outputlist);
+			fu.writeLines(file, outputlist, "");
 			System.out.println("[SHELL] Write insert.sql Done");
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -291,12 +297,14 @@ public class PdbScriptsPipelineMakeSQL {
 		for (BlastResult br : results) {
 			String str = "";
 			if (ensemblHm.containsKey(br.getQseqid())) {
+				//System.out.println("Do Nothing\t"+br.getQseqid());
 				// do nothing
 			} else {
 				outputlist.add(makeTable_ensembl_entry_insert(br));
 				ensemblHm.put(br.getQseqid(), "");
 			}
 			if (pdbHm.containsKey(br.getSseqid())) {
+				//System.out.println("Do Nothing\t"+br.getSseqid());
 				// do nothing
 			} else {
 				outputlist.add(makeTable_pdb_entry_insert(br));
@@ -314,11 +322,11 @@ public class PdbScriptsPipelineMakeSQL {
 	 * 
 	 * @return List<BlastResult>
 	 */
-	public List<BlastResult> parseblastresultsSingle() {
+	public List<BlastResult> parseblastresultsSingle(String currentDir) {
 		List<BlastResult> results = new ArrayList<BlastResult>(this.matches);
 		try {
 			System.out.println("[BLAST] Read blast results from xml file...");
-			File blastresults = new File(this.workspace + this.db.resultfileName);
+			File blastresults = new File(currentDir + this.db.resultfileName);
 			JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
 			Unmarshaller u = jc.createUnmarshaller();
 			u.setSchema(null);
@@ -371,4 +379,28 @@ public class PdbScriptsPipelineMakeSQL {
 		}
 		return br;
 	}
+	
+	
+	
+	public void generateDeleteSql(String currentDir, List<String> list){
+		try{
+			System.out.println("[Shell] Generating delete SQL");
+			File outfile = new File(currentDir+this.sql_delete_file);
+			FileUtils fu = new FileUtils();
+			
+			List<String> outputlist= new ArrayList();
+			for(String pdbName:list){
+				String str="DELETE pdb_ensembl_alignment FROM pdb_ensembl_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_ensembl_alignment.pdb_no WHERE  pdb_ensembl_alignment.pdb_id='"+pdbName+"';\n";
+				outputlist.add(str);
+				String str1="DELETE FROM pdb_entry WHERE PDB_ID='"+pdbName+"';\n";
+				outputlist.add(str1);
+			}		
+			fu.writeLines(outfile, outputlist, "");
+			
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		
+	}
+	
 }

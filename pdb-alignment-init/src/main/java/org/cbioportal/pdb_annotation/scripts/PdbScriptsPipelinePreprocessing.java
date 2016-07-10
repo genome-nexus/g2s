@@ -27,6 +27,10 @@ public class PdbScriptsPipelinePreprocessing {
 	
 	public int ensembl_file_count;
 	
+	public PdbScriptsPipelinePreprocessing(){
+		this.ensembl_file_count = -1;	
+	}
+	
 	public PdbScriptsPipelinePreprocessing(String ensembl_input_interval){
 		this.ensembl_file_count = -1;	
 		this.ensembl_input_interval = ensembl_input_interval;
@@ -76,6 +80,35 @@ public class PdbScriptsPipelinePreprocessing {
 			}
 			// standard fasta output, one line has 80 coloumns
 			// FastaWriterHelper.writeProteinSequence(new File(outfileName), c);
+
+			// no-standard fasta output, one line contains all AA
+			FileWriter fw = new FileWriter(new File(outfileName));
+			fw.write(sb.toString());
+			fw.close();
+		} catch (Exception ex) {
+			System.err.println("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+			ex.printStackTrace();
+		}
+		return true;
+	}
+	
+	public boolean preprocessPDBsequencesUpdate(String infileName, String outfileName) {
+		try {
+			System.out.println("[Preprocessing] Preprocessing PDB sequences... ");
+			LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
+			// FastaReaderHelper.readFastaDNASequence for DNA sequences
+
+			StringBuffer sb = new StringBuffer();
+
+			for (Entry<String, ProteinSequence> entry : a.entrySet()) {
+				//System.out.println(entry.getValue().getOriginalHeader().toString());
+				String[] tmp = entry.getValue().getOriginalHeader().toString().split("\\|");
+				String outstr = tmp[0].replaceAll(":", "_");
+				//System.out.println(tmp[0]+"\t##\t"+outstr);
+				sb.append(">" + outstr + "\n" + entry.getValue().getSequenceAsString()
+							+ "\n");
+				
+			}
 
 			// no-standard fasta output, one line contains all AA
 			FileWriter fw = new FileWriter(new File(outfileName));

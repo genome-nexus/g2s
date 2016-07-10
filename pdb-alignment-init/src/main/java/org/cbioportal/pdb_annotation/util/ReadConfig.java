@@ -17,6 +17,7 @@ public class ReadConfig {
     public static String ensembl_download_file;
     public static String ensembl_fasta_file;
     public static String sql_insert_file;
+    public static String sql_delete_file;
     public static String blast_para_evalue;
     public static String blast_para_threads;
     public static String ensembl_input_interval;
@@ -26,10 +27,15 @@ public class ReadConfig {
     public static String password;
     public static String db_schema;
     public static String db_schema_script;
-    public static String db_input_script;
     
     public static String pdbwholeSource;
     public static String ensemblwholeSource;
+    
+    public static String updateTxt;
+    public static String updateFasta;
+    public static String delPDB;
+    
+    
 
 
 	
@@ -75,6 +81,9 @@ public class ReadConfig {
 			if(hm.containsKey("sql_insert_file")){
 				this.sql_insert_file= hm.get("sql_insert_file").toString();				
 			}
+			if(hm.containsKey("sql_delete_file")){
+				this.sql_delete_file= hm.get("sql_delete_file").toString();				
+			}
 			if(hm.containsKey("blast_para_evalue")){
 				this.blast_para_evalue= hm.get("blast_para_evalue").toString();				
 			}
@@ -103,14 +112,20 @@ public class ReadConfig {
 			if(hm.containsKey("db_schema_script")){
 				this.db_schema_script= hm.get("db_schema_script").toString();				
 			}
-			if(hm.containsKey("db_input_script")){
-				this.db_input_script= hm.get("db_input_script").toString();				
-			}
 			if(hm.containsKey("pdb.wholeSource")){
 				this.pdbwholeSource= hm.get("pdb.wholeSource").toString();				
 			}
 			if(hm.containsKey("ensembl.wholeSource")){
 				this.ensemblwholeSource= hm.get("ensembl.wholeSource").toString();				
+			}
+			if(hm.containsKey("update.updateTxt")){
+				this.updateTxt= hm.get("update.updateTxt").toString();				
+			}
+			if(hm.containsKey("update.updateFasta")){
+				this.updateFasta= hm.get("update.updateFasta").toString();				
+			}
+			if(hm.containsKey("update.delPDB")){
+				this.delPDB= hm.get("update.delPDB").toString();				
 			}
 			
 			

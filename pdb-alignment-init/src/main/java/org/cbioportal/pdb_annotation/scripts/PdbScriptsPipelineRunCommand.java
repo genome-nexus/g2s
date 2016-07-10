@@ -1,13 +1,20 @@
 package org.cbioportal.pdb_annotation.scripts;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +33,7 @@ public class PdbScriptsPipelineRunCommand {
 	public int matches;
 	public int ensembl_file_count;
 	ReadConfig rc;
+	public String dataVesrsion;
 
 
 	/**
@@ -45,11 +53,11 @@ public class PdbScriptsPipelineRunCommand {
 	 * @param command
 	 * @return Success/Failure
 	 */
-	public boolean run(String command) {
+	public boolean run(String command, String currentDir) {
 		if (command.equals("makeblastdb")) {
 			try {
 				System.out.println("[BLAST] Running makeblastdb command...");
-				ProcessBuilder dbBuilder = new ProcessBuilder(makeBlastDBCommand());
+				ProcessBuilder dbBuilder = new ProcessBuilder(makeBlastDBCommand(currentDir));
 				Process makeDB = dbBuilder.start();
 				makeDB.waitFor();
 				System.out.println("[BLAST] Command makeblastdb complete");
@@ -62,12 +70,12 @@ public class PdbScriptsPipelineRunCommand {
 				System.out.println("[BLAST] Running blastp command...");
 				if (this.ensembl_file_count != -1) {
 					for (int i = 0; i < this.ensembl_file_count; i++) {
-						ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(i));
+						ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(currentDir, i));
 						Process blast_standalone = blastp.start();
 						blast_standalone.waitFor();
 					}
 				} else {
-					ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand());
+					ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(currentDir));
 					Process blast_standalone = blastp.start();
 					blast_standalone.waitFor();
 				}
@@ -165,15 +173,15 @@ public class PdbScriptsPipelineRunCommand {
 	 * @return A List containing the commands to execute the makeblastdb
 	 *         function
 	 */
-	private List<String> makeBlastDBCommand() {
+	private List<String> makeBlastDBCommand(String currentDir) {
 		List<String> list = new ArrayList<String>();
 		list.add(rc.makeblastdb);
 		list.add("-in");
-		list.add(rc.workspace +rc.pdb_seqres_fasta_file);
+		list.add(currentDir +rc.pdb_seqres_fasta_file);
 		list.add("-dbtype");
 		list.add("prot");
 		list.add("-out");
-		list.add(rc.workspace + this.db.dbName);
+		list.add(currentDir + this.db.dbName);
 		return list;
 	}
 
@@ -183,8 +191,8 @@ public class PdbScriptsPipelineRunCommand {
 	 * 
 	 * @return A List of command arguments for the processbuilder
 	 */
-	private List<String> makeBlastPCommand() {
-		List<String> list = generateBlastCommand("");
+	private List<String> makeBlastPCommand(String currentDir) {
+		List<String> list = generateBlastCommand(currentDir,"");
 		return list;
 	}
 
@@ -196,9 +204,9 @@ public class PdbScriptsPipelineRunCommand {
 	 * 			the ith file
 	 * @return
 	 */
-	private List<String> makeBlastPCommand(int i) {
+	private List<String> makeBlastPCommand(String currentDir, int i) {
 		String countStr = "." + new Integer(i).toString();
-		List<String> list = generateBlastCommand(countStr);
+		List<String> list = generateBlastCommand(currentDir, countStr);
 		return list;
 	}
 	
@@ -207,12 +215,12 @@ public class PdbScriptsPipelineRunCommand {
 	 * @param countStr
 	 * @return
 	 */
-	private List<String> generateBlastCommand(String countStr){
+	private List<String> generateBlastCommand(String currentDir, String countStr){
 		List<String> list = new ArrayList<String>();
 		// Building the following process command
 		list.add(rc.blastp);
 		list.add("-db");
-		list.add(rc.workspace + this.db.dbName);
+		list.add(currentDir + this.db.dbName);
 		list.add("-query");
 		list.add(rc.workspace + rc.ensembl_fasta_file + countStr);
 		// list.add("-word_size");
@@ -224,7 +232,7 @@ public class PdbScriptsPipelineRunCommand {
 		list.add("-outfmt");
 		list.add("5");
 		list.add("-out");
-		list.add(rc.workspace + this.db.resultfileName + countStr);
+		list.add(currentDir + this.db.resultfileName + countStr);
 		return list;	
 	}
 
@@ -270,14 +278,90 @@ public class PdbScriptsPipelineRunCommand {
 		return true;
 	}
 	
+	public List<String> readFTPfile2List(String urlStr){
+		List<String> list = new ArrayList();
+		try{
+			URL url = new URL(urlStr);
+	        URLConnection con = url.openConnection();
+	        BufferedReader in = new BufferedReader(new InputStreamReader(
+	                                    con.getInputStream()));
+	        String inputLine;
+	        while ((inputLine = in.readLine()) != null) 
+	        	list.add(inputLine);
+	        in.close();
+			
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return list;
+	}
 	
-	public void runcommand(){
+	public String readFTPfile2Str(String urlStr){
+		String str ="";
+		try{
+			URL url = new URL(urlStr);
+	        URLConnection con = url.openConnection();
+	        BufferedReader in = new BufferedReader(new InputStreamReader(
+	                                    con.getInputStream()));
+	        String inputLine;
+	        while ((inputLine = in.readLine()) != null) 
+	        	str=str+inputLine+"\n";
+	        in.close();
+			
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return str;
+	}
+	
+	public List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB){
+		List<String> listOld=new ArrayList<String>();
+		try{
+			System.out.println("[SHELL] Weekly Update: Create deleted list");
+			
+			
+			FileUtils.forceMkdir(new File(currentDir));
+			
+			String addFileName = currentDir+updateTxt;
+			File addFastaFile = new File(addFileName);
+			
+			String delFileName = currentDir+delPDB;
+			
+			List listAdd = readFTPfile2List("ftp://ftp.pdbj.org/pub/pdb/data/status/latest/added.pdb"); 
+						
+			List listMod = readFTPfile2List("ftp://ftp.pdbj.org/pub/pdb/data/status/latest/modified.pdb");
+						
+			List listObs = readFTPfile2List("ftp://ftp.pdbj.org/pub/pdb/data/status/latest/obsolete.pdb");
+			
+			List<String> listNew = new ArrayList<String>(listAdd);
+			listNew.addAll(listMod);
+			
+			listOld = new ArrayList<String>(listMod);
+			listOld.addAll(listObs);
+			
+			String listNewCont = "";
+			for(String pdbName:listNew){
+				listNewCont = listNewCont + readFTPfile2Str("http://www.rcsb.org/pdb/files/fasta.txt?structureIdList="+pdbName);
+			}
+						
+			FileUtils.writeStringToFile(addFastaFile, listNewCont);			
+			
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return listOld;
+	}
+	
+	
+	
+	
+	public void runInit(){
 		this.db = new BlastDataBase(rc.pdb_seqres_fasta_file);
 		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing(rc.ensembl_input_interval);
 		
+		// Step 1: Download essential PDB and Essential tools 
 		downloadfile(rc.pdbwholeSource,rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1));
 		//runwithRedirectTo("gunzip", rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1), rc.workspace+rc.pdb_seqres_download_file);
-		
 		
 		downloadfile(rc.ensemblwholeSource,rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1));
 		//runwithRedirectTo("gunzip", rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1), rc.workspace+rc.ensembl_download_file);
@@ -289,22 +373,54 @@ public class PdbScriptsPipelineRunCommand {
 		ensembl_file_count=preprocess.preprocessGENEsequences(rc.workspace + rc.ensembl_download_file,rc.workspace + rc.ensembl_fasta_file);
 		
 		// Step 3: build the database by makebalstdb
-		run("makeblastdb");
+		run("makeblastdb",rc.workspace);
 
 		// Step 4: blastp ensembl genes against pdb
 		// Warning: This step takes time
-		run("blastp");
+		run("blastp",rc.workspace);
 
 		PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this, rc);
 		// Step 5: parse results and output as input sql statments
-		parseprocess.parse2sql(0);
+		parseprocess.parse2sql(0, rc.workspace);
 
 		// Step 6: create data schema
 		runwithRedirectFrom("mysql", rc.resource_dir + rc.db_schema_script, false);
 
 		// Step 7: import INSERT SQL statements into the database
 		// Warning: This step takes time
-		runwithRedirectFrom("mysql", rc.workspace + rc.db_input_script, true);
+		runwithRedirectFrom("mysql", rc.workspace + rc.sql_insert_file, true);
+	}
+	
+	
+	public void runUpdatePDB(){
+		String dataVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+		this.dataVesrsion = dataVersion;
+		this.db = new BlastDataBase(rc.pdb_seqres_download_file);
+		
+		String currentDir = rc.workspace+this.dataVesrsion+"/";
+		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing();
+		
+		List<String> listOld = prepareUpdatePDBFile(currentDir,rc.pdb_seqres_download_file, rc.delPDB);
+		
+		preprocess.preprocessPDBsequencesUpdate(currentDir+rc.pdb_seqres_download_file, currentDir+rc.pdb_seqres_fasta_file);
+		
+		run("makeblastdb", currentDir);
+
+		run("blastp",  currentDir);
+		
+		PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this, rc);
+		
+		parseprocess.parse2sql(1, currentDir);
+		
+		runwithRedirectFrom("mysql", currentDir + rc.sql_insert_file, false);
+		
+		
+		//delete old
+		
+		parseprocess.generateDeleteSql(currentDir, listOld);
+		runwithRedirectFrom("mysql", currentDir + rc.sql_delete_file, false);
+		
+		
 	}
 
 }
