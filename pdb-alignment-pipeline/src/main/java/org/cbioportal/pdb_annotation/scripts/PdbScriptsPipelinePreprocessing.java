@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Preprocessing the input PDB and Ensembl files
+ * Preprocessing the input PDB and Ensembl files, both in init and update pipeline
  * 
  * @author Juexin Wang
  *
@@ -92,6 +92,12 @@ public class PdbScriptsPipelinePreprocessing {
 		return true;
 	}
 	
+	/**
+	 * preprocess PDB sequence update
+	 * @param infileName
+	 * @param outfileName
+	 * @return
+	 */
 	public boolean preprocessPDBsequencesUpdate(String infileName, String outfileName) {
 		try {
 			System.out.println("[Preprocessing] Preprocessing PDB sequences... ");

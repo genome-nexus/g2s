@@ -381,7 +381,12 @@ public class PdbScriptsPipelineMakeSQL {
 	}
 	
 	
-	
+	/**
+	 * generate sql in delete 
+	 * 
+	 * @param currentDir
+	 * @param list
+	 */
 	public void generateDeleteSql(String currentDir, List<String> list){
 		try{
 			System.out.println("[Shell] Generating delete SQL");

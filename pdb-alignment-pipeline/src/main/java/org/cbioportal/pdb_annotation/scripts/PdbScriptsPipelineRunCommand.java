@@ -23,7 +23,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * Shell-based command running
+ * 
+ * @author wangjue
+ *
+ */
 @Component
 @EnableConfigurationProperties
 @PropertySource("classpath:application.properties")
@@ -50,8 +55,9 @@ public class PdbScriptsPipelineRunCommand {
 	 * run external command by ProcessBuilder, now it only contains
 	 * "makeblastdb" and "blastp", will add more in future
 	 * 
-	 * @param command
-	 * @return Success/Failure
+	 * @param shell command 
+	 * @param currentDir 
+	 * @return
 	 */
 	public boolean run(String command, String currentDir) {
 		if (command.equals("makeblastdb")) {
@@ -93,11 +99,12 @@ public class PdbScriptsPipelineRunCommand {
 
 	/**
 	 * run external command by ProcessBuilder, with redirect maker "<"
+	 * Now the command now is mysql
 	 * 
 	 * @param command
 	 *            contents before "<"
 	 * @param arguments
-	 *            contents after ">"
+	 *            contents after  "<"
 	 * @param checkmultipleTag
 	 *            True for split capable files, false for non-split files
 	 * @return Success/Failure
@@ -138,7 +145,18 @@ public class PdbScriptsPipelineRunCommand {
 		return true;
 	}
 
-	
+	/**
+	 * run external command by ProcessBuilder, with redirect maker ">"
+	 * Now the command is gunzip
+	 * 
+	 * @param command
+	 *            contents before ">"
+	 * @param arguments
+	 *            contents after  ">"
+	 * @param checkmultipleTag
+	 *            True for split capable files, false for non-split files
+	 * @return Success/Failure
+	 */
 	public boolean runwithRedirectTo(String command, String inputname, String outputname){
 		if(command.equals("gunzip")){
 			try{
@@ -155,6 +173,12 @@ public class PdbScriptsPipelineRunCommand {
 		return true;
 	}
 	
+	/**
+	 * generate gunzip command  
+	 * 
+	 * @param inputname
+	 * @return
+	 */
 	private List<String> makeGunzipCommand(String inputname){
 		List<String> list = new ArrayList<String>();
 		list.add("gunzip");
@@ -237,7 +261,7 @@ public class PdbScriptsPipelineRunCommand {
 	}
 
 	/**
-	 * mysql command
+	 * generate mysql command
 	 * 
 	 * @return
 	 */
@@ -253,6 +277,13 @@ public class PdbScriptsPipelineRunCommand {
 		return list;
 	}
 	
+	/**
+	 * generate wget command
+	 * 
+	 * @param urlFilename
+	 * @param localFilename
+	 * @return
+	 */
 	private List<String> makeDownloadCommand(String urlFilename, String localFilename) {
 		List<String> list = new ArrayList<String>();
 		// Building the following process command
@@ -263,7 +294,13 @@ public class PdbScriptsPipelineRunCommand {
 		return list;
 	}
 	
-	
+	/**
+	 * download files from urlFilename from Internet to localFilename of the system
+	 * 
+	 * @param urlFilename
+	 * @param localFilename
+	 * @return
+	 */
 	public boolean downloadfile(String urlFilename, String localFilename) {
 			try {
 				System.out.println("[SHELL] Download file "+urlFilename+" ...");
@@ -278,6 +315,12 @@ public class PdbScriptsPipelineRunCommand {
 		return true;
 	}
 	
+	/**
+	 * read FTP file to list
+	 * 
+	 * @param urlStr
+	 * @return
+	 */
 	public List<String> readFTPfile2List(String urlStr){
 		List<String> list = new ArrayList();
 		try{
@@ -296,6 +339,11 @@ public class PdbScriptsPipelineRunCommand {
 		return list;
 	}
 	
+	/**
+	 * read FTP file to String
+	 * @param urlStr
+	 * @return
+	 */
 	public String readFTPfile2Str(String urlStr){
 		String str ="";
 		try{
@@ -314,6 +362,14 @@ public class PdbScriptsPipelineRunCommand {
 		return str;
 	}
 	
+	/**
+	 * prepare weekly updated PDB files
+	 * 
+	 * @param currentDir
+	 * @param updateTxt
+	 * @param delPDB
+	 * @return
+	 */
 	public List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB){
 		List<String> listOld=new ArrayList<String>();
 		try{
@@ -354,7 +410,9 @@ public class PdbScriptsPipelineRunCommand {
 	
 	
 	
-	
+	/**
+	 * main steps of init pipeline
+	 */
 	public void runInit(){
 		this.db = new BlastDataBase(rc.pdb_seqres_fasta_file);
 		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing(rc.ensembl_input_interval);
@@ -391,7 +449,9 @@ public class PdbScriptsPipelineRunCommand {
 		runwithRedirectFrom("mysql", rc.workspace + rc.sql_insert_file, true);
 	}
 	
-	
+	/**
+	 * main steps of update pipeline
+	 */
 	public void runUpdatePDB(){
 		String dataVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
 		this.dataVesrsion = dataVersion;
@@ -415,8 +475,7 @@ public class PdbScriptsPipelineRunCommand {
 		runwithRedirectFrom("mysql", currentDir + rc.sql_insert_file, false);
 		
 		
-		//delete old
-		
+		//delete old		
 		parseprocess.generateDeleteSql(currentDir, listOld);
 		runwithRedirectFrom("mysql", currentDir + rc.sql_delete_file, false);
 		

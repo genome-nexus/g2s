@@ -50,13 +50,33 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Preliminary script, includes several steps
- * Step 1: choose only protein entries of all pdb 
- * Step 2: preprocess ensembl files, split into small files to save the memory 
- * Step 3: build the database by makebalstdb 
- * Step 4: blastp ensembl genes against pdb (* Takes time) 
- * Step 5: parse results and output as input sql statments 
- * Step 6: create data schema
- * Step 7: import INSERT SQL statements into the database (* Takes time)
+ * How to run this project:
+Step 1. Init the Database
+1. Create an empty database schema named as "pdb", username as "cbio", password as "cbio" in mysql:
+	In mysql prompt,type:
+	CREATE USER 'cbio'@'localhost' IDENTIFIED BY 'cbio';
+	GRANT ALL PRIVILEGES ON * . * TO 'cbio'@'localhost';
+	FLUSH PRIVILEGES;
+	create database pdb;
+2. In your code workspace, git clone https://github.com/cBioPortal/pdb-annotation.git
+3. Change settings in src/main/resources/application.properties 
+	(i) Change workspace to the input sequences located ${workdir}. 
+	(ii)Change resource_dir to "~/pdb-annotation/pdb/src/main/resources/"  
+	(iii)Change ensembl_input_interval for memory performance consideration
+	(iv) * If you want to use other test ensembl sequences, please change both ensembl_download_file and ensembl_fasta_file in your workspace
+4. mvn package
+5. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar init
+ 
+Step 2. Check the API
+1. in pdb-annotation/pdb-alignment-api/: mvn spring-boot:run
+2. open your web browser:
+http://localhost:8080/StructureMappingQuery?ensemblid=ENSP00000483207.2
+http://localhost:8080/ProteinIdentifierRecognitionQuery?ensemblid=ENSP00000483207.2
+
+Step 3. Weekly update
+1. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
+
+Please let me know if you have questions.
  * 
  * @author Juexin Wang
  *
@@ -72,25 +92,43 @@ public class PdbScriptsPipelineStarter {
 	 */
 	public static void main(String[] args) {
 
-		
+		/**
+		 * Check arguments
+		 */
+		if(args.length != 1){
+			System.out.println("Usage:\n"
+					+ "java -jar pdb-alignment-pipeline init\n"
+					+ "or\n"
+					+ "java -jar pdb-alignment-pipeline update\n");
+			System.exit(0);
+		}
+				
 		long startTime = System.currentTimeMillis();
-		
-		
-		
-		//ApplicationContext ctx = new AnnotationConfigApplicationContext(PdbConf.class);		
-		//PdbScriptsPipelineRunCommand app = ctx.getBean(PdbScriptsPipelineRunCommand.class);
 		
 		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
 		
-		//app.runInit();
+		/**
+		 * Argument init for initiate the database 
+		 */
+		if(args[0].equals("init")){
+			app.runInit();
+		}
+		/**
+		 * Argument update for weekly update
+		 */
+		else if(args[0].equals("update")){
+			app.runUpdatePDB();
+		}
+		/**
+		 * If the Argument is not right
+		 */
+		else{
+			System.out.println("The arguments should be either init or update\n");
+		}
 		
-		app.runUpdatePDB();
-		
-		
-
 		long endTime = System.currentTimeMillis();
 		NumberFormat formatter = new DecimalFormat("#0.000");
-		System.out.println("[Shell] Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds");
+		System.out.println("[Shell] All Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds");
 
 	}
 }

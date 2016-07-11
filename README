@@ -8,26 +8,30 @@ mysql: Ver 15.1 Distrib 10.0.21-MariaDB
 blast: 2.4.0+
 *Please make sure java, mvn, mysql, blastp are all in your paths. 
 
-Before you run this project:
+How to run this project:
+Step 1. Init the Database
 1. Create an empty database schema named as "pdb", username as "cbio", password as "cbio" in mysql:
 	In mysql prompt,type:
 	CREATE USER 'cbio'@'localhost' IDENTIFIED BY 'cbio';
 	GRANT ALL PRIVILEGES ON * . * TO 'cbio'@'localhost';
 	FLUSH PRIVILEGES;
 	create database pdb;
-2. Download PDB sequences from (ftp://ftp.rcsb.org/pub/pdb/derived_data/pdb_seqres.txt.gz) and gunzip it to ${workdir}
-3. Download gene sequences from Ensembl (ftp://ftp.ensembl.org/pub/release-84/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz) and gunzip it to ${workdir}
-4. In your code workspace, git clone https://github.com/cBioPortal/pdb-annotation.git
-5. Change settings in org/cbioportal/pdb_annotation/util/Constants.java. 
+2. In your code workspace, git clone https://github.com/cBioPortal/pdb-annotation.git
+3. Change settings in src/main/resources/application.properties 
 	(i) Change workspace to the input sequences located ${workdir}. 
 	(ii)Change resource_dir to "~/pdb-annotation/pdb/src/main/resources/"  
 	(iii)Change ensembl_input_interval for memory performance consideration
 	(iv) * If you want to use other test ensembl sequences, please change both ensembl_download_file and ensembl_fasta_file in your workspace
-6. mvn package
-7. in pdb-annotation/pdb/target/ java -jar -Xmx7000m pdb-0.1.0.jar
-8. Go to mysql to check the results 
-
+4. mvn package
+5. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar init
+ 
+Step 2. Check the API
+1. in pdb-annotation/pdb-alignment-api/: mvn spring-boot:run
+2. open your web browser:
 http://localhost:8080/StructureMappingQuery?ensemblid=ENSP00000483207.2
 http://localhost:8080/ProteinIdentifierRecognitionQuery?ensemblid=ENSP00000483207.2
+
+Step 3. Weekly update
+1. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
 
 Please let me know if you have questions.
