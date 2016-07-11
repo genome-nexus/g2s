@@ -11,7 +11,7 @@
 
     <modules>
       <module>pdb</module>
-      <module>pdb-alignment-init</module>
+      <module>pdb-alignment-pipeline</module>
       <module>pdb-alignment-api</module>
     </modules>
 
