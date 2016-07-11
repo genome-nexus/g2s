@@ -420,10 +420,10 @@ public class PdbScriptsPipelineRunCommand {
 		
 		// Step 1: Download essential PDB and Essential tools 
 		downloadfile(rc.pdbwholeSource,rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1));
-		//runwithRedirectTo("gunzip", rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1), rc.workspace+rc.pdb_seqres_download_file);
+		runwithRedirectTo("gunzip", rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1), rc.workspace+rc.pdb_seqres_download_file);
 		
 		downloadfile(rc.ensemblwholeSource,rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1));
-		//runwithRedirectTo("gunzip", rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1), rc.workspace+rc.ensembl_download_file);
+		runwithRedirectTo("gunzip", rc.workspace +rc.ensemblwholeSource.substring(rc.ensemblwholeSource.lastIndexOf("/")+1), rc.workspace+rc.ensembl_download_file);
 		
 		// Step 1: choose only protein entries of all pdb
 		preprocess.preprocessPDBsequences(rc.workspace + rc.pdb_seqres_download_file,rc.workspace + rc.pdb_seqres_fasta_file);
