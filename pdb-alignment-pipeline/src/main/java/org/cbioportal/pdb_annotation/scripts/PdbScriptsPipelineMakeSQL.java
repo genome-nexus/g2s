@@ -31,8 +31,7 @@ import org.springframework.stereotype.Component;
 public class PdbScriptsPipelineMakeSQL {
 	private BlastDataBase db;
 	private int matches;
-	private int ensembl_file_count;
-	
+	private int ensembl_file_count;	
     
     private String workspace;
     private String sql_insert_file;

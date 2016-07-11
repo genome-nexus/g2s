@@ -7,11 +7,13 @@ import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Timer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -39,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -83,6 +86,10 @@ Please let me know if you have questions.
  */
 @SpringBootApplication
 @PropertySource("classpath:application.properties")
+@EnableScheduling
+@Configuration
+@ComponentScan
+@EnableAutoConfiguration
 public class PdbScriptsPipelineStarter {
 
 	/**
@@ -103,21 +110,45 @@ public class PdbScriptsPipelineStarter {
 			System.exit(0);
 		}
 				
-		long startTime = System.currentTimeMillis();
-		
-		PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
+		long startTime = System.currentTimeMillis();		
 		
 		/**
 		 * Argument init for initiate the database 
 		 */
 		if(args[0].equals("init")){
+			//SpringApplication app = new SpringApplication(PdbScriptsPipelineInit.class);
+			//app.run();
+			PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
 			app.runInit();
 		}
 		/**
 		 * Argument update for weekly update
 		 */
 		else if(args[0].equals("update")){
-			app.runUpdatePDB();
+			//SpringApplication app = new SpringApplication(PdbScriptsPipelineUpdate.class);
+			//app.run();
+			
+	        Calendar calendar = Calendar.getInstance();
+	        calendar.set(
+	           Calendar.DAY_OF_WEEK,
+	           Calendar.TUESDAY
+	        );
+	        calendar.set(Calendar.HOUR_OF_DAY, 19);
+	        calendar.set(Calendar.MINUTE, 10);
+	        calendar.set(Calendar.SECOND, 0);
+	        calendar.set(Calendar.MILLISECOND, 0);
+
+	        Timer time = new Timer(); // Instantiate Timer Object
+
+	        //PDB is updated at Tuesday, 5 pm PDT during daylight saving time in the US, and 4 pm PST otherwise
+	        //We choose running the task on Tuesday at Central Time 19:10:00 
+	        time.schedule(new ScheduleUpdateTask(), calendar.getTime(), 1000 * 60 * 60 * 24 * 7);
+			
+	        /**
+	         * Immediately update
+	         */
+	        //PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
+	        //app.runUpdatePDB();
 		}
 		/**
 		 * If the Argument is not right

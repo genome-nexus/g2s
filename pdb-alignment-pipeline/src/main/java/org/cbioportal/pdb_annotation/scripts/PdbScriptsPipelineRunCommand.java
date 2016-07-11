@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
  * @author wangjue
  *
  */
+
 @Component
 @EnableConfigurationProperties
 @PropertySource("classpath:application.properties")
@@ -473,8 +474,7 @@ public class PdbScriptsPipelineRunCommand {
 		parseprocess.parse2sql(1, currentDir);
 		
 		runwithRedirectFrom("mysql", currentDir + rc.sql_insert_file, false);
-		
-		
+				
 		//delete old		
 		parseprocess.generateDeleteSql(currentDir, listOld);
 		runwithRedirectFrom("mysql", currentDir + rc.sql_delete_file, false);
