@@ -74,8 +74,7 @@ public class PdbScriptsPipelineMakeSQL {
 			// test for small datasets: single input, single sql generated in one time
 			List<BlastResult> outresults = parseblastresultsSingle(currentDir);
 			/*
-			for (int i = 0; i < 3; i++) {
-			//for (int i = 0; i < outresults.size(); i++) {
+			for (int i = 0; i < outresults.size(); i++) {
 				System.out.println(outresults.get(i).toString());
 			}
 			*/
@@ -296,14 +295,12 @@ public class PdbScriptsPipelineMakeSQL {
 		for (BlastResult br : results) {
 			String str = "";
 			if (ensemblHm.containsKey(br.getQseqid())) {
-				//System.out.println("Do Nothing\t"+br.getQseqid());
 				// do nothing
 			} else {
 				outputlist.add(makeTable_ensembl_entry_insert(br));
 				ensemblHm.put(br.getQseqid(), "");
 			}
 			if (pdbHm.containsKey(br.getSseqid())) {
-				//System.out.println("Do Nothing\t"+br.getSseqid());
 				// do nothing
 			} else {
 				outputlist.add(makeTable_pdb_entry_insert(br));

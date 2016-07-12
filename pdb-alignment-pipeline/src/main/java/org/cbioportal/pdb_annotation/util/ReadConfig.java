@@ -35,6 +35,14 @@ public class ReadConfig {
     public static String updateFasta;
     public static String delPDB;
     
+    public static String updateDAY_OF_WEEK;
+    public static String updateHOUR_OF_DAY;
+    public static String updateMINUTE;
+    public static String updateSECOND;
+    public static String updateMILLISECOND;
+    public static String updateDELAY;
+    
+    
     
 
 
@@ -126,6 +134,24 @@ public class ReadConfig {
 			}
 			if(hm.containsKey("update.delPDB")){
 				this.delPDB= hm.get("update.delPDB").toString();				
+			}
+			if(hm.containsKey("update.DAY_OF_WEEK")){
+				this.updateDAY_OF_WEEK= hm.get("update.DAY_OF_WEEK").toString();				
+			}
+			if(hm.containsKey("update.HOUR_OF_DAY")){
+				this.updateHOUR_OF_DAY= hm.get("update.HOUR_OF_DAY").toString();				
+			}
+			if(hm.containsKey("update.MINUTE")){
+				this.updateMINUTE= hm.get("update.MINUTE").toString();				
+			}
+			if(hm.containsKey("update.SECOND")){
+				this.updateSECOND= hm.get("update.SECOND").toString();				
+			}
+			if(hm.containsKey("update.MILLISECOND")){
+				this.updateMILLISECOND= hm.get("update.MILLISECOND").toString();				
+			}
+			if(hm.containsKey("update.DELAY")){
+				this.updateDELAY= hm.get("update.DELAY").toString();				
 			}
 			
 			

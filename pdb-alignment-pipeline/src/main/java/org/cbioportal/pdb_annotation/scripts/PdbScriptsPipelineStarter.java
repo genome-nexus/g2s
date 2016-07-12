@@ -77,7 +77,9 @@ http://localhost:8080/StructureMappingQuery?ensemblid=ENSP00000483207.2
 http://localhost:8080/ProteinIdentifierRecognitionQuery?ensemblid=ENSP00000483207.2
 
 Step 3. Weekly update
-1. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
+1. Using CRON to run command in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
+or 
+in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar updateweekly
 
 Please let me know if you have questions.
  * 
@@ -104,8 +106,13 @@ public class PdbScriptsPipelineStarter {
 		 */
 		if(args.length != 1){
 			System.out.println("Usage:\n"
+					+ "Initiate the database"
 					+ "java -jar pdb-alignment-pipeline init\n"
 					+ "or\n"
+					+ "Update the database weekly, user could deploy and change the settings in application.approperties\n"
+					+ "java -jar pdb-alignment-pipeline updateweekly\n"
+					+ "or\n"
+					+ "update for update immediately , users should use CRON or other scheduling mechanisms to run the updates\n"
 					+ "java -jar pdb-alignment-pipeline update\n");
 			System.exit(0);
 		}
@@ -122,44 +129,43 @@ public class PdbScriptsPipelineStarter {
 			app.runInit();
 		}
 		/**
-		 * Argument update for weekly update
+		 * Argument update for update weekly, user could deploy and change the settings in application.approperties
 		 */
-		else if(args[0].equals("update")){
+		else if(args[0].equals("updateweekly")){
 			//SpringApplication app = new SpringApplication(PdbScriptsPipelineUpdate.class);
 			//app.run();
 			
+			ReadConfig rc = new ReadConfig();
+			
 	        Calendar calendar = Calendar.getInstance();
-	        calendar.set(
-	           Calendar.DAY_OF_WEEK,
-	           Calendar.TUESDAY
-	        );
-	        calendar.set(Calendar.HOUR_OF_DAY, 19);
-	        calendar.set(Calendar.MINUTE, 10);
-	        calendar.set(Calendar.SECOND, 0);
-	        calendar.set(Calendar.MILLISECOND, 0);
+	        calendar.set(Calendar.DAY_OF_WEEK, Integer.parseInt(rc.updateDAY_OF_WEEK));
+	        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(rc.updateHOUR_OF_DAY));
+	        calendar.set(Calendar.MINUTE, Integer.parseInt(rc.updateMINUTE));
+	        calendar.set(Calendar.SECOND, Integer.parseInt(rc.updateSECOND));
+	        calendar.set(Calendar.MILLISECOND, Integer.parseInt(rc.updateMILLISECOND));
 
 	        Timer time = new Timer(); // Instantiate Timer Object
 
 	        //PDB is updated at Tuesday, 5 pm PDT during daylight saving time in the US, and 4 pm PST otherwise
 	        //We choose running the task on Tuesday at Central Time 19:10:00 
-	        time.schedule(new ScheduleUpdateTask(), calendar.getTime(), 1000 * 60 * 60 * 24 * 7);
-			
-	        /**
-	         * Immediately update
-	         */
-	        //PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
-	        //app.runUpdatePDB();
+	        time.schedule(new ScheduleUpdateTask(), calendar.getTime(), Integer.parseInt(rc.updateDELAY));			
+		}
+		/**
+		 * Argument update for update immediately , users should use CRON or other scheduling mechanisms to run the updates 
+		 */
+		else if(args[0].equals("update")){
+			PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
+	        app.runUpdatePDB();			
 		}
 		/**
 		 * If the Argument is not right
 		 */
 		else{
-			System.out.println("The arguments should be either init or update\n");
+			System.out.println("The arguments should be init, updateweekly or update\n");
 		}
 		
 		long endTime = System.currentTimeMillis();
 		NumberFormat formatter = new DecimalFormat("#0.000");
 		System.out.println("[Shell] All Execution time is " + formatter.format((endTime - startTime) / 1000d) + " seconds");
-
 	}
 }

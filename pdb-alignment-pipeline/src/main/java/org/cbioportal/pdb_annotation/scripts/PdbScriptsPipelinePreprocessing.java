@@ -112,8 +112,7 @@ public class PdbScriptsPipelinePreprocessing {
 				String outstr = tmp[0].replaceAll(":", "_");
 				//System.out.println(tmp[0]+"\t##\t"+outstr);
 				sb.append(">" + outstr + "\n" + entry.getValue().getSequenceAsString()
-							+ "\n");
-				
+							+ "\n");				
 			}
 
 			// no-standard fasta output, one line contains all AA

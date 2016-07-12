@@ -384,11 +384,11 @@ public class PdbScriptsPipelineRunCommand {
 			
 			String delFileName = currentDir+delPDB;
 			
-			List listAdd = readFTPfile2List("ftp://ftp.pdbj.org/pub/pdb/data/status/latest/added.pdb"); 
+			List listAdd = readFTPfile2List("ftp://ftp.wwpdb.org/pub/pdb/data/status/latest/added.pdb"); 
 						
-			List listMod = readFTPfile2List("ftp://ftp.pdbj.org/pub/pdb/data/status/latest/modified.pdb");
+			List listMod = readFTPfile2List("ftp://ftp.wwpdb.org/pub/pdb/data/status/latest/modified.pdb");
 						
-			List listObs = readFTPfile2List("ftp://ftp.pdbj.org/pub/pdb/data/status/latest/obsolete.pdb");
+			List listObs = readFTPfile2List("ftp://ftp.wwpdb.org/pub/pdb/data/status/latest/obsolete.pdb");
 			
 			List<String> listNew = new ArrayList<String>(listAdd);
 			listNew.addAll(listMod);
