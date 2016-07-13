@@ -42,9 +42,7 @@ public class ReadConfig {
     public static String updateMILLISECOND;
     public static String updateDELAY;
     
-    
-    
-
+    public static String sql_ensemblSQL;
 
 	
 	public ReadConfig(){
@@ -152,6 +150,9 @@ public class ReadConfig {
 			}
 			if(hm.containsKey("update.DELAY")){
 				this.updateDELAY= hm.get("update.DELAY").toString();				
+			}
+			if(hm.containsKey("sql_ensemblSQL")){
+				this.sql_ensemblSQL= hm.get("sql_ensemblSQL").toString();				
 			}
 			
 			

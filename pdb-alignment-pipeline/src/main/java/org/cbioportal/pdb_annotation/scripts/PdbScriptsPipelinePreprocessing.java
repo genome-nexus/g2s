@@ -5,11 +5,15 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
+import org.cbioportal.pdb_annotation.util.ReadConfig;
+import org.cbioportal.pdb_annotation.util.blast.BlastResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,25 +28,23 @@ public class PdbScriptsPipelinePreprocessing {
 	
 	
     public String ensembl_input_interval;
-	
+	public String ensemblSQLFile;
+    
 	public int ensembl_file_count;
 	
 	public PdbScriptsPipelinePreprocessing(){
 		this.ensembl_file_count = -1;	
 	}
 	
-	public PdbScriptsPipelinePreprocessing(String ensembl_input_interval){
+	public PdbScriptsPipelinePreprocessing(ReadConfig rc){
 		this.ensembl_file_count = -1;	
-		this.ensembl_input_interval = ensembl_input_interval;
-	}
-	
-	
+		this.ensembl_input_interval = rc.ensembl_input_interval;
+		this.ensemblSQLFile=rc.workspace+rc.sql_ensemblSQL;
+	}	
 	
 	public int getEnsembl_file_count() {
 		return ensembl_file_count;
 	}
-
-
 
 	public void setEnsembl_file_count(int ensembl_file_count) {
 		this.ensembl_file_count = ensembl_file_count;
@@ -144,6 +146,7 @@ public class PdbScriptsPipelinePreprocessing {
 		int filecount = 0;
 		try {
 			System.out.println("[Preprocessing] Preprocessing Ensembl sequences... ");
+			List<String> list = new ArrayList();
 
 			LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infilename));
 			// FastaReaderHelper.readFastaDNASequence for DNA sequences
@@ -152,10 +155,10 @@ public class PdbScriptsPipelinePreprocessing {
 			// line count of the original FASTA file
 			int count = 0;
 			int ensembl_input_interval_int = Integer.parseInt(this.ensembl_input_interval);
-
 			
 			for (Entry<String, ProteinSequence> entry : a.entrySet()) {
 				c.add(entry.getValue());
+				list.add(entry.getValue().getOriginalHeader());
 				if (count % ensembl_input_interval_int == ensembl_input_interval_int - 1) {
 					FastaWriterHelper
 							.writeProteinSequence(new File(outfilename + "." + new Integer(filecount).toString()), c);
@@ -166,12 +169,39 @@ public class PdbScriptsPipelinePreprocessing {
 			}
 			FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()),
 					c);
-			setEnsembl_file_count(filecount);
+			setEnsembl_file_count(filecount);	
+			generateEnsemblSQLTmpFile(list);			
 		} catch (Exception ex) {
-			System.err.println("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+			System.err.println("[Preprocessing] Fatal Error: Could not Successfully Preprocessing Ensembl sequences");
 			ex.printStackTrace();
 		}
 		return filecount;
 	}
+	
+	/**
+	 * Generate TmpEnsemblSQLFile
+	 * Ensembl header for generating SQL insert 
+	 * 
+	 * @param list
+	 */
+	public boolean generateEnsemblSQLTmpFile(List<String> list){
+		List outlist = new ArrayList();
+		try{
+			for(String str:list){
+				String[] strarrayQ = str.split("\\s+");				
+				outlist.add("INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
+						+ strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
+						+ "');");
+			}	
+			FileUtils.writeLines(new File(this.ensemblSQLFile), outlist);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return true;
+	}
+	
+	
+	
+
 
 }

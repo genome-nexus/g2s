@@ -37,6 +37,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String sql_insert_file;
     private String sql_insert_output_interval;
     private String sql_delete_file;
+    private String sql_ensemblSQL;
 	
 	PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, ReadConfig rc){
 		this.db = app.db;
@@ -47,6 +48,7 @@ public class PdbScriptsPipelineMakeSQL {
 		this.sql_insert_file = rc.sql_insert_file;
 		this.sql_insert_output_interval = rc.sql_insert_output_interval;
 		this.sql_delete_file = rc.sql_delete_file;
+		this.sql_ensemblSQL=rc.sql_ensemblSQL;
 	}
 	
 	/**
@@ -54,6 +56,9 @@ public class PdbScriptsPipelineMakeSQL {
 	 * 
 	 * @param choose
 	 *            0 for mem efficiency, 1 for disk efficiency
+	 * @param currentDir
+	 * @param ensemblAllTag
+	 * 				True for Init, False for update
 	 * @return
 	 */
 	public boolean parse2sql(int choose, String currentDir) {
@@ -63,10 +68,9 @@ public class PdbScriptsPipelineMakeSQL {
 			if (this.ensembl_file_count == -1) {
 				parseblastresultsSmallMem();
 			} else {
-				HashMap ensemblHm = new HashMap();
 				HashMap pdbHm = new HashMap();
 				for (int i = 0; i < this.ensembl_file_count; i++) {
-					parseblastresultsSmallMem(i, ensemblHm, pdbHm);
+					parseblastresultsSmallMem(i, pdbHm);
 				}
 			}
 			break;
@@ -98,9 +102,8 @@ public class PdbScriptsPipelineMakeSQL {
 
 			File blastresults = new File(this.workspace + this.db.resultfileName);
 			File outputfile = new File(this.workspace + this.sql_insert_file);
-			HashMap ensemblHm = new HashMap();
 			HashMap pdbHm = new HashMap();
-			int count = parsexml(blastresults, outputfile, ensemblHm, pdbHm);
+			int count = parsexml(blastresults, outputfile, pdbHm);
 			this.matches = count;
 			System.out.println("[BLAST] Total Input Queries = " + this.matches);
 		} catch (Exception ee) {
@@ -115,11 +118,10 @@ public class PdbScriptsPipelineMakeSQL {
 	 * 
 	 * @param filecount:
 	 *            id of the multiple files
-	 * @param ensemblHm
 	 * @param pdbHm
 	 * @return
 	 */
-	public boolean parseblastresultsSmallMem(int filecount, HashMap ensemblHm, HashMap pdbHm) {
+	public boolean parseblastresultsSmallMem(int filecount, HashMap pdbHm) {
 		try {
 			System.out.println("[BLAST] Read blast results from " + filecount + "th xml file...");
 			File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
@@ -130,7 +132,7 @@ public class PdbScriptsPipelineMakeSQL {
 			} else {
 				outputfile = new File(this.workspace + this.sql_insert_file);
 			}
-			int count = parsexml(blastresults, outputfile, ensemblHm, pdbHm);			
+			int count = parsexml(blastresults, outputfile, pdbHm);			
 			this.matches = this.matches + count;
 			System.out.println("[BLAST] Input Queries after parsing " + filecount + "th xml : " + this.matches);
 		} catch (Exception ee) {
@@ -144,11 +146,10 @@ public class PdbScriptsPipelineMakeSQL {
 	 * main body of parsing xml
 	 * @param blastresults
 	 * @param outputfile
-	 * @param ensemblHm
 	 * @param pdbHm
 	 * @return
 	 */
-	public int parsexml(File blastresults, File outputfile, HashMap ensemblHm, HashMap pdbHm){
+	public int parsexml(File blastresults, File outputfile, HashMap pdbHm){
 		int count = 0;
 		try{
 			JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
@@ -166,14 +167,14 @@ public class PdbScriptsPipelineMakeSQL {
 					results.add(parseSingleAlignment(querytext, hit, count));
 					if (count % sql_insert_output_interval == 0) {
 						// Once get the criteria, output contents to the SQL file
-						genereateSQLstatementsSmallMem(results, ensemblHm, pdbHm, count, outputfile);
+						genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
 						results.clear();
 					}
 					count++;
 				}
 			}
 			// output remaining contents to the SQL file
-			genereateSQLstatementsSmallMem(results, ensemblHm, pdbHm, count, outputfile);			
+			genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);			
 		}catch (Exception ee) {
 			System.err.println("[BLAST] Error Parsing BLAST Result");
 			ee.printStackTrace();
@@ -181,18 +182,8 @@ public class PdbScriptsPipelineMakeSQL {
 		return count;
 	}
 	
-	/**
-	 * generate SQL insert text to Table ensembl_entry
-	 * @param br
-	 * @return
-	 */
-	public String makeTable_ensembl_entry_insert(BlastResult br){
-		String[] strarrayQ = br.getQseqid().split("\\s+");
-		String str = "INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
-				+ strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
-				+ "');\n";
-		return str;		 
-	}
+	
+	
 	
 	/**
 	 * generate SQL insert text to Table pdb_entry
@@ -237,13 +228,12 @@ public class PdbScriptsPipelineMakeSQL {
 			File file = new File(currentDir + this.sql_insert_file);
 			FileUtils fu = new FileUtils();
 
-			// HashMap ensemblHm and pdbHm are designed to avoid duplication of
+			// HashMap pdbHm is designed to avoid duplication of
 			// primary keys in SQL
 			// if we already have the entry, do nothing; otherwise generate the
 			// SQL and add the keys into the HashMap
-			HashMap ensemblHm = new HashMap();
 			HashMap pdbHm = new HashMap();
-			List<String> outputlist=makeSQLText(results, ensemblHm, pdbHm);
+			List<String> outputlist =makeSQLText(results, pdbHm);
 			fu.writeLines(file, outputlist, "");
 			System.out.println("[SHELL] Write insert.sql Done");
 		} catch (Exception ex) {
@@ -257,24 +247,24 @@ public class PdbScriptsPipelineMakeSQL {
 	 * 
 	 * @param List<BlastResult>
 	 *            results
-	 * @param ensemblHm
 	 * @param pdbHm
 	 * @param count
 	 * @param outputfile
 	 * @return
 	 */
-	public boolean genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap ensemblHm, HashMap pdbHm,
+	public boolean genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap pdbHm,
 			int count, File outputfile) {
 		try {
 			System.out.println("[SHELL] Start Write insert.sql File from Alignment " + count + "...");
-			FileUtils fu = new FileUtils();
-			// check, if starts, make sure it is empty
+			FileUtils fu = new FileUtils();		 
+			
 			if (count == 0) {
+				// check, if starts, make sure it is empty
 				if (outputfile.exists()) {
 					outputfile.delete();
 				}
-			}
-			List<String> outputlist=makeSQLText(results, ensemblHm, pdbHm);
+			}						
+			List<String> outputlist=makeSQLText(results, pdbHm);
 			fu.writeLines(outputfile, outputlist, "", true);
 			outputlist = null;
 		} catch (Exception ex) {
@@ -286,20 +276,12 @@ public class PdbScriptsPipelineMakeSQL {
 	/**
 	 * main body of generate SQL Insert text
 	 * @param results
-	 * @param ensemblHm
 	 * @param pdbHm
 	 * @return
 	 */
-	List<String> makeSQLText(List<BlastResult> results, HashMap ensemblHm, HashMap pdbHm){
+	List<String> makeSQLText(List<BlastResult> results, HashMap pdbHm){
 		List<String> outputlist = new ArrayList<String>();
 		for (BlastResult br : results) {
-			String str = "";
-			if (ensemblHm.containsKey(br.getQseqid())) {
-				// do nothing
-			} else {
-				outputlist.add(makeTable_ensembl_entry_insert(br));
-				ensemblHm.put(br.getQseqid(), "");
-			}
 			if (pdbHm.containsKey(br.getSseqid())) {
 				// do nothing
 			} else {

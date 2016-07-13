@@ -160,6 +160,9 @@ public class PdbScriptsPipelineRunCommand {
 	 */
 	public boolean runwithRedirectTo(String command, String inputname, String outputname){
 		if(command.equals("gunzip")){
+			if(!inputname.endsWith(".gz")){
+				return true;
+			}
 			try{
 				ProcessBuilder builder = new ProcessBuilder(makeGunzipCommand(inputname));
 				builder.redirectOutput(ProcessBuilder.Redirect.to(new File(outputname)));
@@ -416,7 +419,7 @@ public class PdbScriptsPipelineRunCommand {
 	 */
 	public void runInit(){
 		this.db = new BlastDataBase(rc.pdb_seqres_fasta_file);
-		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing(rc.ensembl_input_interval);
+		PdbScriptsPipelinePreprocessing preprocess= new PdbScriptsPipelinePreprocessing(rc);
 		
 		// Step 1: Download essential PDB and Essential tools 
 		downloadfile(rc.pdbwholeSource,rc.workspace +rc.pdbwholeSource.substring(rc.pdbwholeSource.lastIndexOf("/")+1));
@@ -429,7 +432,7 @@ public class PdbScriptsPipelineRunCommand {
 		preprocess.preprocessPDBsequences(rc.workspace + rc.pdb_seqres_download_file,rc.workspace + rc.pdb_seqres_fasta_file);
 
 		// Step 2: preprocess ensembl files, split into small files to save the memory
-		ensembl_file_count=preprocess.preprocessGENEsequences(rc.workspace + rc.ensembl_download_file,rc.workspace + rc.ensembl_fasta_file);
+		ensembl_file_count=preprocess.preprocessGENEsequences(rc.workspace + rc.ensembl_download_file,rc.workspace + rc.ensembl_fasta_file);		
 		
 		// Step 3: build the database by makebalstdb
 		run("makeblastdb",rc.workspace);
@@ -444,8 +447,11 @@ public class PdbScriptsPipelineRunCommand {
 
 		// Step 6: create data schema
 		runwithRedirectFrom("mysql", rc.resource_dir + rc.db_schema_script, false);
+		
+		// Step 7: import ensembl SQL statements into the database
+		runwithRedirectFrom("mysql", rc.workspace + rc.sql_ensemblSQL, false);
 
-		// Step 7: import INSERT SQL statements into the database
+		// Step 8: import INSERT SQL statements into the database
 		// Warning: This step takes time
 		runwithRedirectFrom("mysql", rc.workspace + rc.sql_insert_file, true);
 	}
