@@ -9,6 +9,6 @@ public class MainController {
 	@RequestMapping("/")
 	@ResponseBody
 	public String index() {
-		return "Proudly handcrafted by Juexin Wang";
+		return "Handcrafted by Juexin Wang";
 	}
 }

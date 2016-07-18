@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
  *
  */
 
+
+@Service
 @Component
 @EnableConfigurationProperties
 @PropertySource("classpath:application.properties")
@@ -37,9 +39,18 @@ public class PdbScriptsPipelineRunCommand {
 	
 	public BlastDataBase db;
 	public int matches;
-	public int ensembl_file_count;
+	public int ensemblFileCount;
 	ReadConfig rc;
 	public String dataVesrsion;
+	
+	/*
+	private String makeblastdb;
+	@Value("${makeblastdb}")
+	public void setmakeblastdb(String makeblastdb)
+	{
+	    this.makeblastdb = makeblastdb;
+	}
+	*/
 
 
 	/**
@@ -49,7 +60,7 @@ public class PdbScriptsPipelineRunCommand {
 		// Initiate		
 		ReadConfig rc = new ReadConfig();
 		this.matches = 0;
-		this.ensembl_file_count = -1;
+		this.ensemblFileCount = -1;
 	}	
 
 	/**
@@ -75,8 +86,8 @@ public class PdbScriptsPipelineRunCommand {
 		} else if (command.equals("blastp")) {
 			try {
 				System.out.println("[BLAST] Running blastp command...");
-				if (this.ensembl_file_count != -1) {
-					for (int i = 0; i < this.ensembl_file_count; i++) {
+				if (this.ensemblFileCount != -1) {
+					for (int i = 0; i < this.ensemblFileCount; i++) {
 						ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(currentDir, i));
 						Process blast_standalone = blastp.start();
 						blast_standalone.waitFor();
@@ -115,8 +126,8 @@ public class PdbScriptsPipelineRunCommand {
 			try {
 				System.out.println("[DATABASE] Running mysql command...");
 
-				if (checkmultipleTag && this.ensembl_file_count != -1) {
-					for (int i = 0; i < this.ensembl_file_count; i++) {
+				if (checkmultipleTag && this.ensemblFileCount != -1) {
+					for (int i = 0; i < this.ensemblFileCount; i++) {
 						System.out.println("[DATABASE] Running mysql command on " + i + "th sql ...");
 						long startTime = System.currentTimeMillis();
 						ProcessBuilder mysql = new ProcessBuilder(makeDBCommand());
@@ -204,6 +215,8 @@ public class PdbScriptsPipelineRunCommand {
 	private List<String> makeBlastDBCommand(String currentDir) {
 		List<String> list = new ArrayList<String>();
 		list.add(rc.makeblastdb);
+		//list.add(this.makeblastdb);
+		//System.out.println("!!!Value:"+this.makeblastdb+"!!!");
 		list.add("-in");
 		list.add(currentDir +rc.pdb_seqres_fasta_file);
 		list.add("-dbtype");
@@ -432,7 +445,7 @@ public class PdbScriptsPipelineRunCommand {
 		preprocess.preprocessPDBsequences(rc.workspace + rc.pdb_seqres_download_file,rc.workspace + rc.pdb_seqres_fasta_file);
 
 		// Step 2: preprocess ensembl files, split into small files to save the memory
-		ensembl_file_count=preprocess.preprocessGENEsequences(rc.workspace + rc.ensembl_download_file,rc.workspace + rc.ensembl_fasta_file);		
+		ensemblFileCount=preprocess.preprocessGENEsequences(rc.workspace + rc.ensembl_download_file,rc.workspace + rc.ensembl_fasta_file);		
 		
 		// Step 3: build the database by makebalstdb
 		run("makeblastdb",rc.workspace);

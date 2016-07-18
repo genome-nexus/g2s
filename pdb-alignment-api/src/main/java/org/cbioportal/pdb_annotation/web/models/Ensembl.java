@@ -15,13 +15,13 @@ public class Ensembl {
 	// ------------------------
 	@Id 
 	@Column(name = "ENSEMBL_ID") 
-	private String ensemblid;
+	private String ensemblId;
 	
 	@Column(name = "ENSEMBL_GENE") 
-	private String ensemblgene;
+	private String ensemblGene;
 	
 	@Column(name = "ENSEMBL_TRANSCRIPT") 
-	private String ensembltranscript;
+	private String ensemblTranscript;
 	
 	/**
 	 * Construction Function
@@ -29,33 +29,33 @@ public class Ensembl {
 	public Ensembl() { }
 
 	public Ensembl(String ensemblid) { 
-	    this.ensemblid = ensemblid;
+	    this.ensemblId = ensemblid;
 	}
 
 	
 	// Get and set
 	public String getEnsemblid() {
-		return ensemblid;
+		return ensemblId;
 	}
 
 	public void setEnsemblid(String ensemblid) {
-		this.ensemblid = ensemblid;
+		this.ensemblId = ensemblid;
 	}
 
 	public String getEnsemblgene() {
-		return ensemblgene;
+		return ensemblGene;
 	}
 
 	public void setEnsemblgene(String ensemblgene) {
-		this.ensemblgene = ensemblgene;
+		this.ensemblGene = ensemblgene;
 	}
 
 	public String getEnsembltranscript() {
-		return ensembltranscript;
+		return ensemblTranscript;
 	}
 
 	public void setEnsembltranscript(String ensembltranscript) {
-		this.ensembltranscript = ensembltranscript;
+		this.ensemblTranscript = ensembltranscript;
 	}
 	
 	

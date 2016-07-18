@@ -31,24 +31,24 @@ import org.springframework.stereotype.Component;
 public class PdbScriptsPipelineMakeSQL {
 	private BlastDataBase db;
 	private int matches;
-	private int ensembl_file_count;	
+	private int ensemblFileCount;	
     
     private String workspace;
-    private String sql_insert_file;
-    private String sql_insert_output_interval;
-    private String sql_delete_file;
-    private String sql_ensemblSQL;
+    private String sqlInsertFile;
+    private String sqlInsertOutputInterval;
+    private String sqlDeleteFile;
+    private String sqlEnsemblSQL;
 	
 	PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, ReadConfig rc){
 		this.db = app.db;
 		this.matches=app.matches;
-		this.ensembl_file_count=app.ensembl_file_count;
+		this.ensemblFileCount=app.ensemblFileCount;
 		
 		this.workspace = rc.workspace;
-		this.sql_insert_file = rc.sql_insert_file;
-		this.sql_insert_output_interval = rc.sql_insert_output_interval;
-		this.sql_delete_file = rc.sql_delete_file;
-		this.sql_ensemblSQL=rc.sql_ensemblSQL;
+		this.sqlInsertFile = rc.sql_insert_file;
+		this.sqlInsertOutputInterval = rc.sql_insert_output_interval;
+		this.sqlDeleteFile = rc.sql_delete_file;
+		this.sqlEnsemblSQL=rc.sql_ensemblSQL;
 	}
 	
 	/**
@@ -65,11 +65,11 @@ public class PdbScriptsPipelineMakeSQL {
 		switch (choose) {
 		case 0:
 			// multiple input, multiple sql generated incrementally
-			if (this.ensembl_file_count == -1) {
+			if (this.ensemblFileCount == -1) {
 				parseblastresultsSmallMem();
 			} else {
 				HashMap pdbHm = new HashMap();
-				for (int i = 0; i < this.ensembl_file_count; i++) {
+				for (int i = 0; i < this.ensemblFileCount; i++) {
 					parseblastresultsSmallMem(i, pdbHm);
 				}
 			}
@@ -101,7 +101,7 @@ public class PdbScriptsPipelineMakeSQL {
 			System.out.println("[BLAST] Read blast results from xml file...");
 
 			File blastresults = new File(this.workspace + this.db.resultfileName);
-			File outputfile = new File(this.workspace + this.sql_insert_file);
+			File outputfile = new File(this.workspace + this.sqlInsertFile);
 			HashMap pdbHm = new HashMap();
 			int count = parsexml(blastresults, outputfile, pdbHm);
 			this.matches = count;
@@ -127,10 +127,10 @@ public class PdbScriptsPipelineMakeSQL {
 			File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
 			File outputfile;
 			// Check whether multiple files existed
-			if (this.ensembl_file_count != -1) {
-				outputfile = new File(this.workspace + this.sql_insert_file + "." + filecount);
+			if (this.ensemblFileCount != -1) {
+				outputfile = new File(this.workspace + this.sqlInsertFile + "." + filecount);
 			} else {
-				outputfile = new File(this.workspace + this.sql_insert_file);
+				outputfile = new File(this.workspace + this.sqlInsertFile);
 			}
 			int count = parsexml(blastresults, outputfile, pdbHm);			
 			this.matches = this.matches + count;
@@ -159,7 +159,7 @@ public class PdbScriptsPipelineMakeSQL {
 			List<BlastResult> results = new ArrayList<BlastResult>();
 			BlastOutputIterations iterations = blast.getBlastOutputIterations();
 			System.out.println("[BLAST] Start parsing results...");	
-			int sql_insert_output_interval = Integer.parseInt(this.sql_insert_output_interval);
+			int sql_insert_output_interval = Integer.parseInt(this.sqlInsertOutputInterval);
 			for (Iteration iteration : iterations.getIteration()) {
 				String querytext = iteration.getIterationQueryDef();
 				IterationHits hits = iteration.getIterationHits();
@@ -225,7 +225,7 @@ public class PdbScriptsPipelineMakeSQL {
 	boolean generateSQLstatementsSingle(List<BlastResult> results, String currentDir) {
 		try {
 			System.out.println("[SHELL] Start Write insert.sql File...");
-			File file = new File(currentDir + this.sql_insert_file);
+			File file = new File(currentDir + this.sqlInsertFile);
 			FileUtils fu = new FileUtils();
 
 			// HashMap pdbHm is designed to avoid duplication of
@@ -368,7 +368,7 @@ public class PdbScriptsPipelineMakeSQL {
 	public void generateDeleteSql(String currentDir, List<String> list){
 		try{
 			System.out.println("[Shell] Generating delete SQL");
-			File outfile = new File(currentDir+this.sql_delete_file);
+			File outfile = new File(currentDir+this.sqlDeleteFile);
 			FileUtils fu = new FileUtils();
 			
 			List<String> outputlist= new ArrayList();

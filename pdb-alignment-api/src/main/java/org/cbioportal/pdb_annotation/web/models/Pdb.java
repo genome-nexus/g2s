@@ -13,10 +13,10 @@ public class Pdb {
 	// ------------------------
 	@Id 
 	@Column(name = "PDB_NO")
-	private String pdbno;
+	private String pdbNo;
 	
 	@Column(name = "PDB_ID")
-	private String pdbid;
+	private String pdbId;
 	 
 	@Column(name = "CHAIN")
 	private String chain;
@@ -30,25 +30,25 @@ public class Pdb {
 	public Pdb() { }
 
 	public Pdb(String pdbno) { 
-	    this.pdbno = pdbno;
+	    this.pdbNo = pdbno;
 	}
 
 	
 	//Get and Set
 	public String getPdbno() {
-		return pdbno;
+		return pdbNo;
 	}
 
 	public void setPdbno(String pdbno) {
-		this.pdbno = pdbno;
+		this.pdbNo = pdbno;
 	}
 
 	public String getPdbid() {
-		return pdbid;
+		return pdbId;
 	}
 
 	public void setPdbid(String pdbid) {
-		this.pdbid = pdbid;
+		this.pdbId = pdbid;
 	}
 
 	public String getChain() {

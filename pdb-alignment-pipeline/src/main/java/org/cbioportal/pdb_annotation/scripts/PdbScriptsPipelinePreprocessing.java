@@ -27,27 +27,27 @@ import org.springframework.stereotype.Component;
 public class PdbScriptsPipelinePreprocessing {
 	
 	
-    public String ensembl_input_interval;
+    public String ensemblInputInterval;
 	public String ensemblSQLFile;
     
-	public int ensembl_file_count;
+	public int ensemblFileCount;
 	
 	public PdbScriptsPipelinePreprocessing(){
-		this.ensembl_file_count = -1;	
+		this.ensemblFileCount = -1;	
 	}
 	
 	public PdbScriptsPipelinePreprocessing(ReadConfig rc){
-		this.ensembl_file_count = -1;	
-		this.ensembl_input_interval = rc.ensembl_input_interval;
+		this.ensemblFileCount = -1;	
+		this.ensemblInputInterval = rc.ensembl_input_interval;
 		this.ensemblSQLFile=rc.workspace+rc.sql_ensemblSQL;
 	}	
 	
 	public int getEnsembl_file_count() {
-		return ensembl_file_count;
+		return ensemblFileCount;
 	}
 
 	public void setEnsembl_file_count(int ensembl_file_count) {
-		this.ensembl_file_count = ensembl_file_count;
+		this.ensemblFileCount = ensembl_file_count;
 	}
 
 
@@ -154,7 +154,7 @@ public class PdbScriptsPipelinePreprocessing {
 			Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
 			// line count of the original FASTA file
 			int count = 0;
-			int ensembl_input_interval_int = Integer.parseInt(this.ensembl_input_interval);
+			int ensembl_input_interval_int = Integer.parseInt(this.ensemblInputInterval);
 			
 			for (Entry<String, ProteinSequence> entry : a.entrySet()) {
 				c.add(entry.getValue());
