@@ -43,6 +43,11 @@ public class ReadConfig {
     public static String updateDELAY;
     
     public static String sql_ensemblSQL;
+    
+    public static String updateAdded;
+    public static String updateModified;
+    public static String updateObsolete;
+    public static String pdbFastaService;
 
 	
 	public ReadConfig(){
@@ -153,6 +158,18 @@ public class ReadConfig {
 			}
 			if(hm.containsKey("sql_ensemblSQL")){
 				this.sql_ensemblSQL= hm.get("sql_ensemblSQL").toString();				
+			}
+			if(hm.containsKey("updateAdded")){
+				this.updateAdded= hm.get("update.added").toString();				
+			}
+			if(hm.containsKey("updateModified")){
+				this.updateModified= hm.get("update.modified").toString();				
+			}
+			if(hm.containsKey("updateObsolete")){
+				this.updateObsolete= hm.get("update.obsolete").toString();				
+			}
+			if(hm.containsKey("pdbFastaService")){
+				this.pdbFastaService= hm.get("pdb.fastaService").toString();				
 			}
 			
 			

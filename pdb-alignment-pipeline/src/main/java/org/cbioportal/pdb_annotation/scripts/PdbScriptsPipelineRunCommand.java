@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
  *
  */
 
-
 @Service
 @Component
 @EnableConfigurationProperties
@@ -51,6 +50,7 @@ public class PdbScriptsPipelineRunCommand {
 	    this.makeblastdb = makeblastdb;
 	}
 	*/
+	
 
 
 	/**
@@ -400,11 +400,11 @@ public class PdbScriptsPipelineRunCommand {
 			
 			String delFileName = currentDir+delPDB;
 			
-			List listAdd = readFTPfile2List("ftp://ftp.wwpdb.org/pub/pdb/data/status/latest/added.pdb"); 
+			List listAdd = readFTPfile2List(rc.updateAdded); 
 						
-			List listMod = readFTPfile2List("ftp://ftp.wwpdb.org/pub/pdb/data/status/latest/modified.pdb");
+			List listMod = readFTPfile2List(rc.updateModified);
 						
-			List listObs = readFTPfile2List("ftp://ftp.wwpdb.org/pub/pdb/data/status/latest/obsolete.pdb");
+			List listObs = readFTPfile2List(rc.updateObsolete);
 			
 			List<String> listNew = new ArrayList<String>(listAdd);
 			listNew.addAll(listMod);
@@ -414,7 +414,7 @@ public class PdbScriptsPipelineRunCommand {
 			
 			String listNewCont = "";
 			for(String pdbName:listNew){
-				listNewCont = listNewCont + readFTPfile2Str("http://www.rcsb.org/pdb/files/fasta.txt?structureIdList="+pdbName);
+				listNewCont = listNewCont + readFTPfile2Str(rc.pdbFastaService+pdbName);
 			}
 						
 			FileUtils.writeStringToFile(addFastaFile, listNewCont);			

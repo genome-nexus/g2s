@@ -123,7 +123,7 @@ public class PdbScriptsPipelineStarter {
 		 * Argument init for initiate the database 
 		 */
 		if(args[0].equals("init")){
-			//SpringApplication app = new SpringApplication(PdbScriptsPipelineInit.class);
+			//SpringApplication app = new SpringApplication(PdbScriptsPipelineStarter.class);
 			//app.run();
 			PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
 			app.runInit();
