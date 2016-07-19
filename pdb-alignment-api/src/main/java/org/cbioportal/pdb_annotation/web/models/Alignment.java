@@ -6,7 +6,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
+/**
+ * 
+ * @author Juexin Wang
+ *
+ */
 
 @Entity
 @Table(name = "pdb_ensembl_alignment")
@@ -55,16 +60,14 @@ public class Alignment {
 	  @Column(name = "IDENTP")
 	  private float identp;
 	  
-	  /*
 	  @Column(name = "ENSEMBL_ALIGN")
-	  private String ensemblalign;
+	  private String ensemblAlign;
 	  
 	  @Column(name = "PDB_ALIGN")
-	  private String pdbalign;
+	  private String pdbAlign;
 	  
 	  @Column(name = "MIDLINE_ALIGN")
-	  private String midlinealign;
-	  */
+	  private String midlineAlign;
 	  
 
 	  // ------------------------
@@ -175,33 +178,32 @@ public class Alignment {
 	public void setIdentp(float identp) {
 		this.identp = identp;
 	}
-
-	/*
-	public String getEnsemblalign() {
-		return ensemblalign;
-	}
-
-	public void setEnsemblalign(String ensemblalign) {
-		this.ensemblalign = ensemblalign;
-	}
-
-	public String getPdbalign() {
-		return pdbalign;
-	}
-
-	public void setPdbalgin(String pdbalign) {
-		this.pdbalign = pdbalign;
-	}
-
-	public String getMidlinealign() {
-		return midlinealign;
-	}
-
-	public void setMidlinealign(String midlinealign) {
-		this.midlinealign = midlinealign;
-	}
-	*/
 	
+	
+	public String getEnsemblAlign() {
+		return ensemblAlign;
+	}
+
+	public void setEnsemblAlign(String ensemblAlign) {
+		this.ensemblAlign = ensemblAlign;
+	}
+
+	public String getPdbAlign() {
+		return pdbAlign;
+	}
+
+	public void setPdbAlign(String pdbAlign) {
+		this.pdbAlign = pdbAlign;
+	}
+
+	public String getMidlineAlign() {
+		return midlineAlign;
+	}
+
+	public void setMidlineAlign(String midlineAlign) {
+		this.midlineAlign = midlineAlign;
+	}
+
 	/**
 	 * Construction Function
 	 */

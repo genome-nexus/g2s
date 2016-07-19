@@ -12,12 +12,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -50,8 +47,6 @@ public class PdbScriptsPipelineRunCommand {
 	    this.makeblastdb = makeblastdb;
 	}
 	*/
-	
-
 
 	/**
 	 * Construct function

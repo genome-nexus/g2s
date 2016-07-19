@@ -18,7 +18,6 @@ import org.cbioportal.pdb_annotation.util.blast.Hit;
 import org.cbioportal.pdb_annotation.util.blast.Hsp;
 import org.cbioportal.pdb_annotation.util.blast.Iteration;
 import org.cbioportal.pdb_annotation.util.blast.IterationHits;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**

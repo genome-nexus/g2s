@@ -13,8 +13,6 @@ import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
-import org.cbioportal.pdb_annotation.util.blast.BlastResult;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**

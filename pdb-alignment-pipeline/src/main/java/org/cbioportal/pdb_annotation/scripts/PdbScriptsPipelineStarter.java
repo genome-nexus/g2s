@@ -2,54 +2,17 @@ package org.cbioportal.pdb_annotation.scripts;
 
 import org.cbioportal.pdb_annotation.util.*;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.Timer;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import org.apache.commons.io.FileUtils;
-import org.biojava.nbio.core.search.io.blast.BlastXMLParser;
-import org.biojava.nbio.core.sequence.ProteinSequence;
-import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
-import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
-import org.biojava.nbio.structure.Chain;
-import org.biojava.nbio.structure.DBRef;
-import org.biojava.nbio.structure.Structure;
-import org.biojava.nbio.structure.StructureIO;
-import org.cbioportal.pdb_annotation.util.*;
-import org.cbioportal.pdb_annotation.util.blast.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Component;
-
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Preliminary script, includes several steps
@@ -72,9 +35,11 @@ Step 1. Init the Database
  
 Step 2. Check the API
 1. in pdb-annotation/pdb-alignment-api/: mvn spring-boot:run
-2. open your web browser:
-http://localhost:8080/StructureMappingQuery?ensemblid=ENSP00000483207.2
-http://localhost:8080/ProteinIdentifierRecognitionQuery?ensemblid=ENSP00000483207.2
+2. Swagger-UI:
+http://localhost:8080/swagger-ui.html
+3. Directly using API:
+http://localhost:8080/pdb_annotation/StructureMappingQuery?ensemblId=ENSP00000483207.2
+http://localhost:8080/pdb_annotation/ProteinIdentifierRecognitionQuery?ensemblId=ENSP00000483207.2
 
 Step 3. Weekly update
 1. Using CRON to run command in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update

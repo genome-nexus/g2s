@@ -5,6 +5,13 @@ import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 
+/**
+ * 
+ * Read application.properties
+ * 
+ * @author Juexin Wang
+ *
+ */
 public class ReadConfig {
 	
     public static String makeblastdb;
@@ -57,9 +64,9 @@ public class ReadConfig {
 			List<String> list =FileUtils.readLines(file);
 			for(String str:list){
 				if(!str.startsWith("#") && str.length()!=0 && !str.isEmpty()){
-					//System.out.println(str);
 					String[] array =str.split("=");
-					hm.put(array[0], array[1]);
+					//hm.put(array[0], array[1]);
+					hm.put(array[0], str.substring(str.indexOf("=")+1));
 				}
 			}
 			if(hm.containsKey("makeblastdb")){
@@ -159,16 +166,16 @@ public class ReadConfig {
 			if(hm.containsKey("sql_ensemblSQL")){
 				this.sql_ensemblSQL= hm.get("sql_ensemblSQL").toString();				
 			}
-			if(hm.containsKey("updateAdded")){
+			if(hm.containsKey("update.added")){
 				this.updateAdded= hm.get("update.added").toString();				
 			}
-			if(hm.containsKey("updateModified")){
+			if(hm.containsKey("update.modified")){
 				this.updateModified= hm.get("update.modified").toString();				
 			}
-			if(hm.containsKey("updateObsolete")){
+			if(hm.containsKey("update.obsolete")){
 				this.updateObsolete= hm.get("update.obsolete").toString();				
 			}
-			if(hm.containsKey("pdbFastaService")){
+			if(hm.containsKey("pdb.fastaService")){
 				this.pdbFastaService= hm.get("pdb.fastaService").toString();				
 			}
 			

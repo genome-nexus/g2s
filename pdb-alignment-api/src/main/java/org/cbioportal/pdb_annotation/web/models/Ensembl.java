@@ -2,11 +2,14 @@ package org.cbioportal.pdb_annotation.web.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * 
+ * @author Juexin Wang
+ *
+ */
 @Entity
 @Table(name = "ensembl_entry")
 public class Ensembl {
@@ -56,10 +59,6 @@ public class Ensembl {
 
 	public void setEnsembltranscript(String ensembltranscript) {
 		this.ensemblTranscript = ensembltranscript;
-	}
-	
-	
-	
-	
+	}	
 
 }

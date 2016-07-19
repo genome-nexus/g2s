@@ -25,9 +25,7 @@ public class ScheduleUpdateTask extends TimerTask {
 			PdbScriptsPipelineRunCommand app = new PdbScriptsPipelineRunCommand();
 			app.runUpdatePDB();
 			logger.info("[UPDATE] CronJob End ...");
-
 		} catch (Exception ex) {
-
 			System.out.println("[UPDATE] Error running thread " + ex.getMessage());
 		}
 	}

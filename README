@@ -27,9 +27,11 @@ Step 1. Init the Database
  
 Step 2. Check the API
 1. in pdb-annotation/pdb-alignment-api/: mvn spring-boot:run
-2. open your web browser:
-http://localhost:8080/StructureMappingQuery?ensemblid=ENSP00000483207.2
-http://localhost:8080/ProteinIdentifierRecognitionQuery?ensemblid=ENSP00000483207.2
+2. Swagger-UI:
+http://localhost:8080/swagger-ui.html
+3. Directly using API:
+http://localhost:8080/pdb_annotation/StructureMappingQuery?ensemblId=ENSP00000483207.2
+http://localhost:8080/pdb_annotation/ProteinIdentifierRecognitionQuery?ensemblId=ENSP00000483207.2
 
 Step 3. Weekly update
 1. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
