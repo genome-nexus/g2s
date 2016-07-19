@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.models.AlignmentDAO;
-import org.cbioportal.pdb_annotation.web.models.EnsemblDAO;
+import org.cbioportal.pdb_annotation.web.persistancy.AlignmentRepository;
+import org.cbioportal.pdb_annotation.web.persistancy.EnsemblRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,7 +62,7 @@ public class AlignmentController {
 	  // ------------------------
 
 	  @Autowired
-	  private AlignmentDAO alignmentDao;
+	  private AlignmentRepository alignmentDao;
 	  
 	  //@Autowired
 	  //private EnsemblDAO ensemblDao;
