@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.persistence.AlignmentRepository;
-import org.cbioportal.pdb_annotation.web.persistence.EnsemblRepository;
+import org.cbioportal.pdb_annotation.web.models.AlignmentDAO;
+import org.cbioportal.pdb_annotation.web.models.EnsemblDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +22,7 @@ public class AlignmentController {
 	    
 		List<Alignment> list = new ArrayList<Alignment>();
 	    try {
-	      Iterator<Alignment> it = alignmentDao.findByEnsemblid(ensemblid).iterator();
+	      Iterator<Alignment> it = alignmentDao.findByEnsemblId(ensemblid).iterator();
 	       while(it.hasNext()){
 	    	   Alignment alignment = (Alignment)it.next();
 	    	   list.add(alignment);
@@ -40,7 +40,7 @@ public class AlignmentController {
 	  @ResponseBody
 	  public boolean isExistedEnsemblidinAlignment(String ensemblid) {
 	    try {
-	      Iterator<Alignment> it = alignmentDao.findByEnsemblid(ensemblid).iterator(); 
+	      Iterator<Alignment> it = alignmentDao.findByEnsemblId(ensemblid).iterator(); 
 	      if(it.hasNext()){
 	    	   return true;
 	       }else{
@@ -62,7 +62,7 @@ public class AlignmentController {
 	  // ------------------------
 
 	  @Autowired
-	  private AlignmentRepository alignmentDao;
+	  private AlignmentDAO alignmentDao;
 	  
 	  //@Autowired
 	  //private EnsemblDAO ensemblDao;
