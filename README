@@ -36,4 +36,13 @@ http://localhost:8080/pdb_annotation/ProteinIdentifierRecognitionQuery?ensemblId
 Step 3. Weekly update
 1. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
 
+Notes:
+Typical Running time for pipeline Init  : 80219.905 Seconds (around 22 hours)
+Typical Running time for pipeline Update: 1062.796  Seconds (around 20 minutes)
+
+Test on Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz, 8 cores, 8G Memory
+Linux version 3.18.7-200.fc21.x86_64 (gcc version 4.9.2 20141101 (Red Hat 4.9.2-1) (GCC) ) #1 SMP
+OpenJDK version "1.8.0_65" 64-Bit Server VM (build 25.65-b01, mixed mode)
+mysql  Ver 15.1 Distrib 10.0.21-MariaDB, for Linux (x86_64) using  EditLine wrapper
+
 Please let me know if you have questions.
