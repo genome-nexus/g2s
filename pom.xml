@@ -11,6 +11,8 @@
 
     <modules>
       <module>pdb</module>
+      <module>pdb-alignment-pipeline</module>
+      <module>pdb-alignment-api</module>
     </modules>
 
     <!-- inherit defaults from spring boot -->
@@ -23,7 +25,7 @@
     <properties>
       <java.version>1.7</java.version>
     </properties>
-
+    
     <build>
       <!-- this plugin will allow us to share resources with children -->
       <!--

@@ -1,1 +1,48 @@
-Juexin's pull request test
+Tutorial of Running this project (Beta)
+
+Prerequest:
+OS: Linux 64bit
+java: openjdk_1.8.0
+maven: 3.3.9
+mysql: Ver 15.1 Distrib 10.0.21-MariaDB
+blast: 2.4.0+
+*Please make sure java, mvn, mysql, blastp are all in your paths. 
+
+How to run this project:
+Step 1. Init the Database
+1. Create an empty database schema named as "pdb", username as "cbio", password as "cbio" in mysql:
+	In mysql prompt,type:
+	CREATE USER 'cbio'@'localhost' IDENTIFIED BY 'cbio';
+	GRANT ALL PRIVILEGES ON * . * TO 'cbio'@'localhost';
+	FLUSH PRIVILEGES;
+	create database pdb;
+2. In your code workspace, git clone https://github.com/cBioPortal/pdb-annotation.git
+3. Change settings in src/main/resources/application.properties 
+	(i) Change workspace to the input sequences located ${workdir}. 
+	(ii)Change resource_dir to "~/pdb-annotation/pdb/src/main/resources/"  
+	(iii)Change ensembl_input_interval for memory performance consideration
+	(iv) * If you want to use other test ensembl sequences, please change both ensembl_download_file and ensembl_fasta_file in your workspace
+4. mvn package
+5. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar init
+ 
+Step 2. Check the API
+1. in pdb-annotation/pdb-alignment-api/: mvn spring-boot:run
+2. Swagger-UI:
+http://localhost:8080/swagger-ui.html
+3. Directly using API:
+http://localhost:8080/pdb_annotation/StructureMappingQuery?ensemblId=ENSP00000483207.2
+http://localhost:8080/pdb_annotation/ProteinIdentifierRecognitionQuery?ensemblId=ENSP00000483207.2
+
+Step 3. Weekly update
+1. in pdb-annotation/pdb-alignment-pipeline/target/: java -jar -Xmx7000m pdb-0.1.0.jar update
+
+Notes:
+Typical Running time for pipeline Init  : 80219.905 Seconds (around 22 hours)
+Typical Running time for pipeline Update: 1062.796  Seconds (around 20 minutes)
+
+Test on Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz, 8 cores, 8G Memory
+Linux version 3.18.7-200.fc21.x86_64 (gcc version 4.9.2 20141101 (Red Hat 4.9.2-1) (GCC) ) #1 SMP
+OpenJDK version "1.8.0_65" 64-Bit Server VM (build 25.65-b01, mixed mode)
+mysql  Ver 15.1 Distrib 10.0.21-MariaDB, for Linux (x86_64) using  EditLine wrapper
+
+Please let me know if you have questions.
