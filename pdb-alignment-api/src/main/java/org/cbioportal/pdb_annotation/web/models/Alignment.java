@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  * @author Juexin Wang
  *
  */
@@ -16,201 +16,196 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pdb_ensembl_alignment")
 public class Alignment {
-	  // ------------------------
-	  // PRIVATE FIELDS
-	  // ------------------------
-	 @Id  
-	 @GeneratedValue(strategy = GenerationType.AUTO)
-	 @Column(name = "ALIGNMENT_ID") 
-	 private int alignmentId;	
-	 
-	 @Column(name = "PDB_NO")
-	  private String pdbNo;
-	 
-	 @Column(name = "PDB_ID")
-	  private String pdbId;
-	 
-	 @Column(name = "CHAIN")
-	  private String chain;
-	  
-	  @Column(name = "ENSEMBL_ID")
-	  private String ensemblId;
-	  
-	  @Column(name = "PDB_FROM")
-	  private int pdbFrom;
-	  
-	  @Column(name = "PDB_TO")
-	  private int pdbTo;
-	  
-	  @Column(name = "ENSEMBL_FROM")
-	  private int ensemblFrom;
-	  
-	  @Column(name = "ENSEMBL_TO")
-	  private int ensemblTo;
-	  
-	  @Column(name = "EVALUE")
-	  private String evalue;
-	  
-	  @Column(name = "BITSCORE")
-	  private float bitscore;
-	  
-	  @Column(name = "IDENTITY")
-	  private float identity;
-	  
-	  @Column(name = "IDENTP")
-	  private float identp;
-	  
-	  @Column(name = "ENSEMBL_ALIGN")
-	  private String ensemblAlign;
-	  
-	  @Column(name = "PDB_ALIGN")
-	  private String pdbAlign;
-	  
-	  @Column(name = "MIDLINE_ALIGN")
-	  private String midlineAlign;
-	  
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ALIGNMENT_ID")
+    private int alignmentId;
 
-	  // ------------------------
-	  // PUBLIC METHODS
-	  // ------------------------
-	  
+    @Column(name = "PDB_NO")
+    private String pdbNo;
 
-	  public int getAlignmentid() {
-		return alignmentId;
-	}
+    @Column(name = "PDB_ID")
+    private String pdbId;
 
-	public void setAlignmentid(int alignmentid) {
-		this.alignmentId = alignmentid;
-	}
+    @Column(name = "CHAIN")
+    private String chain;
 
-	public String getPdbno() {
-		return pdbNo;
-	}
+    @Column(name = "ENSEMBL_ID")
+    private String ensemblId;
 
-	public void setPdbno(String pdbno) {
-		this.pdbNo = pdbno;
-	}
+    @Column(name = "PDB_FROM")
+    private int pdbFrom;
 
-	public String getPdbid() {
-		return pdbId;
-	}
+    @Column(name = "PDB_TO")
+    private int pdbTo;
 
-	public void setPdbid(String pdbid) {
-		this.pdbId = pdbid;
-	}
+    @Column(name = "ENSEMBL_FROM")
+    private int ensemblFrom;
 
-	public String getChain() {
-		return chain;
-	}
+    @Column(name = "ENSEMBL_TO")
+    private int ensemblTo;
 
-	public void setChain(String chain) {
-		this.chain = chain;
-	}
+    @Column(name = "EVALUE")
+    private String evalue;
 
-	public String getEnsemblid() {
-		return ensemblId;
-	}
+    @Column(name = "BITSCORE")
+    private float bitscore;
 
-	public void setEnsemblid(String ensemblid) {
-		this.ensemblId = ensemblid;
-	}
+    @Column(name = "IDENTITY")
+    private float identity;
 
-	public int getPdbfrom() {
-		return pdbFrom;
-	}
+    @Column(name = "IDENTP")
+    private float identp;
 
-	public void setPdbfrom(int pdbfrom) {
-		this.pdbFrom = pdbfrom;
-	}
+    @Column(name = "ENSEMBL_ALIGN")
+    private String ensemblAlign;
 
-	public int getPdbto() {
-		return pdbTo;
-	}
+    @Column(name = "PDB_ALIGN")
+    private String pdbAlign;
 
-	public void setPdbto(int pdbto) {
-		this.pdbTo = pdbto;
-	}
+    @Column(name = "MIDLINE_ALIGN")
+    private String midlineAlign;
 
-	public int getEnsemblfrom() {
-		return ensemblFrom;
-	}
+    // ------------------------
+    // Constructors
+    // ------------------------
 
-	public void setEnsemblfrom(int ensemblfrom) {
-		this.ensemblFrom = ensemblfrom;
-	}
+    public Alignment() {
+    }
 
-	public int getEnsemblto() {
-		return ensemblTo;
-	}
+    public Alignment(int alignmentid) {
+        this.alignmentId = alignmentid;
+    }
 
-	public void setEnsemblto(int ensemblto) {
-		this.ensemblTo = ensemblto;
-	}
+    // ------------------------
+    // Methods
+    // ------------------------
 
-	public String getEvalue() {
-		return evalue;
-	}
+    public int getAlignmentid() {
+        return alignmentId;
+    }
 
-	public void setEvalue(String evalue) {
-		this.evalue = evalue;
-	}
+    public void setAlignmentid(int alignmentid) {
+        this.alignmentId = alignmentid;
+    }
 
-	public float getBitscore() {
-		return bitscore;
-	}
+    public String getPdbno() {
+        return pdbNo;
+    }
 
-	public void setBitscore(float bitscore) {
-		this.bitscore = bitscore;
-	}
+    public void setPdbno(String pdbno) {
+        this.pdbNo = pdbno;
+    }
 
-	public float getIdentity() {
-		return identity;
-	}
+    public String getPdbid() {
+        return pdbId;
+    }
 
-	public void setIdentity(float identity) {
-		this.identity = identity;
-	}
+    public void setPdbid(String pdbid) {
+        this.pdbId = pdbid;
+    }
 
-	public float getIdentp() {
-		return identp;
-	}
+    public String getChain() {
+        return chain;
+    }
 
-	public void setIdentp(float identp) {
-		this.identp = identp;
-	}
-	
-	
-	public String getEnsemblAlign() {
-		return ensemblAlign;
-	}
+    public void setChain(String chain) {
+        this.chain = chain;
+    }
 
-	public void setEnsemblAlign(String ensemblAlign) {
-		this.ensemblAlign = ensemblAlign;
-	}
+    public String getEnsemblid() {
+        return ensemblId;
+    }
 
-	public String getPdbAlign() {
-		return pdbAlign;
-	}
+    public void setEnsemblid(String ensemblid) {
+        this.ensemblId = ensemblid;
+    }
 
-	public void setPdbAlign(String pdbAlign) {
-		this.pdbAlign = pdbAlign;
-	}
+    public int getPdbfrom() {
+        return pdbFrom;
+    }
 
-	public String getMidlineAlign() {
-		return midlineAlign;
-	}
+    public void setPdbfrom(int pdbfrom) {
+        this.pdbFrom = pdbfrom;
+    }
 
-	public void setMidlineAlign(String midlineAlign) {
-		this.midlineAlign = midlineAlign;
-	}
+    public int getPdbto() {
+        return pdbTo;
+    }
 
-	/**
-	 * Construction Function
-	 */
-	public Alignment() { }
+    public void setPdbto(int pdbto) {
+        this.pdbTo = pdbto;
+    }
 
-	public Alignment(int alignmentid) { 
-	    this.alignmentId = alignmentid;
-	  }
-	  
+    public int getEnsemblfrom() {
+        return ensemblFrom;
+    }
+
+    public void setEnsemblfrom(int ensemblfrom) {
+        this.ensemblFrom = ensemblfrom;
+    }
+
+    public int getEnsemblto() {
+        return ensemblTo;
+    }
+
+    public void setEnsemblto(int ensemblto) {
+        this.ensemblTo = ensemblto;
+    }
+
+    public String getEvalue() {
+        return evalue;
+    }
+
+    public void setEvalue(String evalue) {
+        this.evalue = evalue;
+    }
+
+    public float getBitscore() {
+        return bitscore;
+    }
+
+    public void setBitscore(float bitscore) {
+        this.bitscore = bitscore;
+    }
+
+    public float getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(float identity) {
+        this.identity = identity;
+    }
+
+    public float getIdentp() {
+        return identp;
+    }
+
+    public void setIdentp(float identp) {
+        this.identp = identp;
+    }
+
+    public String getEnsemblAlign() {
+        return ensemblAlign;
+    }
+
+    public void setEnsemblAlign(String ensemblAlign) {
+        this.ensemblAlign = ensemblAlign;
+    }
+
+    public String getPdbAlign() {
+        return pdbAlign;
+    }
+
+    public void setPdbAlign(String pdbAlign) {
+        this.pdbAlign = pdbAlign;
+    }
+
+    public String getMidlineAlign() {
+        return midlineAlign;
+    }
+
+    public void setMidlineAlign(String midlineAlign) {
+        this.midlineAlign = midlineAlign;
+    }
 }

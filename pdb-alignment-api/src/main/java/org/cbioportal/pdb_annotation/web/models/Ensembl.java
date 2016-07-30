@@ -6,59 +6,60 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  * @author Juexin Wang
  *
  */
 @Entity
 @Table(name = "ensembl_entry")
 public class Ensembl {
-	// ------------------------
-	// PRIVATE FIELDS
-	// ------------------------
-	@Id 
-	@Column(name = "ENSEMBL_ID") 
-	private String ensemblId;
-	
-	@Column(name = "ENSEMBL_GENE") 
-	private String ensemblGene;
-	
-	@Column(name = "ENSEMBL_TRANSCRIPT") 
-	private String ensemblTranscript;
-	
-	/**
-	 * Construction Function
-	 */
-	public Ensembl() { }
+    @Id
+    @Column(name = "ENSEMBL_ID")
+    private String ensemblId;
 
-	public Ensembl(String ensemblid) { 
-	    this.ensemblId = ensemblid;
-	}
+    @Column(name = "ENSEMBL_GENE")
+    private String ensemblGene;
 
-	
-	// Get and set
-	public String getEnsemblid() {
-		return ensemblId;
-	}
+    @Column(name = "ENSEMBL_TRANSCRIPT")
+    private String ensemblTranscript;
 
-	public void setEnsemblid(String ensemblid) {
-		this.ensemblId = ensemblid;
-	}
+    // ------------------------
+    // Constructors
+    // ------------------------
 
-	public String getEnsemblgene() {
-		return ensemblGene;
-	}
+    public Ensembl() {
+    }
 
-	public void setEnsemblgene(String ensemblgene) {
-		this.ensemblGene = ensemblgene;
-	}
+    public Ensembl(String ensemblid) {
+        this.ensemblId = ensemblid;
+    }
 
-	public String getEnsembltranscript() {
-		return ensemblTranscript;
-	}
+    // ------------------------
+    // Methods
+    // ------------------------
 
-	public void setEnsembltranscript(String ensembltranscript) {
-		this.ensemblTranscript = ensembltranscript;
-	}	
+    public String getEnsemblid() {
+        return ensemblId;
+    }
+
+    public void setEnsemblid(String ensemblid) {
+        this.ensemblId = ensemblid;
+    }
+
+    public String getEnsemblgene() {
+        return ensemblGene;
+    }
+
+    public void setEnsemblgene(String ensemblgene) {
+        this.ensemblGene = ensemblgene;
+    }
+
+    public String getEnsembltranscript() {
+        return ensemblTranscript;
+    }
+
+    public void setEnsembltranscript(String ensembltranscript) {
+        this.ensemblTranscript = ensembltranscript;
+    }
 
 }

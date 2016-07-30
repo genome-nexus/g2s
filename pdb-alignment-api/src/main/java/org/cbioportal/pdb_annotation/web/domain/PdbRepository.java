@@ -1,7 +1,6 @@
 package org.cbioportal.pdb_annotation.web.domain;
 
 import javax.transaction.Transactional;
-
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,6 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  */
 @Transactional
-public interface PdbRepository extends JpaRepository<Alignment, Long>{
-
+public interface PdbRepository extends JpaRepository<Alignment, Long> {
 }
