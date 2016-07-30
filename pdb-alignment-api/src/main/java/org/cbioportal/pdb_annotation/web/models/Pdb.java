@@ -6,71 +6,70 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * 
- * @author Juexin Wang
- *
- */
+* 
+* @author Juexin Wang
+*
+*/
 @Entity
 @Table(name = "pdb_entry")
 public class Pdb {
-	// ------------------------
-	// PRIVATE FIELDS
-	// ------------------------
-	@Id 
-	@Column(name = "PDB_NO")
-	private String pdbNo;
-	
-	@Column(name = "PDB_ID")
-	private String pdbId;
-	 
-	@Column(name = "CHAIN")
-	private String chain;
-	
-	@Column(name = "DBREF")
-	private String dbref;
-	
-	/**
-	 * Construction Function
-	 */
-	public Pdb() { }
+    @Id 
+    @Column(name = "PDB_NO")
+    private String pdbNo;
 
-	public Pdb(String pdbno) { 
-	    this.pdbNo = pdbno;
-	}
+    @Column(name = "PDB_ID")
+    private String pdbId;
 
-	
-	//Get and Set
-	public String getPdbno() {
-		return pdbNo;
-	}
+    @Column(name = "CHAIN")
+    private String chain;
 
-	public void setPdbno(String pdbno) {
-		this.pdbNo = pdbno;
-	}
+    @Column(name = "DBREF")
+    private String dbref;
 
-	public String getPdbid() {
-		return pdbId;
-	}
+    // ------------------------
+    // Constructors
+    // ------------------------
 
-	public void setPdbid(String pdbid) {
-		this.pdbId = pdbid;
-	}
+    public Pdb() {
+    }
 
-	public String getChain() {
-		return chain;
-	}
+    public Pdb(String pdbno) { 
+        this.pdbNo = pdbno;
+    }
 
-	public void setChain(String chain) {
-		this.chain = chain;
-	}
+    // ------------------------
+    // Methods
+    // ------------------------
 
-	public String getDbref() {
-		return dbref;
-	}
+    public String getPdbno() {
+        return pdbNo;
+    }
 
-	public void setDbref(String dbref) {
-		this.dbref = dbref;
-	}
-	
+    public void setPdbno(String pdbno) {
+        this.pdbNo = pdbno;
+    }
 
+    public String getPdbid() {
+        return pdbId;
+    }
+
+    public void setPdbid(String pdbid) {
+        this.pdbId = pdbid;
+    }
+
+    public String getChain() {
+        return chain;
+    }
+
+    public void setChain(String chain) {
+        this.chain = chain;
+    }
+
+    public String getDbref() {
+        return dbref;
+    }
+
+    public void setDbref(String dbref) {
+        this.dbref = dbref;
+    }
 }

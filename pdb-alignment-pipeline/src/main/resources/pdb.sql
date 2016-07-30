@@ -30,7 +30,7 @@ CREATE TABLE `pdb_ensembl_alignment` (
   `PDB_TO` int NOT NULL,
   `ENSEMBL_FROM` int NOT NULL,
   `ENSEMBL_TO` int NOT NULL,
-  `EVALUE` VARCHAR(10),
+  `EVALUE` VARCHAR(13),
   `BITSCORE` float,
   `IDENTITY` float,
   `IDENTP` float,
