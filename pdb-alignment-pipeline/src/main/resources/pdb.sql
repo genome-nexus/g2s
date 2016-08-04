@@ -37,6 +37,7 @@ CREATE TABLE `pdb_ensembl_alignment` (
   `ENSEMBL_ALIGN` text,
   `PDB_ALIGN` text,
   `MIDLINE_ALIGN` text,
+  `UPDATE_DATE` DATE,
   PRIMARY KEY (`ALIGNMENT_ID`),
   KEY(`ENSEMBL_ID`),
   KEY(`PDB_ID`, `CHAIN`),

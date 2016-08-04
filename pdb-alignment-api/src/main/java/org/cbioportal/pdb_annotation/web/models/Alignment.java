@@ -65,6 +65,9 @@ public class Alignment {
 
     @Column(name = "MIDLINE_ALIGN")
     private String midlineAlign;
+    
+    @Column(name = "UPDATE_DATE")
+    private String updateDate;
 
     // ------------------------
     // Constructors
@@ -207,5 +210,13 @@ public class Alignment {
 
     public void setMidlineAlign(String midlineAlign) {
         this.midlineAlign = midlineAlign;
+    }
+    
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
     }
 }

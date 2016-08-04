@@ -28,12 +28,8 @@ public class PdbScriptsPipelinePreprocessing {
 
     public PdbScriptsPipelinePreprocessing() {
         this.ensemblFileCount = -1;
-    }
-
-    public PdbScriptsPipelinePreprocessing(ReadConfig rc) {
-        this.ensemblFileCount = -1;
-        this.ensemblInputInterval = rc.ensembl_input_interval;
-        this.ensemblSQLFile=rc.workspace+rc.sql_ensemblSQL;
+        this.ensemblInputInterval = ReadConfig.ensemblInputInterval;
+        this.ensemblSQLFile = ReadConfig.workspace+ReadConfig.sqlEnsemblSQL;
     }
 
     public int getEnsembl_file_count() {

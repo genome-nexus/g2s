@@ -37,15 +37,15 @@ public class PdbScriptsPipelineMakeSQL {
     private String sqlDeleteFile;
     private String sqlEnsemblSQL;
     
-    PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app, ReadConfig rc) {
+    PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app) {
         this.db = app.db;
         this.matches=app.matches;
         this.ensemblFileCount=app.ensemblFileCount;
-        this.workspace = rc.workspace;
-        this.sqlInsertFile = rc.sql_insert_file;
-        this.sqlInsertOutputInterval = rc.sql_insert_output_interval;
-        this.sqlDeleteFile = rc.sql_delete_file;
-        this.sqlEnsemblSQL=rc.sql_ensemblSQL;
+        this.workspace = ReadConfig.workspace;
+        this.sqlInsertFile = ReadConfig.sqlInsertFile;
+        this.sqlInsertOutputInterval = ReadConfig.sqlInsertOutputInterval;
+        this.sqlDeleteFile = ReadConfig.sqlDeleteFile;
+        this.sqlEnsemblSQL = ReadConfig.sqlEnsemblSQL;
     }
     
     /**
@@ -194,11 +194,11 @@ public class PdbScriptsPipelineMakeSQL {
     public String makeTable_pdb_ensembl_insert(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split("\\s+");
         String[] strarrayS = br.getSseqid().split("_");
-        String str = "INSERT INTO `pdb_ensembl_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`ENSEMBL_ID`,`PDB_FROM`,`PDB_TO`,`ENSEMBL_FROM`,`ENSEMBL_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`ENSEMBL_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`)VALUES ('"
+        String str = "INSERT INTO `pdb_ensembl_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`ENSEMBL_ID`,`PDB_FROM`,`PDB_TO`,`ENSEMBL_FROM`,`ENSEMBL_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`ENSEMBL_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
                 + br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayQ[0] + "',"
                 + br.getqStart() + "," + br.getqEnd() + "," + br.getsStart() + "," + br.getsEnd() + ",'"
                 + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getEnsembl_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "');\n";
+                + br.getEnsembl_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "','CURDATE()');\n";
         return str;
     }
 
