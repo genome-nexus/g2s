@@ -14,13 +14,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.util.FTPClientUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 /**
  * Shell-based command running
@@ -28,11 +25,9 @@ import org.springframework.stereotype.Service;
  * @author wangjue
  *
  */
-@Service
-@Component
-@EnableConfigurationProperties
-@PropertySource("classpath:application.properties")
+
 public class PdbScriptsPipelineRunCommand {
+	final static Logger log = Logger.getLogger(PdbScriptsPipelineRunCommand.class);
     BlastDataBase db;
     int matches;
     int ensemblFileCount;
@@ -56,7 +51,7 @@ public class PdbScriptsPipelineRunCommand {
     		if(shellReturnCode != 0){
     			InputStream error = process.getErrorStream();
         		for (int i = 0; i < error.available(); i++) {
-        			System.out.println("[Process] Error: "+error.read());
+        			log.error("[Process] Error: "+error.read());
         		}			
     		}   		
     	}
@@ -78,27 +73,28 @@ public class PdbScriptsPipelineRunCommand {
     	int shellReturnCode = 0;
         if (command.equals("makeblastdb")) {
             try {
-                System.out.println("[BLAST] Running makeblastdb command...");
+                log.info("[BLAST] Running makeblastdb command...");
                 ProcessBuilder dbBuilder = new ProcessBuilder(makeBlastDBCommand(currentDir));
                 Process makeDB = dbBuilder.start();
                 makeDB.waitFor();
                 shellReturnCode=makeDB.exitValue();
                 outputProcessError(makeDB, shellReturnCode);
-                System.out.println("[BLAST] Command makeblastdb complete");
-            } catch (Exception ee) {
-                System.err.println("[BLAST] Fatal Error: Could not Successfully Run makeblastdb command");
-                ee.printStackTrace();
+                log.info("[BLAST] Command makeblastdb complete");
+            } catch (Exception ex) {
+            	log.error("[BLAST] Fatal Error: Could not Successfully Run makeblastdb command");
+            	log.error(ex.getMessage());
+                ex.printStackTrace();
             }
         } else if (command.equals("blastp")) {
             try {
-                System.out.println("[BLAST] Running blastp command...");
+                log.info("[BLAST] Running blastp command...");
                 if (this.ensemblFileCount != -1) {
                     for (int i = 0; i < this.ensemblFileCount; i++) {
                         ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(currentDir, i));
                         Process blast_standalone = blastp.start();
                         blast_standalone.waitFor();
                         if(blast_standalone.exitValue()!=0){
-                        	System.out.println("[BLAST] Running blastp went wrong on "+i+"th input!");
+                        	log.info("[BLAST] Running blastp went wrong on "+i+"th input!");
                         	outputProcessError(blast_standalone, shellReturnCode);
                         	shellReturnCode=blast_standalone.exitValue();
                         }
@@ -110,13 +106,14 @@ public class PdbScriptsPipelineRunCommand {
                     shellReturnCode=blast_standalone.exitValue();
                     outputProcessError(blast_standalone, shellReturnCode);
                 }
-                System.out.println("[BLAST] Command blastp complete");
-            } catch (Exception ee) {
-                System.err.println("[BLAST] Fatal Error: Could not Successfully Run blastp command");
-                ee.printStackTrace();
+                log.info("[BLAST] Command blastp complete");
+            } catch (Exception ex) {
+                log.error("[BLAST] Fatal Error: Could not Successfully Run blastp command");
+                log.error(ex.getMessage());
+                ex.printStackTrace();
             }
         } else {
-            System.out.println("[Shell] Error: Could not recognize Command: " + command);
+            log.info("[Shell] Error: Could not recognize Command: " + command);
         }
         return shellReturnCode;
     }
@@ -137,23 +134,23 @@ public class PdbScriptsPipelineRunCommand {
     	int shellReturnCode = 0;
         if (command.equals("mysql")) {
             try {
-                System.out.println("[DATABASE] Running mysql command...");
+                log.info("[DATABASE] Running mysql command...");
                 if (checkmultipleTag && this.ensemblFileCount != -1) {
                     for (int i = 0; i < this.ensemblFileCount; i++) {
-                        System.out.println("[DATABASE] Running mysql command on " + i + "th sql ...");
+                        log.info("[DATABASE] Running mysql command on " + i + "th sql ...");
                         long startTime = System.currentTimeMillis();
                         ProcessBuilder mysql = new ProcessBuilder(makeDBCommand());
                         mysql.redirectInput(ProcessBuilder.Redirect.from(new File(arguments + "." + new Integer(i).toString())));
                         Process mysql_standalone = mysql.start();
                         mysql_standalone.waitFor();
                         if(mysql_standalone.exitValue()!=0){
-                        	System.out.println("[BLAST] Running mysql went wrong on "+i+"th input!");
+                        	log.info("[BLAST] Running mysql went wrong on "+i+"th input!");
                         	outputProcessError(mysql_standalone, shellReturnCode);
                         	shellReturnCode=mysql_standalone.exitValue();
                         }
                         long endTime = System.currentTimeMillis();
                         NumberFormat formatter = new DecimalFormat("#0.000");
-                        System.out.println("[Shell] " + i + "th sql Execution time is "
+                        log.info("[Shell] " + i + "th sql Execution time is "
                                 + formatter.format((endTime - startTime) / 1000d) + " seconds");
                     }
                 } else {
@@ -164,13 +161,14 @@ public class PdbScriptsPipelineRunCommand {
                     shellReturnCode=mysql_standalone.exitValue();
                     outputProcessError(mysql_standalone, shellReturnCode);
                 }
-                System.out.println("[DATABASE] Command mysql complete");
-            } catch (Exception ee) {
-                ee.printStackTrace();
-                System.err.println("[DATABASE] Fatal Error: Could not Successfully Run mysql command on " + arguments);
+                log.info("[DATABASE] Command mysql complete");
+            } catch (Exception ex) {
+                log.error("[DATABASE] Fatal Error: Could not Successfully Run mysql command on " + arguments);
+                log.error(ex.getMessage());
+                ex.printStackTrace();
             }
         } else {
-            System.out.println("[Shell] Error: Could not recognize Command: " + command);
+            log.error("[Shell] Error: Could not recognize Command: " + command);
         }
         return shellReturnCode;
     }
@@ -200,9 +198,10 @@ public class PdbScriptsPipelineRunCommand {
                 mysql_standalone.waitFor();
                 shellReturnCode=mysql_standalone.exitValue();
                 outputProcessError(mysql_standalone, shellReturnCode);
-            } catch(Exception ee) {
-                ee.printStackTrace();
-                System.err.println("[SHELL] Fatal Error: Could not Successfully Run gunzip command on " + inputname + " to " + outputname);
+            } catch(Exception ex) {
+            	log.error("[SHELL] Fatal Error: Could not Successfully Run gunzip command on " + inputname + " to " + outputname);
+            	log.error(ex.getMessage());
+                ex.printStackTrace();
             }
         }
         return shellReturnCode;
@@ -334,16 +333,17 @@ public class PdbScriptsPipelineRunCommand {
     private int downloadfile(String urlFilename, String localFilename) {
     	int shellReturnCode=0;
             try {
-                System.out.println("[SHELL] Download file " + urlFilename + " ...");
+                log.info("[SHELL] Download file " + urlFilename + " ...");
                 ProcessBuilder dbBuilder = new ProcessBuilder(makeDownloadCommand(urlFilename, localFilename));
                 Process makeDB = dbBuilder.start();
                 makeDB.waitFor();
                 shellReturnCode=makeDB.exitValue();
                 outputProcessError(makeDB, shellReturnCode);
-                System.out.println("[SHELL] " + urlFilename + " completed");
-            } catch (Exception ee) {
-                System.err.println("[SHELL] Fatal Error: Could not Successfully download files");
-                ee.printStackTrace();
+                log.info("[SHELL] " + urlFilename + " completed");
+            } catch (Exception ex) {
+                log.error("[SHELL] Fatal Error: Could not Successfully download files");
+                log.error(ex.getMessage());
+                ex.printStackTrace();
             }
         return shellReturnCode;
     }
@@ -404,7 +404,7 @@ public class PdbScriptsPipelineRunCommand {
     private List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
         List<String> listOld = new ArrayList<String>();
         try {
-            System.out.println("[SHELL] Weekly Update: Create deleted list");
+            log.info("[SHELL] Weekly Update: Create deleted list");
             FileUtils.forceMkdir(new File(currentDir));
             String addFileName = currentDir + updateTxt;
             File addFastaFile = new File(addFileName);
@@ -434,11 +434,6 @@ public class PdbScriptsPipelineRunCommand {
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);              
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();         
         // Step 1: Download essential PDB and Essential tools
-        //FTP test
-        /*
-        FTPClientUtil fu = new FTPClientUtil();
-        fu.downloadFromFTP("ftp.wwpdb.org", "pub/pdb/data/status/latest/added.pdb", "added.pdb");
-        */
         downloadfile(ReadConfig.pdbWholeSource, ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
         runwithRedirectTo("gunzip", ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1), ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         downloadfile(ReadConfig.ensemblWholeSource, ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
@@ -453,7 +448,7 @@ public class PdbScriptsPipelineRunCommand {
         run("blastp", ReadConfig.workspace);
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         // Step 6: parse results and output as input sql statments
-        parseprocess.parse2sql(0, ReadConfig.workspace);
+        parseprocess.parse2sql(false, ReadConfig.workspace);
         // Step 7: create data schema
         runwithRedirectFrom("mysql", ReadConfig.resourceDir + ReadConfig.dbNameScript, false);
         // Step 8: import ensembl SQL statements into the database
@@ -476,7 +471,7 @@ public class PdbScriptsPipelineRunCommand {
         run("makeblastdb", currentDir);
         run("blastp",  currentDir);
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
-        parseprocess.parse2sql(1, currentDir);
+        parseprocess.parse2sql(true, currentDir);
         runwithRedirectFrom("mysql", currentDir + ReadConfig.sqlInsertFile, false);
         //delete old
         parseprocess.generateDeleteSql(currentDir, listOld);

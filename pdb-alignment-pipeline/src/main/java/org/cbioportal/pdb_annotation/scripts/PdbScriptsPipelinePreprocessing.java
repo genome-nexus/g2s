@@ -8,11 +8,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
-import org.springframework.stereotype.Component;
 
 /**
  * Preprocessing the input PDB and Ensembl files, both in init and update pipeline
@@ -20,8 +20,9 @@ import org.springframework.stereotype.Component;
  * @author Juexin Wang
  *
  */
-@Component
+
 public class PdbScriptsPipelinePreprocessing {
+	final static Logger log = Logger.getLogger(PdbScriptsPipelinePreprocessing.class);
     public String ensemblInputInterval;
     public String ensemblSQLFile;
     public int ensemblFileCount;
@@ -53,7 +54,7 @@ public class PdbScriptsPipelinePreprocessing {
      */
     public boolean preprocessPDBsequences(String infileName, String outfileName) {
         try {
-            System.out.println("[Preprocessing] Preprocessing PDB sequences... ");
+            log.info("[Preprocessing] Preprocessing PDB sequences... ");
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
             StringBuffer sb = new StringBuffer();
             for (Entry<String, ProteinSequence> entry : a.entrySet()) {
@@ -62,14 +63,13 @@ public class PdbScriptsPipelinePreprocessing {
                     sb.append(">" + entry.getValue().getOriginalHeader() + "\n" + entry.getValue().getSequenceAsString() + "\n");
                 }
             }
-            // standard fasta output, one line has 80 coloumns
-            // FastaWriterHelper.writeProteinSequence(new File(outfileName), c);
-            // no-standard fasta output, one line contains all AA
+            // one line contains all AA
             FileWriter fw = new FileWriter(new File(outfileName));
             fw.write(sb.toString());
             fw.close();
         } catch (Exception ex) {
-            System.err.println("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+            log.error(ex.getMessage());
             ex.printStackTrace();
         }
         return true;
@@ -83,7 +83,7 @@ public class PdbScriptsPipelinePreprocessing {
      */
     public boolean preprocessPDBsequencesUpdate(String infileName, String outfileName) {
         try {
-            System.out.println("[Preprocessing] Preprocessing PDB sequences... ");
+            log.info("[Preprocessing] Preprocessing PDB sequences... ");
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
             StringBuffer sb = new StringBuffer();
             for (Entry<String, ProteinSequence> entry : a.entrySet()) {
@@ -91,12 +91,13 @@ public class PdbScriptsPipelinePreprocessing {
                 String outstr = tmp[0].replaceAll(":", "_");
                 sb.append(">" + outstr + "\n" + entry.getValue().getSequenceAsString() + "\n");
             }
-            // no-standard fasta output, one line contains all AA
+            // one line contains all AA
             FileWriter fw = new FileWriter(new File(outfileName));
             fw.write(sb.toString());
             fw.close();
         } catch (Exception ex) {
-            System.err.println("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+            log.error(ex.getMessage());
             ex.printStackTrace();
         }
         return true;
@@ -139,7 +140,8 @@ public class PdbScriptsPipelinePreprocessing {
             setEnsembl_file_count(filecount);
             generateEnsemblSQLTmpFile(list);
         } catch (Exception ex) {
-            System.err.println("[Preprocessing] Fatal Error: Could not Successfully Preprocessing Ensembl sequences");
+            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing Ensembl sequences");
+            log.error(ex.getMessage());
             ex.printStackTrace();
         }
         return filecount;
@@ -162,6 +164,7 @@ public class PdbScriptsPipelinePreprocessing {
             }
             FileUtils.writeLines(new File(this.ensemblSQLFile), outlist);
         } catch(Exception ex) {
+        	log.error(ex.getMessage());
             ex.printStackTrace();
         }
         return true;
