@@ -11,11 +11,13 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.util.FTPClientUtil;
+import org.cbioportal.pdb_annotation.util.PdbSequenceUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
 
@@ -431,11 +433,18 @@ public class PdbScriptsPipelineRunCommand {
      * main steps of init pipeline
      */
     public void runInit() { 
+    	
+    	
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);              
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();         
-        // Step 1: Download essential PDB and Essential tools
-        downloadfile(ReadConfig.pdbWholeSource, ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
-        runwithRedirectTo("gunzip", ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1), ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        // Step 1: Download essential PDB and Essential tools       
+        if(ReadConfig.usePdbSeqLocalTag.equals("true")){
+        	PdbSequenceUtil pu = new PdbSequenceUtil();		
+        	pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        }else{
+        	downloadfile(ReadConfig.pdbWholeSource, ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
+            runwithRedirectTo("gunzip", ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1), ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);           
+        }
         downloadfile(ReadConfig.ensemblWholeSource, ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
         runwithRedirectTo("gunzip", ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1), ReadConfig.workspace + ReadConfig.ensemblDownloadFile);       
         // Step 2: choose only protein entries of all pdb
@@ -455,6 +464,7 @@ public class PdbScriptsPipelineRunCommand {
         runwithRedirectFrom("mysql", ReadConfig.workspace + ReadConfig.sqlEnsemblSQL, false);
         // Step 9: import INSERT SQL statements into the database (Warning: This step takes time)
         runwithRedirectFrom("mysql", ReadConfig.workspace + ReadConfig.sqlInsertFile, true);
+        
     }
 
     /**

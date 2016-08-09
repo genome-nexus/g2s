@@ -19,6 +19,7 @@ public class ReadConfig {
     public static String workspace;
     public static String resourceDir;
     public static String tmpdir;
+    public static String pdbRepo;
     public static String pdbSeqresDownloadFile;
     public static String pdbSeqresFastaFile;
     public static String ensemblDownloadFile;
@@ -52,6 +53,7 @@ public class ReadConfig {
     public static String updateObsolete;
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
+    public static String usePdbSeqLocalTag;
     
     private ReadConfig(){
     	try{
@@ -64,6 +66,7 @@ public class ReadConfig {
     	ReadConfig.workspace = prop.getProperty("workspace");   	
     	ReadConfig.resourceDir = prop.getProperty("resource_dir");
     	ReadConfig.tmpdir = prop.getProperty("tmpdir");
+    	ReadConfig.pdbRepo = prop.getProperty("pdbRepo");
     	ReadConfig.pdbSeqresDownloadFile = prop.getProperty("pdb_seqres_download_file");
     	ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file");
     	ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file");
@@ -97,11 +100,15 @@ public class ReadConfig {
     	ReadConfig.updateObsolete = prop.getProperty("update.obsolete");
     	ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService");
     	ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet");
+    	ReadConfig.usePdbSeqLocalTag = prop.getProperty("usePdbSeqLocalTag");
     	}catch(Exception ex){
     		ex.printStackTrace();
     	}
     }
     
+    /**
+     * Get Methods
+     */
     public static ReadConfig getInstance(){
         if(rcObj == null){
             rcObj = new ReadConfig();
@@ -132,6 +139,10 @@ public class ReadConfig {
 	public static String getTmpdir() {
 		return tmpdir;
 	}
+
+	public static String getPdbRepo() {
+		return pdbRepo;
+	}	
 
 	public static String getPdbSeqresDownloadFile() {
 		return pdbSeqresDownloadFile;
@@ -264,7 +275,14 @@ public class ReadConfig {
 	public static String getMysqlMaxAllowedPacket() {
 		return mysqlMaxAllowedPacket;
 	}
+	
+	public static String getUsePdbSeqLocalTag() {
+		return usePdbSeqLocalTag;
+	}
 
+	/**
+	 * Set Methods
+	 */
 	public static void setRcObj(ReadConfig rcObj) {
 		ReadConfig.rcObj = rcObj;
 	}
@@ -287,6 +305,10 @@ public class ReadConfig {
 
 	public static void setTmpdir(String tmpdir) {
 		ReadConfig.tmpdir = tmpdir;
+	}
+	
+	public static void setPdbRepo(String pdbRepo) {
+		ReadConfig.pdbRepo = pdbRepo;
 	}
 
 	public static void setPdbSeqresDownloadFile(String pdbSeqresDownloadFile) {
@@ -419,6 +441,10 @@ public class ReadConfig {
 
 	public static void setMysqlMaxAllowedPacket(String mysqlMaxAllowedPacket) {
 		ReadConfig.mysqlMaxAllowedPacket = mysqlMaxAllowedPacket;
+	}
+	
+	public static void setUsePdbSeqLocalTag(String usePdbSeqLocalTag) {
+		ReadConfig.usePdbSeqLocalTag = usePdbSeqLocalTag;
 	}
 
 }
