@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Preliminary script, includes several steps
- * See README for how to run
+ * See README for how to install and run the project
  *
  * @author Juexin Wang
  *

@@ -1,22 +1,12 @@
 package org.cbioportal.pdb_annotation.scripts;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.cbioportal.pdb_annotation.util.FTPClientUtil;
+import org.cbioportal.pdb_annotation.util.CommandProcessUtil;
 import org.cbioportal.pdb_annotation.util.PdbSequenceUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
@@ -24,7 +14,7 @@ import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
 /**
  * Shell-based command running
  *
- * @author wangjue
+ * @author Juexin Wang
  *
  */
 
@@ -33,7 +23,6 @@ public class PdbScriptsPipelineRunCommand {
     BlastDataBase db;
     int matches;
     int ensemblFileCount;
-    private String dataVersion;
 
     /**
      * Constructor
@@ -41,392 +30,6 @@ public class PdbScriptsPipelineRunCommand {
     public PdbScriptsPipelineRunCommand() {
         this.matches = 0;
         this.ensemblFileCount = -1;
-    }
-    
-    /**
-     * output process Errors from process
-     * 
-     * @param process
-     */
-    private void outputProcessError(Process process, int shellReturnCode){
-    	try{
-    		if(shellReturnCode != 0){
-    			InputStream error = process.getErrorStream();
-        		for (int i = 0; i < error.available(); i++) {
-        			log.error("[Process] Error: "+error.read());
-        		}			
-    		}   		
-    	}
-        catch(Exception ex){
-        	ex.printStackTrace();
-        }
-    	
-    }
-
-    /**
-     * run external command by ProcessBuilder, now it only contains
-     * "makeblastdb" and "blastp", will add more in future
-     *
-     * @param shell command
-     * @param currentDir
-     * @return shellReturnCode, 0 for normal results
-     */
-    private int run(String command, String currentDir) {
-    	int shellReturnCode = 0;
-        if (command.equals("makeblastdb")) {
-            try {
-                log.info("[BLAST] Running makeblastdb command...");
-                ProcessBuilder dbBuilder = new ProcessBuilder(makeBlastDBCommand(currentDir));
-                Process makeDB = dbBuilder.start();
-                makeDB.waitFor();
-                shellReturnCode=makeDB.exitValue();
-                outputProcessError(makeDB, shellReturnCode);
-                log.info("[BLAST] Command makeblastdb complete");
-            } catch (Exception ex) {
-            	log.error("[BLAST] Fatal Error: Could not Successfully Run makeblastdb command");
-            	log.error(ex.getMessage());
-                ex.printStackTrace();
-            }
-        } else if (command.equals("blastp")) {
-            try {
-                log.info("[BLAST] Running blastp command...");
-                if (this.ensemblFileCount != -1) {
-                    for (int i = 0; i < this.ensemblFileCount; i++) {
-                        ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(currentDir, i));
-                        Process blast_standalone = blastp.start();
-                        blast_standalone.waitFor();
-                        if(blast_standalone.exitValue()!=0){
-                        	log.info("[BLAST] Running blastp went wrong on "+i+"th input!");
-                        	outputProcessError(blast_standalone, shellReturnCode);
-                        	shellReturnCode=blast_standalone.exitValue();
-                        }
-                    }
-                } else {
-                    ProcessBuilder blastp = new ProcessBuilder(makeBlastPCommand(currentDir));
-                    Process blast_standalone = blastp.start();
-                    blast_standalone.waitFor();
-                    shellReturnCode=blast_standalone.exitValue();
-                    outputProcessError(blast_standalone, shellReturnCode);
-                }
-                log.info("[BLAST] Command blastp complete");
-            } catch (Exception ex) {
-                log.error("[BLAST] Fatal Error: Could not Successfully Run blastp command");
-                log.error(ex.getMessage());
-                ex.printStackTrace();
-            }
-        } else {
-            log.info("[Shell] Error: Could not recognize Command: " + command);
-        }
-        return shellReturnCode;
-    }
-
-    /**
-     * run external command by ProcessBuilder, with redirect maker "<"
-     * Now the command now is mysql
-     *
-     * @param command
-     *            contents before "<"
-     * @param arguments
-     *            contents after  "<"
-     * @param checkmultipleTag
-     *            True for split capable files, false for non-split files
-     * @return Success/Failure
-     */
-    private int runwithRedirectFrom(String command, String arguments, boolean checkmultipleTag) {
-    	int shellReturnCode = 0;
-        if (command.equals("mysql")) {
-            try {
-                log.info("[DATABASE] Running mysql command...");
-                if (checkmultipleTag && this.ensemblFileCount != -1) {
-                    for (int i = 0; i < this.ensemblFileCount; i++) {
-                        log.info("[DATABASE] Running mysql command on " + i + "th sql ...");
-                        long startTime = System.currentTimeMillis();
-                        ProcessBuilder mysql = new ProcessBuilder(makeDBCommand());
-                        mysql.redirectInput(ProcessBuilder.Redirect.from(new File(arguments + "." + new Integer(i).toString())));
-                        Process mysql_standalone = mysql.start();
-                        mysql_standalone.waitFor();
-                        if(mysql_standalone.exitValue()!=0){
-                        	log.info("[BLAST] Running mysql went wrong on "+i+"th input!");
-                        	outputProcessError(mysql_standalone, shellReturnCode);
-                        	shellReturnCode=mysql_standalone.exitValue();
-                        }
-                        long endTime = System.currentTimeMillis();
-                        NumberFormat formatter = new DecimalFormat("#0.000");
-                        log.info("[Shell] " + i + "th sql Execution time is "
-                                + formatter.format((endTime - startTime) / 1000d) + " seconds");
-                    }
-                } else {
-                    ProcessBuilder builder = new ProcessBuilder(makeDBCommand());
-                    builder.redirectInput(ProcessBuilder.Redirect.from(new File(arguments)));
-                    Process mysql_standalone = builder.start();
-                    mysql_standalone.waitFor();
-                    shellReturnCode=mysql_standalone.exitValue();
-                    outputProcessError(mysql_standalone, shellReturnCode);
-                }
-                log.info("[DATABASE] Command mysql complete");
-            } catch (Exception ex) {
-                log.error("[DATABASE] Fatal Error: Could not Successfully Run mysql command on " + arguments);
-                log.error(ex.getMessage());
-                ex.printStackTrace();
-            }
-        } else {
-            log.error("[Shell] Error: Could not recognize Command: " + command);
-        }
-        return shellReturnCode;
-    }
-
-    /**
-     * run external command by ProcessBuilder, with redirect maker ">"
-     * Now the command is gunzip
-     *
-     * @param command
-     *            contents before ">"
-     * @param arguments
-     *            contents after  ">"
-     * @param checkmultipleTag
-     *            True for split capable files, false for non-split files
-     * @return Success/Failure
-     */
-    private int runwithRedirectTo(String command, String inputname, String outputname) {
-        int shellReturnCode=0;
-    	if (command.equals("gunzip")) {
-            if (!inputname.endsWith(".gz")) {
-                return 0;
-            }
-            try {
-                ProcessBuilder builder = new ProcessBuilder(makeGunzipCommand(inputname));
-                builder.redirectOutput(ProcessBuilder.Redirect.to(new File(outputname)));
-                Process mysql_standalone = builder.start();
-                mysql_standalone.waitFor();
-                shellReturnCode=mysql_standalone.exitValue();
-                outputProcessError(mysql_standalone, shellReturnCode);
-            } catch(Exception ex) {
-            	log.error("[SHELL] Fatal Error: Could not Successfully Run gunzip command on " + inputname + " to " + outputname);
-            	log.error(ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
-        return shellReturnCode;
-    }
-
-    /**
-     * generate gunzip command
-     *
-     * @param inputname
-     * @return
-     */
-    private List<String> makeGunzipCommand(String inputname) {
-        List<String> list = new ArrayList<String>();
-        list.add("gunzip");
-        list.add("-c");
-        list.add("-d");
-        list.add(inputname);
-        return list;
-    }
-
-    /**
-     * Helper Function for building the makeblastdb command: makeblastdb -in
-     * Homo_sapiens.GRCh38.pep.all.fa -dbtype prot -out pdb_seqres.db
-     *
-     * @return A List containing the commands to execute the makeblastdb
-     *         function
-     */
-    private List<String> makeBlastDBCommand(String currentDir) {
-        List<String> list = new ArrayList<String>();
-        list.add(ReadConfig.makeblastdb);
-        list.add("-in");
-        list.add(currentDir + ReadConfig.pdbSeqresFastaFile);
-        list.add("-dbtype");
-        list.add("prot");
-        list.add("-out");
-        list.add(currentDir + this.db.dbName);
-        return list;
-    }
-
-    /**
-     * Helper Function for building the following command :
-     * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue  1e-60 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
-     *
-     * @return A List of command arguments for the processbuilder
-     */
-    private List<String> makeBlastPCommand(String currentDir) {
-        List<String> list = generateBlastCommand(currentDir, "");
-        return list;
-    }
-
-    /**
-     * This is for the multiple inputs
-     * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa.0 -word_size 11 -evalue  1e-60 -num_threads 6 -outfmt 5 -out pdb_seqres.xml.0
-     *
-     * @param i
-     *             the ith file
-     * @return
-     */
-    private List<String> makeBlastPCommand(String currentDir, int i) {
-        String countStr = "." + new Integer(i).toString();
-        List<String> list = generateBlastCommand(currentDir, countStr);
-        return list;
-    }
-
-    /**
-     * main body of generating blast command
-     * @param countStr
-     * @return
-     */
-    private List<String> generateBlastCommand(String currentDir, String countStr) {
-        List<String> list = new ArrayList<String>();
-        list.add(ReadConfig.blastp);
-        list.add("-db");
-        list.add(currentDir + this.db.dbName);
-        list.add("-query");
-        list.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile + countStr);
-        list.add("-word_size");
-        list.add(ReadConfig.blastParaWordSize);
-        list.add("-evalue");
-        list.add(ReadConfig.blastParaEvalue);
-        list.add("-num_threads");
-        list.add(ReadConfig.blastParaThreads);
-        list.add("-outfmt");
-        list.add("5");
-        list.add("-out");
-        list.add(currentDir + this.db.resultfileName + countStr);
-        return list;
-    }
-
-    /**
-     * generate mysql command
-     *
-     * @return
-     */
-    private List<String> makeDBCommand() {
-        List<String> list = new ArrayList<String>();
-        list.add(ReadConfig.mysql);
-        list.add("--max_allowed_packet="+ReadConfig.mysqlMaxAllowedPacket);
-        list.add("-u");
-        list.add(ReadConfig.username);
-        list.add("--password=" + ReadConfig.password);
-        list.add(ReadConfig.dbName);
-        return list;
-    }
-
-    /**
-     * generate wget command
-     *
-     * @param urlFilename
-     * @param localFilename
-     * @return
-     */
-    private List<String> makeDownloadCommand(String urlFilename, String localFilename) {
-        List<String> list = new ArrayList<String>();
-        list.add("wget");
-        list.add("-O");
-        list.add(localFilename);
-        list.add(urlFilename);
-        return list;
-    }
-
-    /**
-     * download files from urlFilename from Internet to localFilename of the system
-     *
-     * @param urlFilename
-     * @param localFilename
-     * @return
-     */
-    private int downloadfile(String urlFilename, String localFilename) {
-    	int shellReturnCode=0;
-            try {
-                log.info("[SHELL] Download file " + urlFilename + " ...");
-                ProcessBuilder dbBuilder = new ProcessBuilder(makeDownloadCommand(urlFilename, localFilename));
-                Process makeDB = dbBuilder.start();
-                makeDB.waitFor();
-                shellReturnCode=makeDB.exitValue();
-                outputProcessError(makeDB, shellReturnCode);
-                log.info("[SHELL] " + urlFilename + " completed");
-            } catch (Exception ex) {
-                log.error("[SHELL] Fatal Error: Could not Successfully download files");
-                log.error(ex.getMessage());
-                ex.printStackTrace();
-            }
-        return shellReturnCode;
-    }
-
-    /**
-     * read FTP file to list
-     *
-     * @param urlStr
-     * @return
-     */
-    private List<String> readFTPfile2List(String urlStr) {
-        List<String> list = new ArrayList();
-        try {
-            URL url = new URL(urlStr);
-            URLConnection con = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                list.add(inputLine);
-            }
-            in.close();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return list;
-    }
-
-    /**
-     * read FTP file to String
-     * @param urlStr
-     * @return
-     */
-    private String readFTPfile2Str(String urlStr) {
-        String str = "";
-        try {
-            URL url = new URL(urlStr);
-            URLConnection con = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                str = str + inputLine + "\n";
-            }
-            in.close();
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return str;
-    }
-
-    /**
-     * prepare weekly updated PDB files
-     *
-     * @param currentDir
-     * @param updateTxt
-     * @param delPDB
-     * @return
-     */
-    private List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
-        List<String> listOld = new ArrayList<String>();
-        try {
-            log.info("[SHELL] Weekly Update: Create deleted list");
-            FileUtils.forceMkdir(new File(currentDir));
-            String addFileName = currentDir + updateTxt;
-            File addFastaFile = new File(addFileName);
-            String delFileName = currentDir + delPDB;
-            List listAdd = readFTPfile2List(ReadConfig.updateAdded);
-            List listMod = readFTPfile2List(ReadConfig.updateModified);
-            List listObs = readFTPfile2List(ReadConfig.updateObsolete);
-            List<String> listNew = new ArrayList<String>(listAdd);
-            listNew.addAll(listMod);
-            listOld = new ArrayList<String>(listMod);
-            listOld.addAll(listObs);
-            String listNewCont = "";
-            for(String pdbName:listNew) {
-                listNewCont = listNewCont + readFTPfile2Str(ReadConfig.pdbFastaService + pdbName);
-            }
-            FileUtils.writeStringToFile(addFastaFile, listNewCont);
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        return listOld;
     }
 
     /**
@@ -436,55 +39,149 @@ public class PdbScriptsPipelineRunCommand {
     	
     	
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);              
-        PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();         
-        // Step 1: Download essential PDB and Essential tools       
+        PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing(); 
+        CommandProcessUtil cu = new CommandProcessUtil();
+        ArrayList<String> paralist = new ArrayList<String>();
+        
+        // Step 1: Download essential PDB and Ensembl
+        // Two strategies were defined here, users could choose one of them from setting usePdbSeqLocalTag in Application.properties
+        // usePdbSeqLocalTag is "true": Read Sequences from cloned whole PDB, need at least 22G free spaces and at least 12 hours, accurate
+        // usePdbSeqLocalTag is not "true": Read Sequences from PDB precaculated file, efficient
         if(ReadConfig.usePdbSeqLocalTag.equals("true")){
+        	log.info("[PDB] usePdbSeqLocalTag is set as true, a cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
         	PdbSequenceUtil pu = new PdbSequenceUtil();		
         	pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         }else{
-        	downloadfile(ReadConfig.pdbWholeSource, ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
-            runwithRedirectTo("gunzip", ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1), ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);           
+        	log.info("[PDB] usePdbSeqLocalTag is not set as true, the PDB sequence is directly downloaded ");
+        	paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.pdbWholeSource);
+            paralist.add(ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
+        	cu.runCommand("wget", paralist);
+        	
+        	paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
+            paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        	cu.runCommand("gunzip", paralist);           
         }
-        downloadfile(ReadConfig.ensemblWholeSource, ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
-        runwithRedirectTo("gunzip", ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1), ReadConfig.workspace + ReadConfig.ensemblDownloadFile);       
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.ensemblWholeSource);
+        paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
+        cu.runCommand("wget", paralist);
+        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
+        paralist.add(ReadConfig.workspace + ReadConfig.ensemblDownloadFile);
+        cu.runCommand("gunzip", paralist);       
+        
         // Step 2: choose only protein entries of all pdb
         preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile, ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
-        // Step 3: preprocess ensembl files, split into small files to save the memory
-        ensemblFileCount = preprocess.preprocessGENEsequences(ReadConfig.workspace + ReadConfig.ensemblDownloadFile, ReadConfig.workspace + ReadConfig.ensemblFastaFile);
-        // Step 4: build the database by makebalstdb
-        run("makeblastdb", ReadConfig.workspace);
+       
+        // Step 3: preprocess ensembl files, split into small files to save the running memory
+        this.ensemblFileCount = preprocess.preprocessGENEsequences(ReadConfig.workspace + ReadConfig.ensemblDownloadFile, ReadConfig.workspace + ReadConfig.ensemblFastaFile);
+        
+        // Step 4: build the database by makeblastdb
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+        paralist.add(ReadConfig.workspace + this.db.dbName);       
+        cu.runCommand("makeblastdb", paralist);
+        
         // Step 5: blastp ensembl genes against pdb (Warning: This step takes time)
-        run("blastp", ReadConfig.workspace);
+        if (this.ensemblFileCount != -1) {
+            for (int i = 0; i < this.ensemblFileCount; i++) {
+            	paralist = new ArrayList<String>();
+            	paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile + "." + new Integer(i).toString());
+            	paralist.add(ReadConfig.workspace + this.db.resultfileName + "." + new Integer(i).toString());
+            	paralist.add(ReadConfig.workspace);
+                cu.runCommand("blastp", paralist);
+            }
+        } else {
+        	paralist = new ArrayList<String>();
+        	paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile);
+        	paralist.add(ReadConfig.workspace + this.db.resultfileName);
+        	paralist.add(ReadConfig.workspace);
+            cu.runCommand("blastp", paralist);           
+        }
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
+        
         // Step 6: parse results and output as input sql statments
         parseprocess.parse2sql(false, ReadConfig.workspace);
-        // Step 7: create data schema
-        runwithRedirectFrom("mysql", ReadConfig.resourceDir + ReadConfig.dbNameScript, false);
-        // Step 8: import ensembl SQL statements into the database
-        runwithRedirectFrom("mysql", ReadConfig.workspace + ReadConfig.sqlEnsemblSQL, false);
-        // Step 9: import INSERT SQL statements into the database (Warning: This step takes time)
-        runwithRedirectFrom("mysql", ReadConfig.workspace + ReadConfig.sqlInsertFile, true);
         
+        // Step 7: create data schema
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);      
+        cu.runCommand("mysql", paralist);
+
+        // Step 8: import ensembl SQL statements into the database
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.sqlEnsemblSQL);      
+        cu.runCommand("mysql", paralist);
+        
+        // Step 9: import INSERT SQL statements into the database (Warning: This step takes time)
+        if (this.ensemblFileCount != -1) {
+            for (int i = 0; i < this.ensemblFileCount; i++) {
+            	paralist = new ArrayList<String>();
+                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString()); 
+            	cu.runCommand("mysql", paralist);
+            }
+        } else {
+        	paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile); 
+        	cu.runCommand("mysql", paralist);
+        }
     }
 
     /**
      * main steps of update pipeline
      */
     public void runUpdatePDB() {
-        String dataVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        this.dataVersion = dataVersion;
-        this.db = new BlastDataBase(ReadConfig.pdbSeqresDownloadFile);
-        String currentDir = ReadConfig.workspace + this.dataVersion + "/";
-        PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
-        List<String> listOld = prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile, ReadConfig.delPDB);
-        preprocess.preprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresDownloadFile, currentDir + ReadConfig.pdbSeqresFastaFile);
-        run("makeblastdb", currentDir);
-        run("blastp",  currentDir);
-        PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
-        parseprocess.parse2sql(true, currentDir);
-        runwithRedirectFrom("mysql", currentDir + ReadConfig.sqlInsertFile, false);
-        //delete old
-        parseprocess.generateDeleteSql(currentDir, listOld);
-        runwithRedirectFrom("mysql", currentDir + ReadConfig.sqlDeleteFile, false);
+    	CommandProcessUtil cu = new CommandProcessUtil();
+    	this.db = new BlastDataBase(ReadConfig.pdbSeqresDownloadFile);
+    	 PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
+    	 PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
+    	
+    	// Step 1: Set dateVersion of updating and create a folder as MMDDYYYY under the main folder
+        String dateVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());        
+        String currentDir = ReadConfig.workspace + dateVersion + "/";
+        
+        // Step 2: Download and prepare new, obsolete and modified PDB in weekly update from PDB
+        List<String> listOld = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile, ReadConfig.delPDB);
+        preprocess.preprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresDownloadFile, currentDir + ReadConfig.pdbSeqresFastaFile);      
+        
+        // Step 3: Create new blast alignments in new and modified PDB
+        ArrayList<String> paralist = new ArrayList<String>();       
+        paralist.add(currentDir + ReadConfig.pdbSeqresFastaFile);
+        paralist.add(currentDir + this.db.dbName);       
+        cu.runCommand("makeblastdb", paralist);
+        
+        // Step 4: blastp ensembl genes against pdb (Warning: This step takes time)
+        if (this.ensemblFileCount != -1) {
+            for (int i = 0; i < this.ensemblFileCount; i++) {
+            	paralist = new ArrayList<String>();
+            	paralist.add(currentDir + ReadConfig.ensemblFastaFile + "." + new Integer(i).toString());
+            	paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
+            	paralist.add(currentDir);
+                cu.runCommand("blastp", paralist);
+            }
+        } else {
+        	paralist = new ArrayList<String>();
+        	paralist.add(currentDir + ReadConfig.ensemblFastaFile);
+        	paralist.add(currentDir + this.db.resultfileName);
+        	paralist.add(currentDir);
+            cu.runCommand("blastp", paralist);           
+        }
+        
+        // Step 5: Insert delete SQL of obsolete and modified alignments
+        parseprocess.generateDeleteSql(currentDir, listOld);       
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.sqlDeleteFile);      
+        cu.runCommand("mysql", paralist);
+        
+        // Step 6: Create and insert SQL statements of new and modified alignments       
+        parseprocess.parse2sql(true, currentDir);       
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.sqlInsertFile);      
+        cu.runCommand("mysql", paralist);
+ 
+        
     }
 }

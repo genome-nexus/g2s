@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
+import org.cbioportal.pdb_annotation.util.FTPClientUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 
 /**
@@ -121,7 +122,7 @@ public class PdbScriptsPipelinePreprocessing {
         int filecount = 0;
         try {
             System.out.println("[Preprocessing] Preprocessing Ensembl sequences... ");
-            List<String> list = new ArrayList();
+            List<String> list = new ArrayList<String>();
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infilename));
             Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
             int count = 0; // line count of the original FASTA file
@@ -153,8 +154,8 @@ public class PdbScriptsPipelinePreprocessing {
      *
      * @param list
      */
-    public boolean generateEnsemblSQLTmpFile(List<String> list) {
-        List outlist = new ArrayList();
+    public void generateEnsemblSQLTmpFile(List<String> list) {
+        List<String> outlist = new ArrayList<String>();
         try {
             for(String str:list) {
                 String[] strarrayQ = str.split("\\s+");
@@ -167,6 +168,41 @@ public class PdbScriptsPipelinePreprocessing {
         	log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
+    }
+    
+    
+    /**
+     * prepare weekly updated PDB files
+     *
+     * @param currentDir
+     * @param updateTxt
+     * @param delPDB
+     * @return
+     */
+    public List<String> prepareUpdatePDBFile(String currentDir, String updateTxt, String delPDB) {
+        List<String> listOld = new ArrayList<String>();
+        FTPClientUtil fcu = new FTPClientUtil();
+        try {
+            log.info("[SHELL] Weekly Update: Create deleted list");
+            FileUtils.forceMkdir(new File(currentDir));
+            String addFileName = currentDir + updateTxt;
+            File addFastaFile = new File(addFileName);
+            String delFileName = currentDir + delPDB;
+            List<String> listAdd = fcu.readFTPfile2List(ReadConfig.updateAdded);
+            List<String> listMod = fcu.readFTPfile2List(ReadConfig.updateModified);
+            List<String> listObs = fcu.readFTPfile2List(ReadConfig.updateObsolete);
+            List<String> listNew = new ArrayList<String>(listAdd);
+            listNew.addAll(listMod);
+            listOld = new ArrayList<String>(listMod);
+            listOld.addAll(listObs);
+            String listNewCont = "";
+            for(String pdbName:listNew) {
+                listNewCont = listNewCont + fcu.readFTPfile2Str(ReadConfig.pdbFastaService + pdbName);
+            }
+            FileUtils.writeStringToFile(addFastaFile, listNewCont);
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return listOld;
     }
 }

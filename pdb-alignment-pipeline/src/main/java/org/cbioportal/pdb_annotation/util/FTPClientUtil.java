@@ -1,182 +1,67 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.cbioportal.pdb_annotation.util;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.net.PrintCommandListener;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPHTTPClient;
-import org.apache.commons.net.ftp.FTPClientConfig;
-import org.apache.commons.net.ftp.FTPConnectionClosedException;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPReply;
-import org.apache.commons.net.ftp.FTPSClient;
-import org.apache.commons.net.io.CopyStreamEvent;
-import org.apache.commons.net.io.CopyStreamListener;
-import org.apache.commons.net.util.TrustManagerUtils;
 
 /**
- * This is an example program demonstrating how to use the FTPClient class.
- * This program connects to an FTP server and retrieves the specified
- * file.  If the -s flag is used, it stores the local file at the FTP server.
- * Just so you can see what's happening, all reply strings are printed.
- * If the -b flag is used, a binary transfer is assumed (default is ASCII).
- * See below for further options.
+ * FTP related Utils
+ * 
+ * @author Juexin Wang
+ *
  */
 public class FTPClientUtil
 {
 
-    public static final String USAGE =
-            "Usage: ftp [-s] [-b] <hostname> <username> <password> <remote file> <local file>\n" +
-            "\nDefault behavior is to download a file and use ASCII transfer mode.\n" +
-            "\t-s store file on server (upload)\n" +
-            "\t-b use binary transfer mode\n";
-
-        public void downloadFromFTP(String server, String remote, String local) 
-        {
-        	
-            boolean binaryTransfer = true, error = false;
-            String username = "", password = "";
-            
-            FTPSClient ftps;
-            String protocol = "TLS";    // SSL/TLS
-            ftps = new FTPSClient(protocol);           
-            
-            ftps.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
-
-            try
-            {
-                int reply;
-                username = "anonymous";
-                password = System.getProperty("user")+"@"+InetAddress.getLocalHost().getHostName();
-                ftps.enterLocalPassiveMode();
-                
-
-                System.out.println("&&&");
-                ftps.connect(server);
-                ftps.enterRemotePassiveMode();
-                System.out.println("***Connected to " + server + ".");
-
-                // After connection attempt, you should check the reply code to verify
-                // success.
-                reply = ftps.getReplyCode();
-
-                if (!FTPReply.isPositiveCompletion(reply))
-                {
-                    ftps.disconnect();
-                    System.err.println("FTP server refused connection.");
-                    System.exit(1);
-                }
+    /**
+     * read FTP file to list
+     *
+     * @param urlStr
+     * @return
+     */
+    public List<String> readFTPfile2List(String urlStr) {
+        List<String> list = new ArrayList<String>();
+        try {
+            URL url = new URL(urlStr);
+            URLConnection con = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                list.add(inputLine);
             }
-            catch (IOException e)
-            {
-                if (ftps.isConnected())
-                {
-                    try
-                    {
-                        ftps.disconnect();
-                    }
-                    catch (IOException f)
-                    {
-                        // do nothing
-                    }
-                }
-                System.err.println("Could not connect to server.");
-                e.printStackTrace();
-                System.exit(1);
+            in.close();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * read FTP file to String
+     * @param urlStr
+     * @return
+     */
+    public String readFTPfile2Str(String urlStr) {
+        String str = "";
+        try {
+            URL url = new URL(urlStr);
+            URLConnection con = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                str = str + inputLine + "\n";
             }
-            catch(Exception ex){
-            	ex.printStackTrace();
-            }
-
-    __main:
-            try
-            {
-                ftps.setBufferSize(1000);
-
-                
-                if (!ftps.login(username, password))
-                {
-                    ftps.logout();
-                    error = true;
-                    break __main;
-                }
-                
-                
-                System.out.println("Remote system is " + ftps.getSystemName());
-
-                if (binaryTransfer) ftps.setFileType(FTP.BINARY_FILE_TYPE);
-
-                // Use passive mode as default because most of us are
-                // behind firewalls these days.
-                ftps.enterLocalPassiveMode();
-
-                
-                    OutputStream output;
-
-                    output = new FileOutputStream(local);
-
-                    ftps.retrieveFile(remote, output);
-
-                    output.close();
-                
-
-                ftps.logout();
-            }
-            catch (FTPConnectionClosedException e)
-            {
-                error = true;
-                System.err.println("Server closed connection.");
-                e.printStackTrace();
-            }
-            catch (IOException e)
-            {
-                error = true;
-                e.printStackTrace();
-            }
-            finally
-            {
-                if (ftps.isConnected())
-                {
-                    try
-                    {
-                        ftps.disconnect();
-                    }
-                    catch (IOException f)
-                    {
-                        // do nothing
-                    }
-                }
-            }
-
-            System.exit(error ? 1 : 0);
-            
-        } // end main
+            in.close();
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return str;
+    }
+    
         
 }
 

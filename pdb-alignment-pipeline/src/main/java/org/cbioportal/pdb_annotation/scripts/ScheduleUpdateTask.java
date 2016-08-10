@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Cron work on Weekly Update
- * @author wangjue
+ * @author Juexin Wang
  *
  */
 public class ScheduleUpdateTask extends TimerTask {

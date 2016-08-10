@@ -66,7 +66,7 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.ensemblFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
-                HashMap pdbHm = new HashMap();
+                HashMap<String,String> pdbHm = new HashMap<String,String>();
                 for (int i = 0; i < this.ensemblFileCount; i++) {
                     parseblastresultsSmallMem(i, pdbHm);
                 }
@@ -89,7 +89,7 @@ public class PdbScriptsPipelineMakeSQL {
             log.info("[BLAST] Read blast results from xml file...");
             File blastresults = new File(this.workspace + this.db.resultfileName);
             File outputfile = new File(this.workspace + this.sqlInsertFile);
-            HashMap pdbHm = new HashMap();
+            HashMap<String,String> pdbHm = new HashMap<String,String>();
             int count = parsexml(blastresults, outputfile, pdbHm);
             this.matches = count;
             log.info("[BLAST] Total Input Queries = " + this.matches);
@@ -109,7 +109,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param pdbHm
      * @return
      */
-    public boolean parseblastresultsSmallMem(int filecount, HashMap pdbHm) {
+    public boolean parseblastresultsSmallMem(int filecount, HashMap<String,String> pdbHm) {
         try {
             log.info("[BLAST] Read blast results from " + filecount + "th xml file...");
             File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
@@ -138,7 +138,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param pdbHm
      * @return
      */
-    public int parsexml(File blastresults, File outputfile, HashMap pdbHm) {
+    public int parsexml(File blastresults, File outputfile, HashMap<String,String> pdbHm) {
         int count = 0;
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
@@ -212,14 +212,13 @@ public class PdbScriptsPipelineMakeSQL {
         try {
             log.info("[SHELL] Start Write insert.sql File...");
             File file = new File(currentDir + this.sqlInsertFile);
-            FileUtils fu = new FileUtils();
             // HashMap pdbHm is designed to avoid duplication of
             // primary keys in SQL
             // if we already have the entry, do nothing; otherwise generate the
             // SQL and add the keys into the HashMap
-            HashMap pdbHm = new HashMap();
+            HashMap<String,String> pdbHm = new HashMap<String,String>();
             List<String> outputlist =makeSQLText(results, pdbHm);
-            fu.writeLines(file, outputlist, "");
+            FileUtils.writeLines(file, outputlist, "");
             log.info("[SHELL] Write insert.sql Done");
         } catch (Exception ex) {
         	log.error(ex.getMessage());
@@ -238,7 +237,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputfile
      * @return
      */
-    public boolean genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap pdbHm,
+    public boolean genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm,
             int count, File outputfile) {
         try {
             log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");   
@@ -264,7 +263,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param pdbHm
      * @return
      */
-    List<String> makeSQLText(List<BlastResult> results, HashMap pdbHm) {
+    List<String> makeSQLText(List<BlastResult> results, HashMap<String,String> pdbHm) {
         List<String> outputlist = new ArrayList<String>();
         for (BlastResult br : results) {
             if (pdbHm.containsKey(br.getSseqid())) {
@@ -352,7 +351,7 @@ public class PdbScriptsPipelineMakeSQL {
         try {
             log.info("[Shell] Generating delete SQL");
             File outfile = new File(currentDir + this.sqlDeleteFile);
-            List<String> outputlist = new ArrayList();
+            List<String> outputlist = new ArrayList<String>();
             for (String pdbName : list) {
                 String str = "DELETE pdb_ensembl_alignment FROM pdb_ensembl_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_ensembl_alignment.pdb_no WHERE  pdb_ensembl_alignment.pdb_id='" + pdbName + "';\n";
                 outputlist.add(str);
