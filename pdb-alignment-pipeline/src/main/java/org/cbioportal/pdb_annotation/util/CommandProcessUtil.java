@@ -144,7 +144,7 @@ public class CommandProcessUtil {
                 	pb = new ProcessBuilder("rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ " + paralist.get(0));
                 	break;
                 case "rm":
-                	log.info("[SHELL] Running rm command and clean whole cloned PDB at" + paralist.get(0) + "...");
+                	log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
                 	pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
                 	break;
                 default:

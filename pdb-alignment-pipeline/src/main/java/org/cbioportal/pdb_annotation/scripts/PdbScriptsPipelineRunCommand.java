@@ -168,6 +168,7 @@ public class PdbScriptsPipelineRunCommand {
         
         // Step 10: Clean up
         if(ReadConfig.saveSpaceTag.equals("true")){
+        	log.info("[PIPELINE] Start cleaning up in filesystem");
         	paralist = new ArrayList<String>();
             paralist.add(ReadConfig.workspace+ReadConfig.sqlEnsemblSQL);
     		cu.runCommand("gzip", paralist);
@@ -223,23 +224,11 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("makeblastdb", paralist);
         
         // Step 4: blastp ensembl genes against pdb
-        /*
-        if (this.ensemblFileCount != -1) {
-            for (int i = 0; i < this.ensemblFileCount; i++) {
-            	paralist = new ArrayList<String>();
-            	paralist.add(currentDir + ReadConfig.ensemblFastaFile + "." + new Integer(i).toString());
-            	paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
-            	paralist.add(currentDir);
-                cu.runCommand("blastp", paralist);
-            }
-        } else {
-        */
-        	paralist = new ArrayList<String>();
-        	paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile);
-        	paralist.add(currentDir + this.db.resultfileName);
-        	paralist.add(currentDir + this.db.dbName);
-            cu.runCommand("blastp", paralist);           
-        
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile);
+        paralist.add(currentDir + this.db.resultfileName);
+        paralist.add(currentDir + this.db.dbName);
+        cu.runCommand("blastp", paralist);                  
         
         // Step 5: Insert delete SQL of obsolete and modified alignments
         parseprocess.generateDeleteSql(currentDir, listOld);       
@@ -255,6 +244,7 @@ public class PdbScriptsPipelineRunCommand {
         
         // Step 7: Clean up
         if(ReadConfig.saveSpaceTag.equals("true")){
+        	log.info("[PIPELINE] Start cleaning up in filesystem");
         	paralist = new ArrayList<String>();
             paralist.add(currentDir+ReadConfig.sqlInsertFile);
     		cu.runCommand("gzip", paralist);

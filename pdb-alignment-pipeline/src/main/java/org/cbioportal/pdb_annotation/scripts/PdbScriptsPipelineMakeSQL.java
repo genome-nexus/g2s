@@ -348,7 +348,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void generateDeleteSql(String currentDir, List<String> list) {
         try {
-            log.info("[SHELL] Generating delete SQL");
+            log.info("[PIPELINE] Generating delete SQL statements");
             File outfile = new File(currentDir + this.sqlDeleteFile);
             List<String> outputlist = new ArrayList<String>();
             //Add transaction

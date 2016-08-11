@@ -186,7 +186,7 @@ public class PdbScriptsPipelinePreprocessing {
         List<String> listOld = new ArrayList<String>();
         FTPClientUtil fcu = new FTPClientUtil();
         try {
-            log.info("[SHELL] Weekly Update: Create deleted list");
+            log.info("[PIPELINE] Weekly Update: Create deleted list");
             FileUtils.forceMkdir(new File(currentDir));
             String addFileName = currentDir + updateTxt;
             File addFastaFile = new File(addFileName);
