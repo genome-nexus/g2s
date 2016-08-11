@@ -273,7 +273,6 @@ public class PdbScriptsPipelineMakeSQL {
             outputlist.add(makeTable_pdb_ensembl_insert(br));
         }
         outputlist.add("commit;");
-        log.info("[SHELL] Totally inserted " + results.size() + " new alignments");
         return outputlist;
     }
 
@@ -304,7 +303,7 @@ public class PdbScriptsPipelineMakeSQL {
                 }
             }
             this.matches = count - 1;
-            log.info("[BLAST] Total Input Queries = " + this.matches);
+            log.info("[BLAST] Total Insert " + this.matches + " alignments");
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
             log.error(ex.getMessage());

@@ -135,7 +135,7 @@ public class PdbScriptsPipelineRunCommand {
         	paralist = new ArrayList<String>();
         	paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile);
         	paralist.add(ReadConfig.workspace + this.db.resultfileName);
-        	paralist.add(ReadConfig.workspace);
+        	paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);           
         }
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
@@ -223,6 +223,7 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("makeblastdb", paralist);
         
         // Step 4: blastp ensembl genes against pdb
+        /*
         if (this.ensemblFileCount != -1) {
             for (int i = 0; i < this.ensemblFileCount; i++) {
             	paralist = new ArrayList<String>();
@@ -232,12 +233,13 @@ public class PdbScriptsPipelineRunCommand {
                 cu.runCommand("blastp", paralist);
             }
         } else {
+        */
         	paralist = new ArrayList<String>();
-        	paralist.add(currentDir + ReadConfig.ensemblFastaFile);
+        	paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile);
         	paralist.add(currentDir + this.db.resultfileName);
-        	paralist.add(currentDir);
+        	paralist.add(currentDir + this.db.dbName);
             cu.runCommand("blastp", paralist);           
-        }
+        
         
         // Step 5: Insert delete SQL of obsolete and modified alignments
         parseprocess.generateDeleteSql(currentDir, listOld);       
