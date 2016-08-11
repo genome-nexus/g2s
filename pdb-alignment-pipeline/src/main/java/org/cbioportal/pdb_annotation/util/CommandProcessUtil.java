@@ -145,7 +145,7 @@ public class CommandProcessUtil {
                 	break;
                 case "rm":
                 	log.info("[SHELL] Running rm command and clean whole cloned PDB at" + paralist.get(0) + "...");
-                	pb = new ProcessBuilder("rm -fr " + paralist.get(0));
+                	pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
                 	break;
                 default:
                     log.error("[SHELL] Command " + commandName + " does not support now");
@@ -269,6 +269,16 @@ public class CommandProcessUtil {
         list.add("--password=" + ReadConfig.password);
         list.add(ReadConfig.dbName);
         return list;
+    }
+    
+    
+    private List<String> makdeRmCommand(String inFilename){
+    	List<String> list = new ArrayList<String>();
+        list.add("rm");
+        list.add("-fr");
+        list.add(inFilename);
+        return list;
+    	
     }
     
     

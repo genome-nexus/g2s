@@ -118,7 +118,7 @@ public class PdbScriptsPipelinePreprocessing {
         // count of all generated small files
         int filecount = 0;
         try {
-            System.out.println("[Preprocessing] Preprocessing Ensembl sequences... ");
+            log.info("[Preprocessing] Preprocessing Ensembl sequences... ");
             List<String> list = new ArrayList<String>();
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infilename));
             Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
