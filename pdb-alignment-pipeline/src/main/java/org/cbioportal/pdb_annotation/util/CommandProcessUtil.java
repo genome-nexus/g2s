@@ -21,10 +21,10 @@ public class CommandProcessUtil {
      * 
      * @param process
      */
-    private void outputProcessError(Process process, int shellReturnCode){
+    private void outputProcessError(Process process, int shellReturnCode, String commandName){
     	try{
     		if(shellReturnCode != 0){
-    			log.error("[Process] Process Error in " + process.toString());
+    			log.error("[Process] Process Error in " + commandName + ":" + process.toString());
     			String errorInfo = "";
     			InputStream error = process.getErrorStream();
         		for (int i = 0; i < error.available(); i++) {
@@ -57,6 +57,11 @@ public class CommandProcessUtil {
     			checkFlag = false;
     		}
     		break;
+    	case "gzip":
+    		if( paralist.size()!=1 ){
+    			checkFlag = false;
+    		}
+    		break;
     	case "makeblastdb":
     		if( paralist.size()!=2 ){
     			checkFlag = false;
@@ -68,6 +73,16 @@ public class CommandProcessUtil {
     		}
     		break;
     	case "mysql":
+    		if( paralist.size()!=1 ){
+    			checkFlag = false;
+    		}
+    		break;
+    	case "rsync":
+    		if( paralist.size()!=1 ){
+    			checkFlag = false;
+    		}
+    		break;
+    	case "rm":
     		if( paralist.size()!=1 ){
     			checkFlag = false;
     		}
@@ -107,6 +122,10 @@ public class CommandProcessUtil {
                 	pb = new ProcessBuilder(makeGunzipCommand(paralist.get(0)));
                     pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));            	
                 	break;
+                case "gzip":
+                	log.info("[SHELL] Gzip file from " + paralist.get(0) + " ...");
+                	pb = new ProcessBuilder(makeGzipCommand(paralist.get(0)));
+                	break;
                 case "makeblastdb":
                 	log.info("[BLAST] Running makeblastdb command...");
                     pb = new ProcessBuilder(makeBlastDBCommand(paralist.get(0), paralist.get(1)));              	
@@ -120,6 +139,14 @@ public class CommandProcessUtil {
                 	pb = new ProcessBuilder(makeDBCommand());
                     pb.redirectInput(ProcessBuilder.Redirect.from(new File(paralist.get(0))));
                 	break;
+                case "rsync":
+                	log.info("[SHELL] Running rsync command and clone whole PDB to" + paralist.get(0) + "...");
+                	pb = new ProcessBuilder("rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ " + paralist.get(0));
+                	break;
+                case "rm":
+                	log.info("[SHELL] Running rm command and clean whole cloned PDB at" + paralist.get(0) + "...");
+                	pb = new ProcessBuilder("rm -fr " + paralist.get(0));
+                	break;
                 default:
                     log.error("[SHELL] Command " + commandName + " does not support now");
                     break;
@@ -127,7 +154,7 @@ public class CommandProcessUtil {
                 Process pc = pb.start();
                 pc.waitFor();
                 shellReturnCode = pc.exitValue();
-                outputProcessError(pc, shellReturnCode);
+                outputProcessError(pc, shellReturnCode, commandName);
                 log.info("[SHELL] Command " + commandName + " completed");
             } catch (Exception ex) {
                 log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
@@ -153,8 +180,6 @@ public class CommandProcessUtil {
         list.add(inFilename);
         return list;
     }
-    
-
 
     /**
      * generate gunzip command
@@ -167,6 +192,20 @@ public class CommandProcessUtil {
         list.add("gunzip");
         list.add("-c");
         list.add("-d");
+        list.add(inFilename);
+        return list;
+    }
+    
+    
+    /**
+     * generate gzip command
+     * 
+     * @param inFilename
+     * @return
+     */
+    private List<String> makeGzipCommand(String inFilename){
+    	List<String> list = new ArrayList<String>();
+        list.add("gzip");
         list.add(inFilename);
         return list;
     }

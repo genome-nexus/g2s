@@ -1,6 +1,8 @@
 package org.cbioportal.pdb_annotation.util;
 
 import java.util.*;
+
+import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineStarter;
 
 /**
@@ -11,6 +13,7 @@ import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineStarter;
  *
  */
 public class ReadConfig {
+	static final Logger log = Logger.getLogger(ReadConfig.class);
 	
 	private static ReadConfig rcObj;
 	
@@ -54,8 +57,31 @@ public class ReadConfig {
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
     public static String usePdbSeqLocalTag;
+    public static String saveSpaceTag;
+    
+    public static boolean isPositiveInteger(String str)
+    {
+      return str.matches("\\d+");  //match a number with positive integer.
+    }
+    
+    public static boolean isNumeric(String str)
+    {
+      return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+    
+    public static boolean isFolder(String str)
+    {
+      return str.matches("/.+/");  //match a folder start with / and end with /
+    }
+    
+    //TODO:
+    //Check value of application.properties
+    public void checkValue(String inStr){
+    	
+    }
     
     private ReadConfig(){
+    	
     	try{
     	Properties prop = new Properties();   	
     	prop.load(PdbScriptsPipelineStarter.class.getClassLoader().getResourceAsStream("application.properties"));
@@ -101,7 +127,12 @@ public class ReadConfig {
     	ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService");
     	ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet");
     	ReadConfig.usePdbSeqLocalTag = prop.getProperty("usePdbSeqLocalTag");
+    	ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag");
+    	
+    	
+    	
     	}catch(Exception ex){
+    		log.error("[CONFIG] Error in Reading application.properties");
     		ex.printStackTrace();
     	}
     }
@@ -279,6 +310,10 @@ public class ReadConfig {
 	public static String getUsePdbSeqLocalTag() {
 		return usePdbSeqLocalTag;
 	}
+	
+	public static String getSaveSpaceTag() {
+		return saveSpaceTag;
+	}
 
 	/**
 	 * Set Methods
@@ -445,6 +480,10 @@ public class ReadConfig {
 	
 	public static void setUsePdbSeqLocalTag(String usePdbSeqLocalTag) {
 		ReadConfig.usePdbSeqLocalTag = usePdbSeqLocalTag;
+	}
+	
+	public static void setSaveSpaceTag(String saveSpaceTag) {
+		ReadConfig.saveSpaceTag = saveSpaceTag;
 	}
 
 }

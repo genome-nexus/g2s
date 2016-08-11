@@ -20,9 +20,9 @@ import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
 
 public class PdbScriptsPipelineRunCommand {
 	final static Logger log = Logger.getLogger(PdbScriptsPipelineRunCommand.class);
-    BlastDataBase db;
-    int matches;
-    int ensemblFileCount;
+    private BlastDataBase db;
+    private int matches;
+    private int ensemblFileCount;
 
     /**
      * Constructor
@@ -31,12 +31,49 @@ public class PdbScriptsPipelineRunCommand {
         this.matches = 0;
         this.ensemblFileCount = -1;
     }
+    
+    
 
-    /**
+    public BlastDataBase getDb() {
+		return db;
+	}
+
+
+
+	public void setDb(BlastDataBase db) {
+		this.db = db;
+	}
+
+
+
+	public int getMatches() {
+		return matches;
+	}
+
+
+
+	public void setMatches(int matches) {
+		this.matches = matches;
+	}
+
+
+
+	public int getEnsemblFileCount() {
+		return ensemblFileCount;
+	}
+
+
+
+	public void setEnsemblFileCount(int ensemblFileCount) {
+		this.ensemblFileCount = ensemblFileCount;
+	}
+
+
+
+	/**
      * main steps of init pipeline
      */
-    public void runInit() { 
-    	
+    public void runInit() {   	
     	
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);              
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing(); 
@@ -91,7 +128,7 @@ public class PdbScriptsPipelineRunCommand {
             	paralist = new ArrayList<String>();
             	paralist.add(ReadConfig.workspace + ReadConfig.ensemblFastaFile + "." + new Integer(i).toString());
             	paralist.add(ReadConfig.workspace + this.db.resultfileName + "." + new Integer(i).toString());
-            	paralist.add(ReadConfig.workspace);
+            	paralist.add(ReadConfig.workspace + this.db.dbName);
                 cu.runCommand("blastp", paralist);
             }
         } else {
@@ -128,6 +165,38 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile); 
         	cu.runCommand("mysql", paralist);
         }
+        
+        // Step 10: Clean up
+        if(ReadConfig.saveSpaceTag.equals("true")){
+        	paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace+ReadConfig.sqlEnsemblSQL);
+    		cu.runCommand("gzip", paralist);
+    		
+    		if (this.ensemblFileCount != -1) {
+                for (int i = 0; i < this.ensemblFileCount; i++) {
+                	paralist = new ArrayList<String>();
+                    paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile + "." + new Integer(i).toString()); 
+                	cu.runCommand("gzip", paralist);
+                	paralist = new ArrayList<String>();
+                	paralist.add(ReadConfig.workspace + this.db.resultfileName + "." + new Integer(i).toString());
+                	cu.runCommand("rm", paralist);
+                }
+            } else {
+            	paralist = new ArrayList<String>();
+                paralist.add(ReadConfig.workspace + ReadConfig.sqlInsertFile); 
+            	cu.runCommand("gzip", paralist);
+            	paralist = new ArrayList<String>();
+            	paralist.add(ReadConfig.workspace + this.db.resultfileName );
+            	cu.runCommand("rm", paralist);
+            }
+    		
+    		/*
+    		paralist = new ArrayList<String>();
+        	paralist.add(ReadConfig.pdbRepo);
+        	cu.runCommand("rm", paralist);
+    		*/
+        }
+        
     }
 
     /**
@@ -139,7 +208,7 @@ public class PdbScriptsPipelineRunCommand {
     	 PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
     	 PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
     	
-    	// Step 1: Set dateVersion of updating and create a folder as MMDDYYYY under the main folder
+    	// Step 1: Set dateVersion of updating and create a folder as YYYYMMDD under the main folder
         String dateVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());        
         String currentDir = ReadConfig.workspace + dateVersion + "/";
         
@@ -153,7 +222,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + this.db.dbName);       
         cu.runCommand("makeblastdb", paralist);
         
-        // Step 4: blastp ensembl genes against pdb (Warning: This step takes time)
+        // Step 4: blastp ensembl genes against pdb
         if (this.ensemblFileCount != -1) {
             for (int i = 0; i < this.ensemblFileCount; i++) {
             	paralist = new ArrayList<String>();
@@ -181,7 +250,22 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.sqlInsertFile);      
         cu.runCommand("mysql", paralist);
- 
         
+        // Step 7: Clean up
+        if(ReadConfig.saveSpaceTag.equals("true")){
+        	paralist = new ArrayList<String>();
+            paralist.add(currentDir+ReadConfig.sqlInsertFile);
+    		cu.runCommand("gzip", paralist);
+    		    		
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.sqlDeleteFile); 
+            cu.runCommand("gzip", paralist);
+            	
+            paralist = new ArrayList<String>();	
+            paralist.add(currentDir + this.db.resultfileName );
+            cu.runCommand("rm", paralist);
+    		
+        }
+ 
     }
 }

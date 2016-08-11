@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
+import org.cbioportal.pdb_annotation.util.CommandProcessUtil;
 import org.cbioportal.pdb_annotation.util.FTPClientUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 
@@ -24,14 +25,12 @@ import org.cbioportal.pdb_annotation.util.ReadConfig;
 
 public class PdbScriptsPipelinePreprocessing {
 	final static Logger log = Logger.getLogger(PdbScriptsPipelinePreprocessing.class);
-    public String ensemblInputInterval;
-    public String ensemblSQLFile;
     public int ensemblFileCount;
+    public int ensemblInputInterval;
 
     public PdbScriptsPipelinePreprocessing() {
+    	this.ensemblInputInterval = Integer.parseInt(ReadConfig.ensemblInputInterval);
         this.ensemblFileCount = -1;
-        this.ensemblInputInterval = ReadConfig.ensemblInputInterval;
-        this.ensemblSQLFile = ReadConfig.workspace+ReadConfig.sqlEnsemblSQL;
     }
 
     public int getEnsembl_file_count() {
@@ -53,7 +52,7 @@ public class PdbScriptsPipelinePreprocessing {
      *            input for makeblastdb
      * @return Success/Failure
      */
-    public boolean preprocessPDBsequences(String infileName, String outfileName) {
+    public void preprocessPDBsequences(String infileName, String outfileName) {
         try {
             log.info("[Preprocessing] Preprocessing PDB sequences... ");
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
@@ -73,7 +72,6 @@ public class PdbScriptsPipelinePreprocessing {
             log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
     }
 
     /**
@@ -82,7 +80,7 @@ public class PdbScriptsPipelinePreprocessing {
      * @param outfileName
      * @return
      */
-    public boolean preprocessPDBsequencesUpdate(String infileName, String outfileName) {
+    public void preprocessPDBsequencesUpdate(String infileName, String outfileName) {
         try {
             log.info("[Preprocessing] Preprocessing PDB sequences... ");
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
@@ -101,7 +99,6 @@ public class PdbScriptsPipelinePreprocessing {
             log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
     }
 
     /**
@@ -126,18 +123,19 @@ public class PdbScriptsPipelinePreprocessing {
             LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infilename));
             Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
             int count = 0; // line count of the original FASTA file
-            int ensembl_input_interval_int = Integer.parseInt(this.ensemblInputInterval);
             for (Entry<String, ProteinSequence> entry : a.entrySet()) {
                 c.add(entry.getValue());
                 list.add(entry.getValue().getOriginalHeader());
-                if (count % ensembl_input_interval_int == ensembl_input_interval_int - 1) {
+                if (count % this.ensemblInputInterval == this.ensemblInputInterval - 1) {
                     FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount).toString()), c);
                     c.clear();
                     filecount++;
                 }
                 count++;
             }
-            FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()), c);
+            if(c.size()!=0){
+            	FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()), c);
+            }           
             setEnsembl_file_count(filecount);
             generateEnsemblSQLTmpFile(list);
         } catch (Exception ex) {
@@ -155,15 +153,20 @@ public class PdbScriptsPipelinePreprocessing {
      * @param list
      */
     public void generateEnsemblSQLTmpFile(List<String> list) {
-        List<String> outlist = new ArrayList<String>();
+        List<String> outputlist = new ArrayList<String>();
         try {
+        	//Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
             for(String str:list) {
                 String[] strarrayQ = str.split("\\s+");
-                outlist.add("INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
+                outputlist.add("INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
                         + strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
                         + "');");
             }
-            FileUtils.writeLines(new File(this.ensemblSQLFile), outlist);
+            outputlist.add("commit;");
+            // Write File named as sqlEnsemblSQL in application.properties
+            FileUtils.writeLines(new File(ReadConfig.workspace+ReadConfig.sqlEnsemblSQL), outputlist);
         } catch(Exception ex) {
         	log.error(ex.getMessage());
             ex.printStackTrace();
@@ -201,8 +204,11 @@ public class PdbScriptsPipelinePreprocessing {
             }
             FileUtils.writeStringToFile(addFastaFile, listNewCont);
         } catch(Exception ex) {
+        	log.error("[SHELL] Error in fetching weekly updates: "+ex.getMessage());
             ex.printStackTrace();
         }
         return listOld;
     }
+    
+    
 }

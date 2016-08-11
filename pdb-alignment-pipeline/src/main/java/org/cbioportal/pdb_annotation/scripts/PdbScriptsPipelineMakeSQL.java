@@ -39,9 +39,9 @@ public class PdbScriptsPipelineMakeSQL {
     private String sqlEnsemblSQL;
     
     PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app) {
-        this.db = app.db;
-        this.matches=app.matches;
-        this.ensemblFileCount=app.ensemblFileCount;
+        this.db = app.getDb();
+        this.matches=app.getMatches();
+        this.ensemblFileCount=app.getEnsemblFileCount();
         this.workspace = ReadConfig.workspace;
         this.sqlInsertFile = ReadConfig.sqlInsertFile;
         this.sqlInsertOutputInterval = ReadConfig.sqlInsertOutputInterval;
@@ -58,7 +58,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param currentDir
      * @return
      */
-    public boolean parse2sql(boolean oneInputTag, String currentDir) {
+    public void parse2sql(boolean oneInputTag, String currentDir) {
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); //http.agent is needed to fetch dtd from some servers
         if (!oneInputTag) {      
@@ -76,7 +76,6 @@ public class PdbScriptsPipelineMakeSQL {
             List<BlastResult> outresults = parseblastresultsSingle(currentDir);
             generateSQLstatementsSingle(outresults,currentDir);
         }
-        return true;
     }
     
     /**
@@ -84,7 +83,7 @@ public class PdbScriptsPipelineMakeSQL {
      * 
      * @return Success/Failure
      */
-    public boolean parseblastresultsSmallMem() {
+    public void parseblastresultsSmallMem() {
         try {
             log.info("[BLAST] Read blast results from xml file...");
             File blastresults = new File(this.workspace + this.db.resultfileName);
@@ -92,13 +91,12 @@ public class PdbScriptsPipelineMakeSQL {
             HashMap<String,String> pdbHm = new HashMap<String,String>();
             int count = parsexml(blastresults, outputfile, pdbHm);
             this.matches = count;
-            log.info("[BLAST] Total Input Queries = " + this.matches);
+            log.info("[BLAST] Insert Statements of the file is : " + this.matches);
         } catch (Exception ex) {
         	log.error("[BLAST] Error Parsing BLAST Result");
         	log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
     }
 
     /**
@@ -109,7 +107,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param pdbHm
      * @return
      */
-    public boolean parseblastresultsSmallMem(int filecount, HashMap<String,String> pdbHm) {
+    public void parseblastresultsSmallMem(int filecount, HashMap<String,String> pdbHm) {
         try {
             log.info("[BLAST] Read blast results from " + filecount + "th xml file...");
             File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
@@ -122,13 +120,12 @@ public class PdbScriptsPipelineMakeSQL {
             }
             int count = parsexml(blastresults, outputfile, pdbHm);    
             this.matches = this.matches + count;
-            log.info("[BLAST] Input Queries after parsing " + filecount + "th xml : " + this.matches);
+            log.info("[BLAST] Insert statements after parsing " + filecount + "th xml : " + this.matches);
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
             log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
     }
     
     /**
@@ -208,7 +205,7 @@ public class PdbScriptsPipelineMakeSQL {
      *            List<BlastResult>
      * @return Success/Failure
      */
-    boolean generateSQLstatementsSingle(List<BlastResult> results, String currentDir) {
+    public void generateSQLstatementsSingle(List<BlastResult> results, String currentDir) {
         try {
             log.info("[SHELL] Start Write insert.sql File...");
             File file = new File(currentDir + this.sqlInsertFile);
@@ -224,7 +221,6 @@ public class PdbScriptsPipelineMakeSQL {
         	log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
     }
 
     /**
@@ -237,7 +233,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @param outputfile
      * @return
      */
-    public boolean genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm,
+    public void genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm,
             int count, File outputfile) {
         try {
             log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");   
@@ -254,7 +250,6 @@ public class PdbScriptsPipelineMakeSQL {
         	log.error(ex.getMessage());
             ex.printStackTrace();
         }
-        return true;
     }
     
     /**
@@ -265,6 +260,9 @@ public class PdbScriptsPipelineMakeSQL {
      */
     List<String> makeSQLText(List<BlastResult> results, HashMap<String,String> pdbHm) {
         List<String> outputlist = new ArrayList<String>();
+        //Add transaction
+        outputlist.add("SET autocommit = 0;");
+        outputlist.add("start transaction;");
         for (BlastResult br : results) {
             if (pdbHm.containsKey(br.getSseqid())) {
                 // do nothing
@@ -274,6 +272,8 @@ public class PdbScriptsPipelineMakeSQL {
             }
             outputlist.add(makeTable_pdb_ensembl_insert(br));
         }
+        outputlist.add("commit;");
+        log.info("[SHELL] Totally inserted " + results.size() + " new alignments");
         return outputlist;
     }
 
@@ -349,16 +349,21 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public void generateDeleteSql(String currentDir, List<String> list) {
         try {
-            log.info("[Shell] Generating delete SQL");
+            log.info("[SHELL] Generating delete SQL");
             File outfile = new File(currentDir + this.sqlDeleteFile);
             List<String> outputlist = new ArrayList<String>();
+            //Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
             for (String pdbName : list) {
                 String str = "DELETE pdb_ensembl_alignment FROM pdb_ensembl_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_ensembl_alignment.pdb_no WHERE  pdb_ensembl_alignment.pdb_id='" + pdbName + "';\n";
                 outputlist.add(str);
                 String str1 = "DELETE FROM pdb_entry WHERE PDB_ID='" + pdbName + "';\n";
                 outputlist.add(str1);
             }
+            outputlist.add("commit;");
             FileUtils.writeLines(outfile, outputlist, "");
+            log.info("[SHELL] Totally delete " + list.size() + " obsolete and modified alignments");
         } catch(Exception ex) {
         	log.error(ex.getMessage());
             ex.printStackTrace();

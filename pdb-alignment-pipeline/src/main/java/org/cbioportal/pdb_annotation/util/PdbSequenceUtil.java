@@ -27,42 +27,6 @@ import org.biojava.nbio.structure.StructureIO;
  */
 public class PdbSequenceUtil {
 	final static Logger log = Logger.getLogger(PdbSequenceUtil.class);
-	
-	public int runCommand(String command){
-		int shellReturnCode = 0;
-		try{
-			Runtime rt = Runtime.getRuntime();
-			//String command = "rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ "+dir;
-			Process pr = rt.exec(command);
-			pr.waitFor();
-			shellReturnCode = pr.exitValue();
-			outputProcessError(pr,shellReturnCode);
-		}catch(Exception ex){
-			log.error(ex.getMessage());
-			ex.printStackTrace();
-		}		
-		return shellReturnCode;
-	}
-	
-	/**
-     * output process Errors from process
-     * 
-     * @param process
-     */
-    private void outputProcessError(Process process, int shellReturnCode){
-    	try{
-    		if(shellReturnCode != 0){
-    			InputStream error = process.getErrorStream();
-        		for (int i = 0; i < error.available(); i++) {
-        			log.error("[Process] Error: "+error.read());
-        		}			
-    		}   		
-    	}
-        catch(Exception ex){
-        	ex.printStackTrace();
-        }
-    	
-    }
 
 	/**
 	 * read PDB file and generate the results to a String
@@ -109,7 +73,11 @@ public class PdbSequenceUtil {
 			
 			// clone the whole PDB locally
 			log.info("[PDB] Cloning the local copy of all the PDB ... ");
-			runCommand( "rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ "+dirname);			
+			CommandProcessUtil cu = new CommandProcessUtil();
+			ArrayList<String> paralist = new ArrayList<String>();
+			paralist.add(dirname);
+			cu.runCommand("rsync", paralist);
+			//runCommand( "rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ "+dirname);			
 			log.info("[PDB] The cloing is done");
 			File dir = new File(dirname);
 			log.info("[PDB] Parsing all PDB files in " + dir.getCanonicalPath() + " and output PDB sequences to " + outfilename + "...");
@@ -127,7 +95,9 @@ public class PdbSequenceUtil {
 			FileUtils.writeLines(new File(outfilename), outlist, "");
 			log.info("[PDB] PDB sequences generation done");
 			log.info("[PDB] Deleting the local copy of whole PDB ... ");
-			runCommand( "rm -fr "+dirname);			
+			paralist = new ArrayList<String>();
+			paralist.add(dirname);
+			cu.runCommand("rm", paralist);		
 			log.info("[PDB] The local copy of whole PDB has deleted");
 		} catch (Exception ex) {
 			ex.printStackTrace();
