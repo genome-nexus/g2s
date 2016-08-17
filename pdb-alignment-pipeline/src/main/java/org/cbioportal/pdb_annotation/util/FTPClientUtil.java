@@ -61,7 +61,7 @@ public class FTPClientUtil
         }
         return str;
     }
-    
-        
+
+
 }
 

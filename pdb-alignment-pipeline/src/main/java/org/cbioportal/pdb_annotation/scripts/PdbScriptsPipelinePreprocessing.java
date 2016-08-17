@@ -24,12 +24,12 @@ import org.cbioportal.pdb_annotation.util.ReadConfig;
  */
 
 public class PdbScriptsPipelinePreprocessing {
-	final static Logger log = Logger.getLogger(PdbScriptsPipelinePreprocessing.class);
+    final static Logger log = Logger.getLogger(PdbScriptsPipelinePreprocessing.class);
     public int ensemblFileCount;
     public int ensemblInputInterval;
 
     public PdbScriptsPipelinePreprocessing() {
-    	this.ensemblInputInterval = Integer.parseInt(ReadConfig.ensemblInputInterval);
+        this.ensemblInputInterval = Integer.parseInt(ReadConfig.ensemblInputInterval);
         this.ensemblFileCount = -1;
     }
 
@@ -50,7 +50,6 @@ public class PdbScriptsPipelinePreprocessing {
      *            downloaded gunzip file
      * @param outfileName:
      *            input for makeblastdb
-     * @return Success/Failure
      */
     public void preprocessPDBsequences(String infileName, String outfileName) {
         try {
@@ -76,9 +75,9 @@ public class PdbScriptsPipelinePreprocessing {
 
     /**
      * preprocess PDB sequence update
+     * 
      * @param infileName
      * @param outfileName
-     * @return
      */
     public void preprocessPDBsequencesUpdate(String infileName, String outfileName) {
         try {
@@ -134,7 +133,7 @@ public class PdbScriptsPipelinePreprocessing {
                 count++;
             }
             if(c.size()!=0){
-            	FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()), c);
+                FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()), c);
             }           
             setEnsembl_file_count(filecount);
             generateEnsemblSQLTmpFile(list);
@@ -155,25 +154,25 @@ public class PdbScriptsPipelinePreprocessing {
     public void generateEnsemblSQLTmpFile(List<String> list) {
         List<String> outputlist = new ArrayList<String>();
         try {
-        	//Add transaction
+            //Add transaction
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
             for(String str:list) {
                 String[] strarrayQ = str.split("\\s+");
                 outputlist.add("INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
                         + strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
-                        + "');");
+                                + "');");
             }
             outputlist.add("commit;");
             // Write File named as sqlEnsemblSQL in application.properties
             FileUtils.writeLines(new File(ReadConfig.workspace+ReadConfig.sqlEnsemblSQL), outputlist);
         } catch(Exception ex) {
-        	log.error(ex.getMessage());
+            log.error(ex.getMessage());
             ex.printStackTrace();
         }
     }
-    
-    
+
+
     /**
      * prepare weekly updated PDB files
      *
@@ -204,11 +203,11 @@ public class PdbScriptsPipelinePreprocessing {
             }
             FileUtils.writeStringToFile(addFastaFile, listNewCont);
         } catch(Exception ex) {
-        	log.error("[SHELL] Error in fetching weekly updates: "+ex.getMessage());
+            log.error("[SHELL] Error in fetching weekly updates: "+ex.getMessage());
             ex.printStackTrace();
         }
         return listOld;
     }
-    
-    
+
+
 }

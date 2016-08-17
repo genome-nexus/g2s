@@ -16,8 +16,8 @@ import org.apache.log4j.Logger;
  *
  */
 public class PdbScriptsPipelineStarter {
-	static final Logger log = Logger.getLogger(PdbScriptsPipelineStarter.class);
-	
+    static final Logger log = Logger.getLogger(PdbScriptsPipelineStarter.class);
+
     public static final String INITIALIZE_DATABASE_COMMAND = "init";
     public static final String WEEKLY_UPDATE_COMMAND = "updateweekly";
     public static final String IMMEDIATE_UPDATE_COMMAND = "update";
@@ -27,9 +27,9 @@ public class PdbScriptsPipelineStarter {
      * @param args
      */
     public static void main(String[] args) {    	
-    	log.info("[Pipeline] Start pipeline");   	
-    	
-    	// Check arguments
+        log.info("[Pipeline] Start pipeline");   	
+
+        // Check arguments
         if (args.length != 1) {
             System.out.println("Usage:\n"
                     + "Initiate the database"
@@ -45,19 +45,19 @@ public class PdbScriptsPipelineStarter {
         long startTime = System.currentTimeMillis();
         PdbScriptsPipelineRunCommand app = null;
         // Init Variable from application.properties
-    	ReadConfig rc = ReadConfig.getInstance();
-    	// Choose different entry point of the project: init/updateweekly/update
+        ReadConfig rc = ReadConfig.getInstance();
+        // Choose different entry point of the project: init/updateweekly/update
         switch (args[0].toLowerCase()) {
         case INITIALIZE_DATABASE_COMMAND:
             // initialize the database
-        	log.info("[Pipeline] Run Pipleline init");
+            log.info("[Pipeline] Run Pipleline init");
             app = new PdbScriptsPipelineRunCommand();
             app.runInit();
             break;
         case WEEKLY_UPDATE_COMMAND:       	
             // user could deploy and change the settings in application.properties
             // the program run continuously, scheduling updates on a weekly basis
-        	log.info("[Pipeline] Run Pipleline updateweekly by inner java schedule");
+            log.info("[Pipeline] Run Pipleline updateweekly by inner java schedule");
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.DAY_OF_WEEK, Integer.parseInt(ReadConfig.updateDAY));
             calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(ReadConfig.updateHOUR));
@@ -71,7 +71,7 @@ public class PdbScriptsPipelineStarter {
             break;
         case IMMEDIATE_UPDATE_COMMAND:
             // update immediately then exit; users should use CRON or other scheduling mechanisms to run the updates
-        	log.info("[Pipeline] Run Pipleline update immediately");
+            log.info("[Pipeline] Run Pipleline update immediately");
             app = new PdbScriptsPipelineRunCommand();
             app.runUpdatePDB();
             break;

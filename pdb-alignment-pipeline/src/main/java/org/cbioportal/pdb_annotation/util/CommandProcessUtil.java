@@ -14,30 +14,30 @@ import org.apache.log4j.Logger;
  *
  */
 public class CommandProcessUtil {
-	final static Logger log = Logger.getLogger(CommandProcessUtil.class);
-	
+    final static Logger log = Logger.getLogger(CommandProcessUtil.class);
+
     /**
      * output process Errors from process
      * 
      * @param process
      */
     private void outputProcessError(Process process, int shellReturnCode, String commandName){
-    	try{
-    		if(shellReturnCode != 0){
-    			log.error("[Process] Process Error in " + commandName + ":" + process.toString());
-    			String errorInfo = "";
-    			InputStream error = process.getErrorStream();
-        		for (int i = 0; i < error.available(); i++) {
-        			errorInfo = errorInfo + error.read() + "\t";
-        		}			
-        		log.error("[Process] Error: " + errorInfo);
-    		}   		
-    	}
+        try{
+            if(shellReturnCode != 0){
+                log.error("[Process] Process Error in " + commandName + ":" + process.toString());
+                String errorInfo = "";
+                InputStream error = process.getErrorStream();
+                for (int i = 0; i < error.available(); i++) {
+                    errorInfo = errorInfo + error.read() + "\t";
+                }			
+                log.error("[Process] Error: " + errorInfo);
+            }   		
+        }
         catch(Exception ex){
-        	ex.printStackTrace();
+            ex.printStackTrace();
         }   	
     }
-    
+
     /**
      * Check the parameters of the command
      * 
@@ -45,58 +45,58 @@ public class CommandProcessUtil {
      * @param paralist
      */
     private void checkCommandParam(String commandName, ArrayList<String> paralist){
-    	boolean checkFlag = true;
-    	switch(commandName){
-    	case "wget":
-    		if( paralist.size()!=2 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "gunzip":
-    		if( paralist.size()!=2 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "gzip":
-    		if( paralist.size()!=1 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "makeblastdb":
-    		if( paralist.size()!=2 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "blastp":
-    		if( paralist.size()!=3 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "mysql":
-    		if( paralist.size()!=1 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "rsync":
-    		if( paralist.size()!=1 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	case "rm":
-    		if( paralist.size()!=1 ){
-    			checkFlag = false;
-    		}
-    		break;
-    	default:
+        boolean checkFlag = true;
+        switch(commandName){
+        case "wget":
+            if( paralist.size()!=2 ){
+                checkFlag = false;
+            }
+            break;
+        case "gunzip":
+            if( paralist.size()!=2 ){
+                checkFlag = false;
+            }
+            break;
+        case "gzip":
+            if( paralist.size()!=1 ){
+                checkFlag = false;
+            }
+            break;
+        case "makeblastdb":
+            if( paralist.size()!=2 ){
+                checkFlag = false;
+            }
+            break;
+        case "blastp":
+            if( paralist.size()!=3 ){
+                checkFlag = false;
+            }
+            break;
+        case "mysql":
+            if( paralist.size()!=1 ){
+                checkFlag = false;
+            }
+            break;
+        case "rsync":
+            if( paralist.size()!=1 ){
+                checkFlag = false;
+            }
+            break;
+        case "rm":
+            if( paralist.size()!=1 ){
+                checkFlag = false;
+            }
+            break;
+        default:
             log.error("[SHELL] Command " + commandName + " does not support now");
             break;
-    	}
-    	if(!checkFlag){
-    		log.error("[SHELL] Fatal Error: Parameters for " + commandName + " does not make sense, please check. Now the program is exit");
-    		System.exit(0);
-    	}
+        }
+        if(!checkFlag){
+            log.error("[SHELL] Fatal Error: Parameters for " + commandName + " does not make sense, please check. Now the program is exit");
+            System.exit(0);
+        }
     }
-	
+
     /**
      * main entrance of running command in shell
      * 
@@ -105,66 +105,66 @@ public class CommandProcessUtil {
      * @return
      */
     public int runCommand(String commandName, ArrayList<String> paralist ) {
-    	int shellReturnCode=0;
-            try {
-            	checkCommandParam(commandName, paralist);
-                ProcessBuilder pb = null;              
-                switch (commandName){
-                case "wget":
-                	log.info("[SHELL] Download file " + paralist.get(0) + " to " + paralist.get(1) + " ...");
-                	pb = new ProcessBuilder(makeDownloadCommand(paralist.get(0), paralist.get(1)));
-                	break;
-                case "gunzip":
-                	if (!paralist.get(0).endsWith(".gz")) {
-                        return 0;
-                    }
-                	log.info("[SHELL] Gunzip file from " + paralist.get(0) + " to " + paralist.get(1) + " ...");
-                	pb = new ProcessBuilder(makeGunzipCommand(paralist.get(0)));
-                    pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));            	
-                	break;
-                case "gzip":
-                	log.info("[SHELL] Gzip file from " + paralist.get(0) + " ...");
-                	pb = new ProcessBuilder(makeGzipCommand(paralist.get(0)));
-                	break;
-                case "makeblastdb":
-                	log.info("[BLAST] Running makeblastdb command...");
-                    pb = new ProcessBuilder(makeBlastDBCommand(paralist.get(0), paralist.get(1)));              	
-                	break;
-                case "blastp":
-                	log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
-                	pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2))); 
-                	break;
-                case "mysql":
-                	log.info("[MYSQL] Running mysql command insert " + paralist.get(0) + "...");
-                	pb = new ProcessBuilder(makeDBCommand());
-                    pb.redirectInput(ProcessBuilder.Redirect.from(new File(paralist.get(0))));
-                	break;
-                case "rsync":
-                	log.info("[SHELL] Running rsync command and clone whole PDB to" + paralist.get(0) + "...");
-                	pb = new ProcessBuilder("rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ " + paralist.get(0));
-                	break;
-                case "rm":
-                	log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
-                	pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
-                	break;
-                default:
-                    log.error("[SHELL] Command " + commandName + " does not support now");
-                    break;
-                }              	              
-                Process pc = pb.start();
-                pc.waitFor();
-                shellReturnCode = pc.exitValue();
-                outputProcessError(pc, shellReturnCode, commandName);
-                log.info("[SHELL] Command " + commandName + " completed");
-            } catch (Exception ex) {
-                log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
-                log.error(ex.getMessage());
-                ex.printStackTrace();
-                System.exit(0);
-            }
+        int shellReturnCode=0;
+        try {
+            checkCommandParam(commandName, paralist);
+            ProcessBuilder pb = null;              
+            switch (commandName){
+            case "wget":
+                log.info("[SHELL] Download file " + paralist.get(0) + " to " + paralist.get(1) + " ...");
+                pb = new ProcessBuilder(makeDownloadCommand(paralist.get(0), paralist.get(1)));
+                break;
+            case "gunzip":
+                if (!paralist.get(0).endsWith(".gz")) {
+                    return 0;
+                }
+                log.info("[SHELL] Gunzip file from " + paralist.get(0) + " to " + paralist.get(1) + " ...");
+                pb = new ProcessBuilder(makeGunzipCommand(paralist.get(0)));
+                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));            	
+                break;
+            case "gzip":
+                log.info("[SHELL] Gzip file from " + paralist.get(0) + " ...");
+                pb = new ProcessBuilder(makeGzipCommand(paralist.get(0)));
+                break;
+            case "makeblastdb":
+                log.info("[BLAST] Running makeblastdb command...");
+                pb = new ProcessBuilder(makeBlastDBCommand(paralist.get(0), paralist.get(1)));              	
+                break;
+            case "blastp":
+                log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
+                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2))); 
+                break;
+            case "mysql":
+                log.info("[MYSQL] Running mysql command insert " + paralist.get(0) + "...");
+                pb = new ProcessBuilder(makeDBCommand());
+                pb.redirectInput(ProcessBuilder.Redirect.from(new File(paralist.get(0))));
+                break;
+            case "rsync":
+                log.info("[SHELL] Running rsync command and clone whole PDB to" + paralist.get(0) + "...");
+                pb = new ProcessBuilder("rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ " + paralist.get(0));
+                break;
+            case "rm":
+                log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
+                pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
+                break;
+            default:
+                log.error("[SHELL] Command " + commandName + " does not support now");
+                break;
+            }              	              
+            Process pc = pb.start();
+            pc.waitFor();
+            shellReturnCode = pc.exitValue();
+            outputProcessError(pc, shellReturnCode, commandName);
+            log.info("[SHELL] Command " + commandName + " completed");
+        } catch (Exception ex) {
+            log.error("[SHELL] Fatal Error: Could not Successfully process command, exit the program now");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(0);
+        }
         return shellReturnCode;
     }
-    
+
     /**
      * generate wget command
      *
@@ -195,8 +195,8 @@ public class CommandProcessUtil {
         list.add(inFilename);
         return list;
     }
-    
-    
+
+
     /**
      * generate gzip command
      * 
@@ -204,12 +204,12 @@ public class CommandProcessUtil {
      * @return
      */
     private List<String> makeGzipCommand(String inFilename){
-    	List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
         list.add("gzip");
         list.add(inFilename);
         return list;
     }
-    
+
     /**
      * Helper Function for building the makeblastdb command: makeblastdb -in
      * Homo_sapiens.GRCh38.pep.all.fa -dbtype prot -out pdb_seqres.db
@@ -228,7 +228,7 @@ public class CommandProcessUtil {
         list.add(outFilename);
         return list;
     }
-    
+
     /**
      * Helper Function for building the following command :
      * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue  1e-60 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
@@ -236,7 +236,7 @@ public class CommandProcessUtil {
      * @return A List of command arguments for the processbuilder
      */
     private List<String> makeBlastPCommand(String queryFilename, String outFilename, String dbFilename) {
-    	List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
         list.add(ReadConfig.blastp);
         list.add("-db");
         list.add(dbFilename);
@@ -270,17 +270,17 @@ public class CommandProcessUtil {
         list.add(ReadConfig.dbName);
         return list;
     }
-    
-    
+
+
     private List<String> makdeRmCommand(String inFilename){
-    	List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<String>();
         list.add("rm");
         list.add("-fr");
         list.add(inFilename);
         return list;
-    	
+
     }
-    
-    
+
+
 
 }
