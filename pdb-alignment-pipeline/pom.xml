@@ -10,7 +10,7 @@
     <version>0.1.0</version>
   </parent>
   <dependencies>
-    <dependency>
+    <!--dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
@@ -22,12 +22,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
+    </dependency-->
     <!--dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency-->
-    <dependency>
+    <!--dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-mongodb</artifactId>
     </dependency>
@@ -54,7 +54,7 @@
       <artifactId>springfox-swagger-ui</artifactId>
       <version>2.3.1</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency-->
     <!-- BioJava 4.x -->
     <dependency>
       <groupId>org.biojava</groupId>
@@ -75,6 +75,16 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
+      <version>3.4</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
     </dependency>
   </dependencies>
 
