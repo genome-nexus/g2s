@@ -4,12 +4,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 
 /**
  * Command Utils for dealing with the processes invoked by JAVA
- * 
+ *
  * @author Juexin Wang
  *
  */
@@ -18,72 +17,75 @@ public class CommandProcessUtil {
 
     /**
      * output process Errors from process
-     * 
+     *
      * @param process
      */
-    private void outputProcessError(Process process, int shellReturnCode, String commandName){
-        try{
-            if(shellReturnCode != 0){
+    private void outputProcessError(Process process, int shellReturnCode, String commandName) {
+        try {
+            if (shellReturnCode != 0) {
                 log.error("[Process] Process Error in " + commandName + ":" + process.toString());
                 String errorInfo = "";
                 InputStream error = process.getErrorStream();
-                for (int i = 0; i < error.available(); i++) {
-                    errorInfo = errorInfo + error.read() + "\t";
-                }			
+                boolean done = false;
+                while (!done) {
+                    int buf = error.read();
+                    if (buf == -1) break;
+                    errorInfo = errorInfo + (char)buf;
+                }
                 log.error("[Process] Error: " + errorInfo);
-            }   		
+            }
         }
-        catch(Exception ex){
+        catch (Exception ex) {
             ex.printStackTrace();
-        }   	
+        }
     }
 
     /**
      * Check the parameters of the command
-     * 
+     *
      * @param commandName
      * @param paralist
      */
-    private void checkCommandParam(String commandName, ArrayList<String> paralist){
+    private void checkCommandParam(String commandName, ArrayList<String> paralist) {
         boolean checkFlag = true;
-        switch(commandName){
+        switch(commandName) {
         case "wget":
-            if( paralist.size()!=2 ){
+            if (paralist.size() != 2) {
                 checkFlag = false;
             }
             break;
         case "gunzip":
-            if( paralist.size()!=2 ){
+            if (paralist.size() != 2) {
                 checkFlag = false;
             }
             break;
         case "gzip":
-            if( paralist.size()!=1 ){
+            if (paralist.size() != 1) {
                 checkFlag = false;
             }
             break;
         case "makeblastdb":
-            if( paralist.size()!=2 ){
+            if (paralist.size() != 2) {
                 checkFlag = false;
             }
             break;
         case "blastp":
-            if( paralist.size()!=3 ){
+            if (paralist.size() != 3) {
                 checkFlag = false;
             }
             break;
         case "mysql":
-            if( paralist.size()!=1 ){
+            if (paralist.size() != 1) {
                 checkFlag = false;
             }
             break;
         case "rsync":
-            if( paralist.size()!=1 ){
+            if (paralist.size() != 1) {
                 checkFlag = false;
             }
             break;
         case "rm":
-            if( paralist.size()!=1 ){
+            if (paralist.size() != 1) {
                 checkFlag = false;
             }
             break;
@@ -91,7 +93,7 @@ public class CommandProcessUtil {
             log.error("[SHELL] Command " + commandName + " does not support now");
             break;
         }
-        if(!checkFlag){
+        if (!checkFlag) {
             log.error("[SHELL] Fatal Error: Parameters for " + commandName + " does not make sense, please check. Now the program is exit");
             System.exit(0);
         }
@@ -99,17 +101,17 @@ public class CommandProcessUtil {
 
     /**
      * main entrance of running command in shell
-     * 
+     *
      * @param commandName
      * @param paralist
      * @return
      */
-    public int runCommand(String commandName, ArrayList<String> paralist ) {
+    public int runCommand(String commandName, ArrayList<String> paralist) {
         int shellReturnCode=0;
         try {
             checkCommandParam(commandName, paralist);
-            ProcessBuilder pb = null;              
-            switch (commandName){
+            ProcessBuilder pb = null;
+            switch (commandName) {
             case "wget":
                 log.info("[SHELL] Download file " + paralist.get(0) + " to " + paralist.get(1) + " ...");
                 pb = new ProcessBuilder(makeDownloadCommand(paralist.get(0), paralist.get(1)));
@@ -120,7 +122,7 @@ public class CommandProcessUtil {
                 }
                 log.info("[SHELL] Gunzip file from " + paralist.get(0) + " to " + paralist.get(1) + " ...");
                 pb = new ProcessBuilder(makeGunzipCommand(paralist.get(0)));
-                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));            	
+                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
                 break;
             case "gzip":
                 log.info("[SHELL] Gzip file from " + paralist.get(0) + " ...");
@@ -128,11 +130,11 @@ public class CommandProcessUtil {
                 break;
             case "makeblastdb":
                 log.info("[BLAST] Running makeblastdb command...");
-                pb = new ProcessBuilder(makeBlastDBCommand(paralist.get(0), paralist.get(1)));              	
+                pb = new ProcessBuilder(makeBlastDBCommand(paralist.get(0), paralist.get(1)));
                 break;
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
-                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2))); 
+                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
                 break;
             case "mysql":
                 log.info("[MYSQL] Running mysql command insert " + paralist.get(0) + "...");
@@ -150,7 +152,7 @@ public class CommandProcessUtil {
             default:
                 log.error("[SHELL] Command " + commandName + " does not support now");
                 break;
-            }              	              
+            }
             Process pc = pb.start();
             pc.waitFor();
             shellReturnCode = pc.exitValue();
@@ -196,14 +198,13 @@ public class CommandProcessUtil {
         return list;
     }
 
-
     /**
      * generate gzip command
-     * 
+     *
      * @param inFilename
      * @return
      */
-    private List<String> makeGzipCommand(String inFilename){
+    private List<String> makeGzipCommand(String inFilename) {
         List<String> list = new ArrayList<String>();
         list.add("gzip");
         list.add(inFilename);
@@ -253,7 +254,7 @@ public class CommandProcessUtil {
         list.add("-out");
         list.add(outFilename);
         return list;
-    } 
+    }
 
     /**
      * generate mysql command
@@ -271,16 +272,11 @@ public class CommandProcessUtil {
         return list;
     }
 
-
-    private List<String> makdeRmCommand(String inFilename){
+    private List<String> makdeRmCommand(String inFilename) {
         List<String> list = new ArrayList<String>();
         list.add("rm");
         list.add("-fr");
         list.add(inFilename);
         return list;
-
     }
-
-
-
 }
