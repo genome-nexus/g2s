@@ -10,6 +10,7 @@ import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.EnsemblRepository;
 import org.cbioportal.pdb_annotation.web.domain.PdbRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
+import org.cbioportal.pdb_annotation.web.models.Ensembl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,16 +32,12 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*") // allow all cross-domain requests
 @RequestMapping(value = "/pdb_annotation/")
 public class AlignmentController {
-    private AlignmentRepository alignmentRepository;
-    private EnsemblRepository ensemblRepository;
-    private PdbRepository pdbRepository;
-
     @Autowired
-    public AlignmentController(AlignmentRepository alignmentRepository, EnsemblRepository ensemblRepository, PdbRepository pdbRepository) {
-        this.alignmentRepository = alignmentRepository;
-        this.ensemblRepository = ensemblRepository;
-        this.pdbRepository = pdbRepository;
-    }
+    private AlignmentRepository alignmentRepository;
+    @Autowired
+    private EnsemblRepository ensemblRepository;
+    @Autowired
+    private PdbRepository pdbRepository;
 
     @ApiOperation(value = "get pdb alignments by ensemblId", nickname = "getPdbAlignmentByEnsemblId")
     @ApiResponses(value = {
@@ -49,16 +46,9 @@ public class AlignmentController {
     @RequestMapping(value = "/StructureMappingQuery", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public List<Alignment> getPdbAlignmentByEnsemblId(
+    public List<Alignment> getPdbAlignmentByEnsemblId (
             @RequestParam @ApiParam(value = "Input ensembl id. For example ENSP00000483207.2", required = true, allowMultiple = true) String ensemblId) {
-        List<Alignment> list = new ArrayList();
-        try {
-            List<Alignment> it = alignmentRepository.findByEnsemblId(ensemblId);
-            list.addAll(it);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return list;
+        return alignmentRepository.findByEnsemblId(ensemblId);
     }
 
     @ApiOperation(value = "get whether ensemblId exists by ensemblId", nickname = "getExistedEnsemblidinAlignment")
@@ -70,12 +60,6 @@ public class AlignmentController {
     @ResponseStatus(HttpStatus.OK)
     public boolean getExistedEnsemblidinAlignment(
             @RequestParam @ApiParam(value = "Input ensembl id. For example ENSP00000483207.2", required = true, allowMultiple = true) String ensemblId) {
-        try {
-            List<Alignment> it = alignmentRepository.findByEnsemblId(ensemblId);
-            return it.size() != 0;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return false;
+        return ensemblRepository.findByEnsemblId(ensemblId).size() != 0;
     }
 }
