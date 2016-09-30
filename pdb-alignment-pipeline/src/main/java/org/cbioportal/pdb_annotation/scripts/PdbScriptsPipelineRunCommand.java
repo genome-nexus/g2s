@@ -72,8 +72,10 @@ public class PdbScriptsPipelineRunCommand {
         // usePdbSeqLocalTag is not "true": Read Sequences from PDB precaculated file, efficient
         if(ReadConfig.usePdbSeqLocalTag.equals("true")){
             log.info("[PDB] usePdbSeqLocalTag is set as true, a cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
-            PdbSequenceUtil pu = new PdbSequenceUtil();		
-            pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+            PdbSequenceUtil pu = new PdbSequenceUtil();	
+            pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+            //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+            //pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         }else{
             log.info("[PDB] usePdbSeqLocalTag is not set as true, the PDB sequence is directly downloaded ");
             paralist = new ArrayList<String>();
@@ -86,6 +88,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
             cu.runCommand("gunzip", paralist);           
         }
+        /*
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
@@ -182,7 +185,7 @@ public class PdbScriptsPipelineRunCommand {
         	cu.runCommand("rm", paralist);
         	
         }
-
+*/
     }
 
     /**
