@@ -23,6 +23,9 @@ public class Pdb {
     @Column(name = "CHAIN")
     private String chain;
 
+    @Column(name = "PDB_SEG")
+    private String pdbSeg;
+    
     @Column(name = "DBREF")
     private String dbref;
 
@@ -35,26 +38,26 @@ public class Pdb {
 
     public Pdb(String pdbno) { 
         this.pdbNo = pdbno;
-    }
+    }  
 
     // ------------------------
     // Methods
     // ------------------------
 
-    public String getPdbno() {
+    public String getPdbNo() {
         return pdbNo;
     }
 
-    public void setPdbno(String pdbno) {
-        this.pdbNo = pdbno;
+    public void setPdbNo(String pdbNo) {
+        this.pdbNo = pdbNo;
     }
 
-    public String getPdbid() {
+    public String getPdbId() {
         return pdbId;
     }
 
-    public void setPdbid(String pdbid) {
-        this.pdbId = pdbid;
+    public void setPdbId(String pdbId) {
+        this.pdbId = pdbId;
     }
 
     public String getChain() {
@@ -65,11 +68,20 @@ public class Pdb {
         this.chain = chain;
     }
 
+    public String getPdbSeg() {
+        return pdbSeg;
+    }
+
+    public void setPdbSeg(String pdbSeg) {
+        this.pdbSeg = pdbSeg;
+    }
+
     public String getDbref() {
         return dbref;
     }
 
     public void setDbref(String dbref) {
         this.dbref = dbref;
-    }
+    }   
+    
 }

@@ -29,6 +29,9 @@ public class Alignment {
 
     @Column(name = "CHAIN")
     private String chain;
+    
+    @Column(name = "PDB_SEG")
+    private String pdbSeg;
 
     @Column(name = "ENSEMBL_ID")
     private String ensemblId;
@@ -84,28 +87,28 @@ public class Alignment {
     // Methods
     // ------------------------
 
-    public int getAlignmentid() {
+    public int getAlignmentId() {
         return alignmentId;
     }
 
-    public void setAlignmentid(int alignmentid) {
-        this.alignmentId = alignmentid;
+    public void setAlignmentId(int alignmentId) {
+        this.alignmentId = alignmentId;
     }
 
-    public String getPdbno() {
+    public String getPdbNo() {
         return pdbNo;
     }
 
-    public void setPdbno(String pdbno) {
-        this.pdbNo = pdbno;
+    public void setPdbNo(String pdbNo) {
+        this.pdbNo = pdbNo;
     }
 
-    public String getPdbid() {
+    public String getPdbId() {
         return pdbId;
     }
 
-    public void setPdbid(String pdbid) {
-        this.pdbId = pdbid;
+    public void setPdbId(String pdbId) {
+        this.pdbId = pdbId;
     }
 
     public String getChain() {
@@ -116,44 +119,52 @@ public class Alignment {
         this.chain = chain;
     }
 
-    public String getEnsemblid() {
+    public String getPdbSeg() {
+        return pdbSeg;
+    }
+
+    public void setPdbSeg(String pdbSeg) {
+        this.pdbSeg = pdbSeg;
+    }
+
+    public String getEnsemblId() {
         return ensemblId;
     }
 
-    public void setEnsemblid(String ensemblid) {
-        this.ensemblId = ensemblid;
+    public void setEnsemblId(String ensemblId) {
+        this.ensemblId = ensemblId;
     }
 
-    public int getPdbfrom() {
+    public int getPdbFrom() {
         return pdbFrom;
     }
 
-    public void setPdbfrom(int pdbfrom) {
-        this.pdbFrom = pdbfrom;
+    public void setPdbFrom(int pdbFrom) {
+        this.pdbFrom = pdbFrom;
     }
 
-    public int getPdbto() {
+    public int getPdbTo() {
         return pdbTo;
     }
 
-    public void setPdbto(int pdbto) {
-        this.pdbTo = pdbto;
+    public void setPdbTo(int pdbTo) {
+        this.pdbTo = pdbTo;
     }
 
-    public int getEnsemblfrom() {
+    public int getEnsemblFrom() {
         return ensemblFrom;
     }
 
-    public void setEnsemblfrom(int ensemblfrom) {
-        this.ensemblFrom = ensemblfrom;
+    public void setEnsemblFrom(int ensemblFrom) {
+        this.ensemblFrom = ensemblFrom;
     }
 
-    public int getEnsemblto() {
+    public int getEnsemblTo() {
         return ensemblTo;
     }
 
-    public void setEnsemblto(int ensemblto) {
-        this.ensemblTo = ensemblto;
+    public void setEnsemblTo(int ensemblTo) {
+        this.ensemblTo = ensemblTo;
     }
 
     public String getEvalue() {
@@ -211,7 +222,7 @@ public class Alignment {
     public void setMidlineAlign(String midlineAlign) {
         this.midlineAlign = midlineAlign;
     }
-    
+
     public String getUpdateDate() {
         return updateDate;
     }
@@ -219,4 +230,5 @@ public class Alignment {
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
+
 }

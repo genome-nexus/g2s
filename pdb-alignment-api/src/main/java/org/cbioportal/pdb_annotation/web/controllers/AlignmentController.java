@@ -6,11 +6,14 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.EnsemblRepository;
 import org.cbioportal.pdb_annotation.web.domain.PdbRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Ensembl;
+import org.cbioportal.pdb_annotation.web.models.Residue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -62,4 +65,51 @@ public class AlignmentController {
             @RequestParam @ApiParam(value = "Input ensembl id. For example ENSP00000483207.2", required = true, allowMultiple = true) String ensemblId) {
         return ensemblRepository.findByEnsemblId(ensemblId).size() != 0;
     }
+    
+    
+    @ApiOperation(value = "get residue mapping from pdb alignments by ensemblId and Amino Acid Number", nickname = "getPdbResidueByEnsemblId")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Bad Request") })
+    @RequestMapping(value = "/ResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<Residue> getPdbResidueByEnsemblId (
+            @RequestParam
+            @ApiParam(value = "Input ensembl id and Amio Acid Number. For example http://localhost:8080/pdb_annotation/ResidueMappingQuery?ensemblId=ENSP00000483207.2&aaNumber=117", required = true, allowMultiple = true) Map<String, String> input ) {
+        String ensemblId = input.get("ensemblId"); 
+        String aaNumber = input.get("aaNumber");
+        List<Alignment> it = alignmentRepository.findByEnsemblId(ensemblId);
+        List<Residue> outit = new ArrayList<Residue> ();
+        int inputAA = Integer.parseInt(aaNumber);
+        for(Alignment ali:it){
+            if(inputAA>=ali.getEnsemblFrom() && inputAA<=ali.getEnsemblTo()){
+                Residue re = new Residue(); 
+                re.setAlignmentId(ali.getAlignmentId());
+                re.setBitscore(ali.getBitscore());
+                re.setChain(ali.getChain());
+                re.setEnsemblAlign(ali.getEnsemblAlign());
+                re.setEnsemblFrom(ali.getEnsemblFrom());
+                re.setEnsemblId(ali.getEnsemblId());
+                re.setEnsemblTo(ali.getEnsemblTo());
+                re.setEvalue(ali.getEvalue());
+                re.setIdentity(ali.getIdentity());
+                re.setIdentp(ali.getIdentp());
+                re.setMidlineAlign(ali.getMidlineAlign());
+                re.setPdbAlign(ali.getPdbAlign());
+                re.setPdbFrom(ali.getPdbFrom());
+                re.setPdbId(ali.getPdbId());
+                re.setPdbNo(ali.getPdbNo());
+                re.setPdbSeg(ali.getPdbSeg());
+                re.setPdbTo(ali.getPdbTo());
+                re.setUpdateDate(ali.getUpdateDate());                              
+                re.setResidueName(ali.getPdbAlign().substring(inputAA-ali.getEnsemblFrom(), inputAA-ali.getEnsemblFrom()+1));
+                re.setResidueNum(ali.getPdbFrom()+(inputAA-ali.getEnsemblFrom())); 
+                outit.add(re);
+            }
+        }
+        return outit;
+    }
+    
+ 
 }

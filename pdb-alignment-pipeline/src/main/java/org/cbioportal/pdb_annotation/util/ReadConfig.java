@@ -23,6 +23,9 @@ public class ReadConfig {
     public static String resourceDir;
     public static String tmpdir;
     public static String pdbRepo;
+    public static String pdbSegMinLengthMulti;
+    public static String pdbSegMinLengthSingle;
+    public static String pdbSegGapThreshold;
     public static String pdbSeqresDownloadFile;
     public static String pdbSeqresFastaFile;
     public static String ensemblDownloadFile;
@@ -56,7 +59,6 @@ public class ReadConfig {
     public static String updateObsolete;
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
-    public static String usePdbSeqLocalTag;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -92,6 +94,9 @@ public class ReadConfig {
             ReadConfig.resourceDir = prop.getProperty("resource_dir");
             ReadConfig.tmpdir = prop.getProperty("tmpdir");
             ReadConfig.pdbRepo = prop.getProperty("pdbRepo");
+            ReadConfig.pdbSegMinLengthMulti = prop.getProperty("pdb.seg.minLength.multi");
+            ReadConfig.pdbSegMinLengthSingle = prop.getProperty("pdb.seg.minLength.single");
+            ReadConfig.pdbSegGapThreshold = prop.getProperty("pdb.seg.gapThreshold");
             ReadConfig.pdbSeqresDownloadFile = prop.getProperty("pdb_seqres_download_file");
             ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file");
             ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file");
@@ -125,7 +130,6 @@ public class ReadConfig {
             ReadConfig.updateObsolete = prop.getProperty("update.obsolete");
             ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService");
             ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet");
-            ReadConfig.usePdbSeqLocalTag = prop.getProperty("usePdbSeqLocalTag");
             ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag");
 
         } catch (Exception ex) {
@@ -170,6 +174,30 @@ public class ReadConfig {
 
     public static String getPdbRepo() {
         return pdbRepo;
+    }
+
+    public static String getPdbSegMinLengthMulti() {
+        return pdbSegMinLengthMulti;
+    }
+
+    public static void setPdbSegMinLengthMulti(String pdbSegMinLengthMulti) {
+        ReadConfig.pdbSegMinLengthMulti = pdbSegMinLengthMulti;
+    }
+
+    public static String getPdbSegMinLengthSingle() {
+        return pdbSegMinLengthSingle;
+    }
+
+    public static void setPdbSegMinLengthSingle(String pdbSegMinLengthSingle) {
+        ReadConfig.pdbSegMinLengthSingle = pdbSegMinLengthSingle;
+    }
+
+    public static String getPdbSegGapThreshold() {
+        return pdbSegGapThreshold;
+    }
+
+    public static void setPdbSegGapThreshold(String pdbSegGapThreshold) {
+        ReadConfig.pdbSegGapThreshold = pdbSegGapThreshold;
     }
 
     public static String getPdbSeqresDownloadFile() {
@@ -302,10 +330,6 @@ public class ReadConfig {
 
     public static String getMysqlMaxAllowedPacket() {
         return mysqlMaxAllowedPacket;
-    }
-
-    public static String getUsePdbSeqLocalTag() {
-        return usePdbSeqLocalTag;
     }
 
     public static String getSaveSpaceTag() {
@@ -473,10 +497,6 @@ public class ReadConfig {
 
     public static void setMysqlMaxAllowedPacket(String mysqlMaxAllowedPacket) {
         ReadConfig.mysqlMaxAllowedPacket = mysqlMaxAllowedPacket;
-    }
-
-    public static void setUsePdbSeqLocalTag(String usePdbSeqLocalTag) {
-        ReadConfig.usePdbSeqLocalTag = usePdbSeqLocalTag;
     }
 
     public static void setSaveSpaceTag(String saveSpaceTag) {

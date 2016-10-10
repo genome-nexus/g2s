@@ -66,29 +66,15 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
+        
         // Step 1: Download essential PDB and Ensembl
-        // Two strategies were defined here, users could choose one of them from setting usePdbSeqLocalTag in Application.properties
-        // usePdbSeqLocalTag is "true": Read Sequences from cloned whole PDB, need at least 22G free spaces and at least 12 hours, accurate
-        // usePdbSeqLocalTag is not "true": Read Sequences from PDB precaculated file, efficient
-        if(ReadConfig.usePdbSeqLocalTag.equals("true")){
-            log.info("[PDB] usePdbSeqLocalTag is set as true, a cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
-            PdbSequenceUtil pu = new PdbSequenceUtil();	
-            pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-            //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-            //pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        }else{
-            log.info("[PDB] usePdbSeqLocalTag is not set as true, the PDB sequence is directly downloaded ");
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.pdbWholeSource);
-            paralist.add(ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
-            cu.runCommand("wget", paralist);
-
-            paralist = new ArrayList<String>();
-            paralist.add(ReadConfig.workspace + ReadConfig.pdbWholeSource.substring(ReadConfig.pdbWholeSource.lastIndexOf("/") + 1));
-            paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-            cu.runCommand("gunzip", paralist);           
-        }
-        /*
+        // Read Sequences from cloned whole PDB, need at least 22G free spaces and at least 12 hours
+        log.info("[PDB] A cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
+        PdbSequenceUtil pu = new PdbSequenceUtil();	
+        pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        //pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
@@ -127,6 +113,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);           
         }
+        
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
 
         // Step 6: parse results and output as input sql statments
@@ -155,6 +142,7 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("mysql", paralist);
         }
 
+        /*
         // Step 10: Clean up
         if(ReadConfig.saveSpaceTag.equals("true")){
             log.info("[PIPELINE] Start cleaning up in filesystem");
@@ -182,10 +170,9 @@ public class PdbScriptsPipelineRunCommand {
 
     		paralist = new ArrayList<String>();
         	paralist.add(ReadConfig.pdbRepo);
-        	cu.runCommand("rm", paralist);
-        	
+        	cu.runCommand("rm", paralist);       	
         }
-*/
+        */
     }
 
     /**

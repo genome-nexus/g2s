@@ -14,6 +14,7 @@ import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
 import org.cbioportal.pdb_annotation.util.CommandProcessUtil;
 import org.cbioportal.pdb_annotation.util.FTPClientUtil;
+import org.cbioportal.pdb_annotation.util.PdbSequenceUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 
 /**
@@ -66,6 +67,7 @@ public class PdbScriptsPipelinePreprocessing {
             FileWriter fw = new FileWriter(new File(outfileName));
             fw.write(sb.toString());
             fw.close();
+            log.info("[Preprocessing] PDB sequences Ready ... ");
         } catch (Exception ex) {
             log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
             log.error(ex.getMessage());
@@ -198,8 +200,11 @@ public class PdbScriptsPipelinePreprocessing {
             listOld = new ArrayList<String>(listMod);
             listOld.addAll(listObs);
             String listNewCont = "";
+            PdbSequenceUtil pu = new PdbSequenceUtil();
             for(String pdbName:listNew) {
-                listNewCont = listNewCont + fcu.readFTPfile2Str(ReadConfig.pdbFastaService + pdbName);
+                //listNewCont = listNewCont + fcu.readFTPfile2Str(ReadConfig.pdbFastaService + pdbName);
+                //System.out.println(pdbName);
+                listNewCont = listNewCont + pu.readPDB2Results(pdbName);
             }
             FileUtils.writeStringToFile(addFastaFile, listNewCont);
         } catch(Exception ex) {
