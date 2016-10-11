@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author Selcuk Onur Sumer
  */
-@RestController // shorthand for @Controller, @ResponseBody
+//@RestController // shorthand for @Controller, @ResponseBody
 //@CrossOrigin(origins="*") // allow all cross-domain requests
-@RequestMapping(value = "/admin/")
+//@RequestMapping(value = "/admin/")
 public class AdminController
 {
     @Autowired
