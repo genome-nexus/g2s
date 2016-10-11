@@ -75,10 +75,10 @@ public class AlignmentController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public List<Residue> getPdbResidueByEnsemblId (
-            @RequestParam
-            @ApiParam(value = "Input ensembl id and Amio Acid Number. For example http://localhost:8080/pdb_annotation/ResidueMappingQuery?ensemblId=ENSP00000483207.2&aaNumber=117", required = true, allowMultiple = true) Map<String, String> input ) {
-        String ensemblId = input.get("ensemblId"); 
-        String aaNumber = input.get("aaNumber");
+            @RequestParam(required = true)
+            @ApiParam(value = "Input ensembl id. Example: ENSP00000483207.2", required = true, allowMultiple = true) String ensemblId, 
+            @RequestParam(required = true)
+            @ApiParam(value = "Input Amio Acid Number. Example: 117", required = true, allowMultiple = true) String aaNumber) {
         List<Alignment> it = alignmentRepository.findByEnsemblId(ensemblId);
         List<Residue> outit = new ArrayList<Residue> ();
         int inputAA = Integer.parseInt(aaNumber);
