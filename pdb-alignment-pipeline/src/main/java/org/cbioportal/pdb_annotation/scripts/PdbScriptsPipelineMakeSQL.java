@@ -31,12 +31,12 @@ public class PdbScriptsPipelineMakeSQL {
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36";   
     private BlastDataBase db;
     private int matches;
-    private int ensemblFileCount;    
+    private int seqFileCount;    
     private String workspace;
     private String sqlInsertFile;
     private String sqlInsertOutputInterval;
     private String sqlDeleteFile;
-    private String sqlEnsemblSQL;
+    private String insertSequenceSQL;
 
     /**
      * 
@@ -47,12 +47,12 @@ public class PdbScriptsPipelineMakeSQL {
     PdbScriptsPipelineMakeSQL(PdbScriptsPipelineRunCommand app) {
         this.db = app.getDb();
         this.matches=app.getMatches();
-        this.ensemblFileCount=app.getEnsemblFileCount();
+        this.seqFileCount=app.getSeqFileCount();
         this.workspace = ReadConfig.workspace;
         this.sqlInsertFile = ReadConfig.sqlInsertFile;
         this.sqlInsertOutputInterval = ReadConfig.sqlInsertOutputInterval;
         this.sqlDeleteFile = ReadConfig.sqlDeleteFile;
-        this.sqlEnsemblSQL = ReadConfig.sqlEnsemblSQL;
+        this.insertSequenceSQL = ReadConfig.insertSequenceSQL;
     }
 
     /**
@@ -66,11 +66,11 @@ public class PdbScriptsPipelineMakeSQL {
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); //http.agent is needed to fetch dtd from some servers
         if (!oneInputTag) {      
             // multiple input, multiple sql generated incrementally
-            if (this.ensemblFileCount == -1) {
+            if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
                 HashMap<String,String> pdbHm = new HashMap<String,String>();
-                for (int i = 0; i < this.ensemblFileCount; i++) {
+                for (int i = 0; i < this.seqFileCount; i++) {
                     parseblastresultsSmallMem(i, pdbHm);
                 }
             }
@@ -114,7 +114,7 @@ public class PdbScriptsPipelineMakeSQL {
             File blastresults = new File(this.workspace + this.db.resultfileName + "." + filecount);
             File outputfile;
             // Check whether multiple files existed
-            if (this.ensemblFileCount != -1) {
+            if (this.seqFileCount != -1) {
                 outputfile = new File(this.workspace + this.sqlInsertFile + "." + filecount);
             } else {
                 outputfile = new File(this.workspace + this.sqlInsertFile);
@@ -190,11 +190,11 @@ public class PdbScriptsPipelineMakeSQL {
     public String makeTable_pdb_ensembl_insert(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split("\\s+");
         String[] strarrayS = br.getSseqid().split("_");
-        String str = "INSERT INTO `pdb_ensembl_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`ENSEMBL_ID`,`PDB_FROM`,`PDB_TO`,`ENSEMBL_FROM`,`ENSEMBL_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`ENSEMBL_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEQL_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
                 + br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + strarrayQ[0] + "',"
                 + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd() + ",'" 
                 + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getEnsembl_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
+                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
         return str;
     }
 
@@ -333,7 +333,7 @@ public class PdbScriptsPipelineMakeSQL {
             br.qEnd = Integer.parseInt(tmp.getHspQueryTo());
             br.sStart = Integer.parseInt(tmp.getHspHitFrom());
             br.sEnd = Integer.parseInt(tmp.getHspHitTo());
-            br.ensembl_align = tmp.getHspQseq();
+            br.seq_align = tmp.getHspQseq();
             br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
         }
@@ -355,7 +355,7 @@ public class PdbScriptsPipelineMakeSQL {
             outputlist.add("SET autocommit = 0;");
             outputlist.add("start transaction;");
             for (String pdbName : list) {
-                String str = "DELETE pdb_ensembl_alignment FROM pdb_ensembl_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_ensembl_alignment.pdb_no WHERE  pdb_ensembl_alignment.pdb_id='" + pdbName + "';\n";
+                String str = "DELETE pdb_seq_alignment FROM pdb_seq_alignment inner join pdb_entry on pdb_entry.pdb_no=pdb_seq_alignment.pdb_no WHERE pdb_seq_alignment.pdb_id='" + pdbName + "';\n";
                 outputlist.add(str);
                 String str1 = "DELETE FROM pdb_entry WHERE PDB_ID='" + pdbName + "';\n";
                 outputlist.add(str1);

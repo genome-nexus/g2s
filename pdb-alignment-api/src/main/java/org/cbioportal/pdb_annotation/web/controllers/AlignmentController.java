@@ -83,15 +83,15 @@ public class AlignmentController {
         List<Residue> outit = new ArrayList<Residue> ();
         int inputAA = Integer.parseInt(aaNumber);
         for(Alignment ali:it){
-            if(inputAA>=ali.getEnsemblFrom() && inputAA<=ali.getEnsemblTo()){
+            if(inputAA>=ali.getSeqFrom() && inputAA<=ali.getSeqTo()){
                 Residue re = new Residue(); 
                 re.setAlignmentId(ali.getAlignmentId());
                 re.setBitscore(ali.getBitscore());
                 re.setChain(ali.getChain());
-                re.setEnsemblAlign(ali.getEnsemblAlign());
-                re.setEnsemblFrom(ali.getEnsemblFrom());
-                re.setEnsemblId(ali.getEnsemblId());
-                re.setEnsemblTo(ali.getEnsemblTo());
+                re.setSeqAlign(ali.getSeqAlign());
+                re.setSeqFrom(ali.getSeqFrom());
+                re.setSeqId(ali.getSeqId());
+                re.setSeqTo(ali.getSeqTo());
                 re.setEvalue(ali.getEvalue());
                 re.setIdentity(ali.getIdentity());
                 re.setIdentp(ali.getIdentp());
@@ -103,8 +103,8 @@ public class AlignmentController {
                 re.setPdbSeg(ali.getPdbSeg());
                 re.setPdbTo(ali.getPdbTo());
                 re.setUpdateDate(ali.getUpdateDate());                              
-                re.setResidueName(ali.getPdbAlign().substring(inputAA-ali.getEnsemblFrom(), inputAA-ali.getEnsemblFrom()+1));
-                re.setResidueNum(ali.getPdbFrom()+(inputAA-ali.getEnsemblFrom())); 
+                re.setResidueName(ali.getPdbAlign().substring(inputAA-ali.getSeqFrom(), inputAA-ali.getSeqFrom()+1));
+                re.setResidueNum(ali.getPdbFrom()+(inputAA-ali.getSeqFrom())); 
                 outit.add(re);
             }
         }

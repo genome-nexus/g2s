@@ -28,8 +28,11 @@ public class ReadConfig {
     public static String pdbSegGapThreshold;
     public static String pdbSeqresDownloadFile;
     public static String pdbSeqresFastaFile;
-    public static String ensemblDownloadFile;
-    public static String ensemblFastaFile;
+    public static String ensemblDownloadFile;        
+    public static String swissprotDownloadFile;
+    public static String tremblDownloadFile;
+    public static String isoformDownloadFile; 
+    public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
     public static String blastParaEvalue;
@@ -43,7 +46,10 @@ public class ReadConfig {
     public static String dbName;
     public static String dbNameScript;
     public static String pdbWholeSource;
-    public static String ensemblWholeSource;
+    public static String ensemblWholeSource;    
+    public static String swissprotWholeSource;
+    public static String tremblWholeSource;
+    public static String isoformWholeSource;    
     public static String updateTxt;
     public static String updateFasta;
     public static String delPDB;
@@ -53,7 +59,7 @@ public class ReadConfig {
     public static String updateSECOND;
     public static String updateMILLISECOND;
     public static String updateDELAY;
-    public static String sqlEnsemblSQL;
+    public static String insertSequenceSQL;
     public static String updateAdded;
     public static String updateModified;
     public static String updateObsolete;
@@ -99,8 +105,11 @@ public class ReadConfig {
             ReadConfig.pdbSegGapThreshold = prop.getProperty("pdb.seg.gapThreshold");
             ReadConfig.pdbSeqresDownloadFile = prop.getProperty("pdb_seqres_download_file");
             ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file");
-            ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file");
-            ReadConfig.ensemblFastaFile = prop.getProperty("ensembl_fasta_file");
+            ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file");                       
+            ReadConfig.swissprotDownloadFile = prop.getProperty("swissprot_download_file");
+            ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file");
+            ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file");
+            ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file"); 
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file");
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file");
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue");
@@ -114,7 +123,10 @@ public class ReadConfig {
             ReadConfig.dbName = prop.getProperty("db_name");
             ReadConfig.dbNameScript = prop.getProperty("db_name_script");
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource");
-            ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource");
+            ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource");            
+            ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource");
+            ReadConfig.tremblWholeSource = prop.getProperty("trembl.wholeSource");
+            ReadConfig.isoformWholeSource = prop.getProperty("isoform.wholeSource");
             ReadConfig.updateTxt = prop.getProperty("update.updateTxt");
             ReadConfig.updateFasta = prop.getProperty("update.updateFasta");
             ReadConfig.delPDB = prop.getProperty("update.delPDB");
@@ -124,7 +136,7 @@ public class ReadConfig {
             ReadConfig.updateSECOND = prop.getProperty("update.SECOND");
             ReadConfig.updateMILLISECOND = prop.getProperty("update.MILLISECOND");
             ReadConfig.updateDELAY = prop.getProperty("update.DELAY");
-            ReadConfig.sqlEnsemblSQL = prop.getProperty("sql_ensemblSQL");
+            ReadConfig.insertSequenceSQL = prop.getProperty("insert_sequence_SQL");
             ReadConfig.updateAdded = prop.getProperty("update.added");
             ReadConfig.updateModified = prop.getProperty("update.modified");
             ReadConfig.updateObsolete = prop.getProperty("update.obsolete");
@@ -141,6 +153,8 @@ public class ReadConfig {
     /**
      * Get Methods
      */
+    
+    
     public static ReadConfig getInstance() {
         if (rcObj == null) {
             rcObj = new ReadConfig();
@@ -150,6 +164,34 @@ public class ReadConfig {
 
     public static ReadConfig getRcObj() {
         return rcObj;
+    }
+
+    public static String getSwissprotDownloadFile() {
+        return swissprotDownloadFile;
+    }
+
+    public static String getTremblDownloadFile() {
+        return tremblDownloadFile;
+    }
+
+    public static String getIsoformDownloadFile() {
+        return isoformDownloadFile;
+    }
+
+    public static String getSeqFastaFile() {
+        return seqFastaFile;
+    }
+
+    public static String getSwissprotWholeSource() {
+        return swissprotWholeSource;
+    }
+
+    public static String getTremblWholeSource() {
+        return tremblWholeSource;
+    }
+
+    public static String getIsoformWholeSource() {
+        return isoformWholeSource;
     }
 
     public static String getMakeblastdb() {
@@ -210,10 +252,6 @@ public class ReadConfig {
 
     public static String getEnsemblDownloadFile() {
         return ensemblDownloadFile;
-    }
-
-    public static String getEnsemblFastaFile() {
-        return ensemblFastaFile;
     }
 
     public static String getSqlInsertFile() {
@@ -308,8 +346,8 @@ public class ReadConfig {
         return updateDELAY;
     }
 
-    public static String getSqlEnsemblSQL() {
-        return sqlEnsemblSQL;
+    public static String getInsertSequenceSQL() {
+        return insertSequenceSQL;
     }
 
     public static String getUpdateAdded() {
@@ -341,6 +379,35 @@ public class ReadConfig {
      */
     public static void setRcObj(ReadConfig rcObj) {
         ReadConfig.rcObj = rcObj;
+    }
+    
+
+    public static void setSwissprotDownloadFile(String swissprotDownloadFile) {
+        ReadConfig.swissprotDownloadFile = swissprotDownloadFile;
+    }
+
+    public static void setTremblDownloadFile(String tremblDownloadFile) {
+        ReadConfig.tremblDownloadFile = tremblDownloadFile;
+    }
+
+    public static void setIsoformDownloadFile(String isoformDownloadFile) {
+        ReadConfig.isoformDownloadFile = isoformDownloadFile;
+    }
+
+    public static void setSeqFastaFile(String seqFastaFile) {
+        ReadConfig.seqFastaFile = seqFastaFile;
+    }
+
+    public static void setSwissprotWholeSource(String swissprotWholeSource) {
+        ReadConfig.swissprotWholeSource = swissprotWholeSource;
+    }
+
+    public static void setTremblWholeSource(String tremblWholeSource) {
+        ReadConfig.tremblWholeSource = tremblWholeSource;
+    }
+
+    public static void setIsoformWholeSource(String isoformWholeSource) {
+        ReadConfig.isoformWholeSource = isoformWholeSource;
     }
 
     public static void setMakeblastdb(String makeblastdb) {
@@ -377,10 +444,6 @@ public class ReadConfig {
 
     public static void setEnsemblDownloadFile(String ensemblDownloadFile) {
         ReadConfig.ensemblDownloadFile = ensemblDownloadFile;
-    }
-
-    public static void setEnsemblFastaFile(String ensemblFastaFile) {
-        ReadConfig.ensemblFastaFile = ensemblFastaFile;
     }
 
     public static void setSqlInsertFile(String sqlInsertFile) {
@@ -475,8 +538,8 @@ public class ReadConfig {
         ReadConfig.updateDELAY = updateDELAY;
     }
 
-    public static void setSqlEnsemblSQL(String sqlEnsemblSQL) {
-        ReadConfig.sqlEnsemblSQL = sqlEnsemblSQL;
+    public static void setInsertSequenceSQL(String insertSequenceSQL) {
+        ReadConfig.insertSequenceSQL = insertSequenceSQL;
     }
 
     public static void setUpdateAdded(String updateAdded) {

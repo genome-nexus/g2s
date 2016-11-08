@@ -14,7 +14,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name = "pdb_ensembl_alignment")
+@Table(name = "pdb_seq_alignment")
 public class Alignment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,8 +33,8 @@ public class Alignment {
     @Column(name = "PDB_SEG")
     private String pdbSeg;
 
-    @Column(name = "ENSEMBL_ID")
-    private String ensemblId;
+    @Column(name = "SEQ_ID")
+    private String seqId;
 
     @Column(name = "PDB_FROM")
     private int pdbFrom;
@@ -42,11 +42,11 @@ public class Alignment {
     @Column(name = "PDB_TO")
     private int pdbTo;
 
-    @Column(name = "ENSEMBL_FROM")
-    private int ensemblFrom;
+    @Column(name = "SEQ_FROM")
+    private int seqFrom;
 
-    @Column(name = "ENSEMBL_TO")
-    private int ensemblTo;
+    @Column(name = "SEQ_TO")
+    private int seqTo;
 
     @Column(name = "EVALUE")
     private String evalue;
@@ -60,8 +60,8 @@ public class Alignment {
     @Column(name = "IDENTP")
     private float identp;
 
-    @Column(name = "ENSEMBL_ALIGN")
-    private String ensemblAlign;
+    @Column(name = "SEQ_ALIGN")
+    private String seqAlign;
 
     @Column(name = "PDB_ALIGN")
     private String pdbAlign;
@@ -127,12 +127,12 @@ public class Alignment {
         this.pdbSeg = pdbSeg;
     }
 
-    public String getEnsemblId() {
-        return ensemblId;
+    public String getSeqId() {
+        return seqId;
     }
 
-    public void setEnsemblId(String ensemblId) {
-        this.ensemblId = ensemblId;
+    public void setSeqId(String seqId) {
+        this.seqId = seqId;
     }
 
     public int getPdbFrom() {
@@ -151,20 +151,20 @@ public class Alignment {
         this.pdbTo = pdbTo;
     }
 
-    public int getEnsemblFrom() {
-        return ensemblFrom;
+    public int getSeqFrom() {
+        return seqFrom;
     }
 
-    public void setEnsemblFrom(int ensemblFrom) {
-        this.ensemblFrom = ensemblFrom;
+    public void setSeqFrom(int seqFrom) {
+        this.seqFrom = seqFrom;
     }
 
-    public int getEnsemblTo() {
-        return ensemblTo;
+    public int getSeqTo() {
+        return seqTo;
     }
 
-    public void setEnsemblTo(int ensemblTo) {
-        this.ensemblTo = ensemblTo;
+    public void setSeqTo(int seqTo) {
+        this.seqTo = seqTo;
     }
 
     public String getEvalue() {
@@ -199,12 +199,12 @@ public class Alignment {
         this.identp = identp;
     }
 
-    public String getEnsemblAlign() {
-        return ensemblAlign;
+    public String getSeqAlign() {
+        return seqAlign;
     }
 
-    public void setEnsemblAlign(String ensemblAlign) {
-        this.ensemblAlign = ensemblAlign;
+    public void setSeqAlign(String seqAlign) {
+        this.seqAlign = seqAlign;
     }
 
     public String getPdbAlign() {

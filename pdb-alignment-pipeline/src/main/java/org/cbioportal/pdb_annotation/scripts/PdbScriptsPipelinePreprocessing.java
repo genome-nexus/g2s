@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -26,20 +27,20 @@ import org.cbioportal.pdb_annotation.util.ReadConfig;
 
 public class PdbScriptsPipelinePreprocessing {
     final static Logger log = Logger.getLogger(PdbScriptsPipelinePreprocessing.class);
-    public int ensemblFileCount;
-    public int ensemblInputInterval;
+    public int seqFileCount;
+    public int seqInputInterval;
 
     public PdbScriptsPipelinePreprocessing() {
-        this.ensemblInputInterval = Integer.parseInt(ReadConfig.ensemblInputInterval);
-        this.ensemblFileCount = -1;
+        this.seqInputInterval = Integer.parseInt(ReadConfig.ensemblInputInterval);
+        this.seqFileCount = -1;
     }
 
-    public int getEnsembl_file_count() {
-        return ensemblFileCount;
+    public int getSeq_file_count() {
+        return seqFileCount;
     }
 
-    public void setEnsembl_file_count(int ensembl_file_count) {
-        this.ensemblFileCount = ensembl_file_count;
+    public void setSeq_file_count(int seqFileCount) {
+        this.seqFileCount = seqFileCount;
     }
 
     /**
@@ -103,6 +104,7 @@ public class PdbScriptsPipelinePreprocessing {
     }
 
     /**
+     * obsolete
      * Preprocess the Gene sequences download from Ensembl
      * (ftp://ftp.ensembl.org/pub/release-84/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz)
      * This function is designed to split the original FASTA file into several small files. Each small files contains
@@ -127,7 +129,7 @@ public class PdbScriptsPipelinePreprocessing {
             for (Entry<String, ProteinSequence> entry : a.entrySet()) {
                 c.add(entry.getValue());
                 list.add(entry.getValue().getOriginalHeader());
-                if (count % this.ensemblInputInterval == this.ensemblInputInterval - 1) {
+                if (count % this.seqInputInterval == this.seqInputInterval - 1) {
                     FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount).toString()), c);
                     c.clear();
                     filecount++;
@@ -137,8 +139,8 @@ public class PdbScriptsPipelinePreprocessing {
             if(c.size()!=0){
                 FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()), c);
             }           
-            setEnsembl_file_count(filecount);
-            generateEnsemblSQLTmpFile(list);
+            setSeq_file_count(filecount);
+            generateSeqSQLTmpFile(list);
         } catch (Exception ex) {
             log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing Ensembl sequences");
             log.error(ex.getMessage());
@@ -146,13 +148,120 @@ public class PdbScriptsPipelinePreprocessing {
         }
         return filecount;
     }
+    
+    /**
+     * Preprocess the Gene sequences download from Ensembl, uniprot
+     * This function is designed to split the original FASTA file into several small files. Each small files contains
+     * Constants.ensembl_input_interval lines The purpose of doing this is
+     * saving memory in next step
+     * 
+     * @param uniqSeqHm
+     *          HashMap <key,value> >1;ensembl;uniprot\nseq\n
+     * @param outfilename
+     * @return
+     */
+    public int preprocessGENEsequences(HashMap<String,String> uniqSeqHm, String outfilename) {
+        // count of all generated small files
+        int filecount = 0;
+        try {
+            log.info("[Preprocessing] Preprocessing gene sequences... ");
+            List<String> list = new ArrayList<String>();
+            
+            Collection<String> c = new ArrayList<String>();
+            // line count of the original FASTA file, Start from 1
+            int count = 1; 
+            for (Entry<String, String> entry : uniqSeqHm.entrySet()) {
+                c.add(">"+count+";"+entry.getValue()+"\n"+entry.getKey());
+                list.add(count+";"+entry.getValue());
+                if (count % this.seqInputInterval == this.seqInputInterval - 1) {
+                    FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount).toString()), c);
+                    c.clear();
+                    filecount++;
+                }
+                count++;
+            }
+            if(c.size()!=0){
+                FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount++).toString()), c);
+            }           
+            setSeq_file_count(filecount);
+            generateSeqSQLTmpFile(list);
+        } catch (Exception ex) {
+            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing gene sequences");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return filecount;        
+    }
+    
+    
+    /**
+     * parsing fasta names:
+     * ENSEMBL: return ID,gene,transcript
+     * UNIPROT: uniprotID
+     * 
+     * @param inputStr
+     * @return
+     */
+    String getUniqueSeqID(String inputStr){
+        //ENSEMBL
+        if(inputStr.startsWith("ENSP") && inputStr.trim().split("\\s+").length>3){
+            String tmpArray[]= inputStr.trim().split("\\s+");
+            return tmpArray[0] + " " + tmpArray[3].split("gene:")[1] + " " + tmpArray[4].split("transcript:")[1];
+        }
+        //UNIPROT
+        else if(inputStr.length()>=6 && inputStr.length()<=12){
+            String tmpArray[] = inputStr.trim().split("-");
+            if(tmpArray.length==2){
+                return tmpArray[0] + "_" + tmpArray[1];
+            }else{
+                return inputStr+"_1";
+            }           
+        }
+        //Others, to continue
+        else{
+            log.error("Sequence ID Parsing Format error in: " + inputStr);
+            return "";
+        }
+    }
+    
+    /**
+     * deal with redundancy,combine the name together, split with ";"
+     * 
+     * @param infilename
+     * @param outHm
+     * @return
+     */
+    HashMap<String,String> preprocessUniqSeq(String infilename, HashMap<String,String> outHm){       
+        try{
+            LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper.readFastaProteinSequence(new File(infilename));           
+            
+            for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
+                if(outHm.containsKey(entry.getValue().getSequenceAsString())){
+                    String tmpStr = outHm.get(entry.getValue().getSequenceAsString());
+                    tmpStr = tmpStr + ";" + getUniqueSeqID(entry.getKey());
+                    outHm.put(entry.getValue().getSequenceAsString(), tmpStr);
+                }else{
+                    outHm.put(entry.getValue().getSequenceAsString(), getUniqueSeqID(entry.getKey()));
+                }
+            }
+        }catch(Exception ex){
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }        
+        return outHm;        
+    }
+    
+    
+    
 
     /**
+     * obsolete
      * Generate TmpEnsemblSQLFile
      * Ensembl header for generating SQL insert
      *
      * @param list
      */
+    /*
     public void generateEnsemblSQLTmpFile(List<String> list) {
         List<String> outputlist = new ArrayList<String>();
         try {
@@ -168,6 +277,43 @@ public class PdbScriptsPipelinePreprocessing {
             outputlist.add("commit;");
             // Write File named as sqlEnsemblSQL in application.properties
             FileUtils.writeLines(new File(ReadConfig.workspace+ReadConfig.sqlEnsemblSQL), outputlist);
+        } catch(Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    */
+    
+    /**
+     * Generate TmpSeqSQLFile
+     * Fasta headers of ensembl and uniprot genes for generating SQL insert
+     *
+     * @param list
+     */
+    public void generateSeqSQLTmpFile(List<String> list) {
+        List<String> outputlist = new ArrayList<String>();
+        try {
+            //Add transaction
+            outputlist.add("SET autocommit = 0;");
+            outputlist.add("start transaction;");
+            for(String str:list) {
+                String[] strarrayQ = str.split(";");
+                outputlist.add("INSERT IGNORE INTO `seq_entry`(`SEQ_ID`) VALUES('"  + strarrayQ[0] + "');");
+                for(int i=1;i<strarrayQ.length;i++){
+                    if(strarrayQ[i].split("\\s+").length==3){//ensembl
+                        String[] strarrayQQ = strarrayQ[i].split("\\s+");
+                        outputlist.add("INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`,`SEQ_ID`) VALUES('"
+                                + strarrayQQ[0] + "', '" + strarrayQQ[1] + "', '" + strarrayQQ[2] + "', '" + strarrayQ[0] + "');");                       
+                    }else{//uniprot
+                        String[] strarrayQQ = strarrayQ[i].split("_");
+                        outputlist.add("INSERT IGNORE INTO `uniprot_entry`(`UNIPROT_ID_ISO`,`UNIPROT_ID`,`ISOFORM`,`SEQ_ID`) VALUES('"
+                                + strarrayQ[i] + "', '" + strarrayQQ[0] + "', '" + strarrayQQ[1] + "', '" + strarrayQ[0] + "');");
+                    }
+                }               
+            }
+            outputlist.add("commit;");
+            // Write File named as insertSequenceSQL in application.properties
+            FileUtils.writeLines(new File(ReadConfig.workspace+ReadConfig.insertSequenceSQL), outputlist);
         } catch(Exception ex) {
             log.error(ex.getMessage());
             ex.printStackTrace();
