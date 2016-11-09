@@ -12,8 +12,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
-import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
-import org.cbioportal.pdb_annotation.util.CommandProcessUtil;
 import org.cbioportal.pdb_annotation.util.FTPClientUtil;
 import org.cbioportal.pdb_annotation.util.PdbSequenceUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
@@ -207,42 +205,9 @@ public class PdbScriptsPipelinePreprocessing {
         return outHm;        
     }
     
-    
-    
-
-    /**
-     * obsolete
-     * Generate TmpEnsemblSQLFile
-     * Ensembl header for generating SQL insert
-     *
-     * @param list
-     */
-    /*
-    public void generateEnsemblSQLTmpFile(List<String> list) {
-        List<String> outputlist = new ArrayList<String>();
-        try {
-            //Add transaction
-            outputlist.add("SET autocommit = 0;");
-            outputlist.add("start transaction;");
-            for(String str:list) {
-                String[] strarrayQ = str.split("\\s+");
-                outputlist.add("INSERT IGNORE INTO `ensembl_entry`(`ENSEMBL_ID`,`ENSEMBL_GENE`,`ENSEMBL_TRANSCRIPT`) VALUES('"
-                        + strarrayQ[0] + "', '" + strarrayQ[3].split(":")[1] + "', '" + strarrayQ[4].split(":")[1]
-                                + "');");
-            }
-            outputlist.add("commit;");
-            // Write File named as sqlEnsemblSQL in application.properties
-            FileUtils.writeLines(new File(ReadConfig.workspace+ReadConfig.sqlEnsemblSQL), outputlist);
-        } catch(Exception ex) {
-            log.error(ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-    */
-    
     /**
      * Generate TmpSeqSQLFile
-     * Fasta headers of ensembl and uniprot genes for generating SQL insert
+     * Fasta headers of ensembl and uniprot genes for generating SQL insert file
      *
      * @param list
      */

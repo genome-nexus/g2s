@@ -15,7 +15,6 @@ import java.util.List;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.log4j.Logger;
-import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelinePreprocessing;
 
 
 /**
@@ -73,6 +72,16 @@ public class FTPClientUtil
         return str;
     }
     
+    /**
+     * Download file from ftp://ftp.site.org
+     * 
+     * @param infileName
+     *                  URL of the infileName
+     * @param outfileName
+     *                  download file to specific location
+     * @return  
+     *          download success or not
+     */
     public boolean downloadFilefromFTP(String infileName, String outfileName){
         log.info("Start download "+outfileName.substring(outfileName.lastIndexOf("/")+1)+" from FTP.");
         boolean success = false;

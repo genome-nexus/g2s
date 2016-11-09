@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.EnsemblRepository;

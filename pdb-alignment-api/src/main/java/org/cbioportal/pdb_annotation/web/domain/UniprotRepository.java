@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.springframework.data.jpa.repository.JpaRepository;
 
