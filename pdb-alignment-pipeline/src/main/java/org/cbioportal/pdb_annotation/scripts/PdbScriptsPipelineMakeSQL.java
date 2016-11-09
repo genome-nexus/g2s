@@ -190,7 +190,7 @@ public class PdbScriptsPipelineMakeSQL {
     public String makeTable_pdb_ensembl_insert(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split("\\s+");
         String[] strarrayS = br.getSseqid().split("_");
-        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEQL_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
                 + br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + strarrayQ[0] + "',"
                 + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd() + ",'" 
                 + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"

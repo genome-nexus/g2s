@@ -1,11 +1,11 @@
 --
 -- database `pdb`
 --
-drop table IF EXISTS pdb_ensembl_alignment;
-drop table IF EXISTS seq_entry;
+drop table IF EXISTS pdb_seq_alignment;
 drop table IF EXISTS uniprot_entry;
 drop table IF EXISTS ensembl_entry;
 drop table IF EXISTS pdb_entry;
+drop table IF EXISTS seq_entry;
 
 CREATE TABLE `seq_entry`(
     `SEQ_ID` int(255) NOT NULL,

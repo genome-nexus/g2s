@@ -1,7 +1,10 @@
 package org.cbioportal.pdb_annotation.web.domain;
 
 import java.util.List;
+
 import javax.transaction.Transactional;
+
+import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Ensembl;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,6 +14,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  */
 @Transactional
-public interface EnsemblRepository extends JpaRepository<Ensembl, Long> {
+public interface EnsemblRepository extends JpaRepository<Ensembl, Long>{
     public List<Ensembl> findByEnsemblId(String ensemblId);
 }

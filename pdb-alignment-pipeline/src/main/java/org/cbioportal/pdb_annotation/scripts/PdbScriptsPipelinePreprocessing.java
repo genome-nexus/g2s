@@ -102,52 +102,6 @@ public class PdbScriptsPipelinePreprocessing {
             ex.printStackTrace();
         }
     }
-
-    /**
-     * obsolete
-     * Preprocess the Gene sequences download from Ensembl
-     * (ftp://ftp.ensembl.org/pub/release-84/fasta/homo_sapiens/pep/Homo_sapiens.GRCh38.pep.all.fa.gz)
-     * This function is designed to split the original FASTA file into several small files. Each small files contains
-     * Constants.ensembl_input_interval lines The purpose of doing this is
-     * saving memory in next step
-     *
-     * @param infilename:
-     *            downloaded file
-     * @param outfilename:
-     *            processed file
-     * @return count
-     */
-    public int preprocessGENEsequences(String infilename, String outfilename) {
-        // count of all generated small files
-        int filecount = 0;
-        try {
-            log.info("[Preprocessing] Preprocessing Ensembl sequences... ");
-            List<String> list = new ArrayList<String>();
-            LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infilename));
-            Collection<ProteinSequence> c = new ArrayList<ProteinSequence>();
-            int count = 0; // line count of the original FASTA file
-            for (Entry<String, ProteinSequence> entry : a.entrySet()) {
-                c.add(entry.getValue());
-                list.add(entry.getValue().getOriginalHeader());
-                if (count % this.seqInputInterval == this.seqInputInterval - 1) {
-                    FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount).toString()), c);
-                    c.clear();
-                    filecount++;
-                }
-                count++;
-            }
-            if(c.size()!=0){
-                FastaWriterHelper.writeProteinSequence(new File(outfilename + "." + new Integer(filecount++).toString()), c);
-            }           
-            setSeq_file_count(filecount);
-            generateSeqSQLTmpFile(list);
-        } catch (Exception ex) {
-            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing Ensembl sequences");
-            log.error(ex.getMessage());
-            ex.printStackTrace();
-        }
-        return filecount;
-    }
     
     /**
      * Preprocess the Gene sequences download from Ensembl, uniprot
@@ -175,6 +129,7 @@ public class PdbScriptsPipelinePreprocessing {
                 list.add(count+";"+entry.getValue());
                 if (count % this.seqInputInterval == this.seqInputInterval - 1) {
                     FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount).toString()), c);
+                    FileUtils.writeLines(new File(outfilename), c, true);
                     c.clear();
                     filecount++;
                 }
@@ -182,6 +137,7 @@ public class PdbScriptsPipelinePreprocessing {
             }
             if(c.size()!=0){
                 FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount++).toString()), c);
+                FileUtils.writeLines(new File(outfilename), c, true);
             }           
             setSeq_file_count(filecount);
             generateSeqSQLTmpFile(list);

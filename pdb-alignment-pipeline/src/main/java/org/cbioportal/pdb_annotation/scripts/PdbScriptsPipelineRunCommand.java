@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.util.CommandProcessUtil;
+import org.cbioportal.pdb_annotation.util.FTPClientUtil;
 import org.cbioportal.pdb_annotation.util.PdbSequenceUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.util.blast.BlastDataBase;
@@ -67,15 +68,14 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
-        /*
+        
         // Step 1: Download essential PDB, Ensembl and uniprot
         // Read Sequences from cloned whole PDB, need at least 22G free spaces and at least 12 hours
         log.info("[PDB] A cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();	
-        pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        //pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        //pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        */
+        pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);       
         
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
@@ -87,33 +87,28 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblDownloadFile);
         cu.runCommand("gunzip", paralist);
         
-        //paralist = new ArrayList<String>();
-        //paralist.add(ReadConfig.swissprotWholeSource);
-        //paralist.add(ReadConfig.workspace + ReadConfig.swissprotWholeSource.substring(ReadConfig.swissprotWholeSource.lastIndexOf("/") + 1));
-        //cu.runCommand("wget", paralist);
+        
+        FTPClientUtil fc = new FTPClientUtil();
+        fc.downloadFilefromFTP(ReadConfig.swissprotWholeSource, ReadConfig.workspace + ReadConfig.swissprotWholeSource.substring(ReadConfig.swissprotWholeSource.lastIndexOf("/") + 1));
 
-        //paralist = new ArrayList<String>();
-        //paralist.add(ReadConfig.workspace + ReadConfig.swissprotWholeSource.substring(ReadConfig.swissprotWholeSource.lastIndexOf("/") + 1));
-        //paralist.add(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
-        //cu.runCommand("gunzip", paralist);
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.swissprotWholeSource.substring(ReadConfig.swissprotWholeSource.lastIndexOf("/") + 1));
+        paralist.add(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
+        cu.runCommand("gunzip", paralist);
         
         
         //TrTembl, it is huge and needs to be careful
         //paralist = new ArrayList<String>();
         //paralist.add(ReadConfig.tremblWholeSource);
         //paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
-        //cu.runCommand("wget", paralist);
+        //cu.runCommand("wgetftp", paralist);
 
         //paralist = new ArrayList<String>();
         //paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
         //paralist.add(ReadConfig.workspace + ReadConfig.tremblDownloadFile);
         //cu.runCommand("gunzip", paralist);
         
-        
-        //paralist = new ArrayList<String>();
-        //paralist.add(ReadConfig.isoformWholeSource);
-        //paralist.add(ReadConfig.workspace + ReadConfig.isoformWholeSource.substring(ReadConfig.isoformWholeSource.lastIndexOf("/") + 1));
-        //cu.runCommand("wget", paralist);
+        fc.downloadFilefromFTP(ReadConfig.isoformWholeSource, ReadConfig.workspace + ReadConfig.isoformWholeSource.substring(ReadConfig.isoformWholeSource.lastIndexOf("/") + 1));
 
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.isoformWholeSource.substring(ReadConfig.isoformWholeSource.lastIndexOf("/") + 1));
@@ -121,8 +116,9 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("gunzip", paralist);        
 
         // Step 2: choose only protein entries of all pdb
-        //preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile, ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
-
+        preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile, ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+      
+        
         // Step 3: preprocess sequence files, incorprate ensembl, swissprot, trembl and isoform together; This step takes memory
         // Then split into small files to save the running memory               
         HashMap<String,String> uniqSeqHm = new HashMap<String,String>();
@@ -160,13 +156,13 @@ public class PdbScriptsPipelineRunCommand {
 
         // Step 6: parse results and output as input sql statments
         parseprocess.parse2sql(false, ReadConfig.workspace);
-
+        
         // Step 7: create data schema
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);      
         cu.runCommand("mysql", paralist);
 
-        // Step 8: import ensembl SQL statements into the database
+        // Step 8: import gene sequence SQL statements into the database
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);      
         cu.runCommand("mysql", paralist);
@@ -274,6 +270,5 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + this.db.resultfileName );
             cu.runCommand("rm", paralist);
         }
-
     }
 }

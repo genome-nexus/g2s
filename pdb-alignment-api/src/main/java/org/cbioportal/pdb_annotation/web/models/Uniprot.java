@@ -5,6 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * 
+ * @author Juexin Wang
+ *
+ */
 @Entity
 @Table(name = "uniprot_entry")
 public class Uniprot {
