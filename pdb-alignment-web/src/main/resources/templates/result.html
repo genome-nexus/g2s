@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head>
+<title>Results:</title>
+</head>
+<body>
+	<h1 layout:fragment="header">Blast Results : View all</h1>
+	<div layout:fragment="content" class="container">
+	<div class="alert alert-success" th:if="${globalMessage}"
+			th:text="${globalMessage}">Some Success message</div>
+		<table class="table table-bordered table-striped">	
+			<thead>
+				<tr>
+					<td>ID</td>
+					<td>PDB</td>
+					<td>Chain</td>
+					<td>Segment</td>
+					<td>PDBFrom</td>
+					<td>PDBTo</td>
+					<td>SeqFrom</td>
+					<td>SeqTo</td>
+					<td>Evalue</td>
+					<td>Bitscore</td>
+					<td>Identity</td>
+					<td>identityP</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${alignments.empty}">
+					<td colspan="12">No results</td>
+				</tr>
+				<tr th:each="alignment : ${alignments}">
+					<td th:text="${alignment.alignmentId}">1</td>					
+					<td th:text="${alignment.pdbId}">1</td>
+					<td th:text="${alignment.chain}">1</td>
+					<td th:text="${alignment.pdbSeg}">1</td>
+					<td th:text="${alignment.pdbFrom}">1</td>
+					<td th:text="${alignment.pdbTo}">1</td>
+					<td th:text="${alignment.seqFrom}">1</td>
+					<td th:text="${alignment.seqTo}">1</td>
+					<td th:text="${alignment.evalue}">1</td>
+					<td th:text="${alignment.bitscore}">1</td>
+					<td th:text="${alignment.identity}">1</td>
+					<td th:text="${alignment.identp}">1</td>					
+				</tr>			
+			</tbody>
+		</table>
+		<a href="/input">Submit another sequence</a>
+	</div>
+</body>
+</html>

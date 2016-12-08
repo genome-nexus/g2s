@@ -325,8 +325,8 @@ public class PdbScriptsPipelineMakeSQL {
         br.qseqid = querytext;
         br.sseqid = hit.getHitDef().split("\\s+")[0];
         for (Hsp tmp : hit.getHitHsps().getHsp()) {
-            br.ident = Double.parseDouble(tmp.getHspPositive());
-            br.identp = Double.parseDouble(tmp.getHspIdentity());
+            br.ident = Double.parseDouble(tmp.getHspIdentity());
+            br.identp = Double.parseDouble(tmp.getHspPositive());
             br.evalue = Double.parseDouble(tmp.getHspEvalue());
             br.bitscore = Double.parseDouble(tmp.getHspBitScore());
             br.qStart = Integer.parseInt(tmp.getHspQueryFrom());

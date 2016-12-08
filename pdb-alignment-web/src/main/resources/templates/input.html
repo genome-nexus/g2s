@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<head> 
+    <title>Getting Started: Handling Form Submission</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1 layout:fragment="header">Form</h1>
+	<div layout:fragment="content" class="container">
+    	<form action="#" th:action="@{/input}" th:object="${inputsequence}" method="post">
+    		<p>Introduction here</p>
+        	<p>Input protein sequences here:</p>        	
+        	<textarea rows="10" cols="100" th:field="*{sequence}"></textarea> 
+        	<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence Error</p>     	       	
+        	<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    	</form>
+    </div>
+
+    <div layout:fragment="footer"></div>
+</body>
+</html>

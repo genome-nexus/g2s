@@ -6,12 +6,13 @@
     <name>PDB Annotation Master</name>
     <version>0.1.0</version>
     <description>master maven module</description>
-    <url>https://github.com/cBioPortal/genome-nexus/</url>
+    <url>https://github.com/cBioPortal/pdb-annotation/</url>
 
     <modules>
       <module>pdb</module>
       <module>pdb-alignment-pipeline</module>
       <module>pdb-alignment-api</module>
+      <module>pdb-alignment-web</module>
     </modules>
 
     <!-- inherit defaults from spring boot -->

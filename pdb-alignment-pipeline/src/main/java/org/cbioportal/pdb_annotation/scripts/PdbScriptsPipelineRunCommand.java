@@ -68,7 +68,6 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
-        
         // Step 1: Download essential PDB, Ensembl and uniprot
         // Read Sequences from cloned whole PDB, need at least 22G free spaces and at least 12 hours
         log.info("[PDB] A cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
