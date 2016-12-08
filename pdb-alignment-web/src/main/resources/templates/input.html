@@ -9,11 +9,17 @@
 <body>
 	<h1 layout:fragment="header">Form</h1>
 	<div layout:fragment="content" class="container">
-    	<form action="#" th:action="@{/input}" th:object="${inputsequence}" method="post">
-    		<p>Introduction here</p>
+	<p>Introduction here</p>
+    	<form action="#" th:action="@{/input}" th:object="${inputsequence}" method="post">   		
         	<p>Input protein sequences here:</p>        	
         	<textarea rows="10" cols="100" th:field="*{sequence}"></textarea> 
-        	<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence Error</p>     	       	
+        	<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence Error</p> 
+        	<p>Input interested residue number here:(Optional)</p> 
+        	<p th:if="${#fields.hasErrors('residueNum')}" th:errors="*{residueNum}">Residue Number Error</p> 
+        	<input type="text" th:field="*{residueNum}"></input> 
+        	<p>Input corresponding residue name here:(Optional)</p> 
+        	<p th:if="${#fields.hasErrors('residueName')}" th:errors="*{residueName}">Residue Name Error</p> 
+        	<input type="text" th:field="*{residueName}"></input>  	       	
         	<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
     	</form>
     </div>

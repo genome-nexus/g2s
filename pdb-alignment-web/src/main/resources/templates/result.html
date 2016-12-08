@@ -25,25 +25,28 @@
 					<td>Bitscore</td>
 					<td>Identity</td>
 					<td>identityP</td>
+					<td>Mapped Residue</td>
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:if="${alignments.empty}">
+				<tr th:if="${residues.empty}">
 					<td colspan="12">No results</td>
 				</tr>
-				<tr th:each="alignment : ${alignments}">
-					<td th:text="${alignment.alignmentId}">1</td>					
-					<td th:text="${alignment.pdbId}">1</td>
-					<td th:text="${alignment.chain}">1</td>
-					<td th:text="${alignment.pdbSeg}">1</td>
-					<td th:text="${alignment.pdbFrom}">1</td>
-					<td th:text="${alignment.pdbTo}">1</td>
-					<td th:text="${alignment.seqFrom}">1</td>
-					<td th:text="${alignment.seqTo}">1</td>
-					<td th:text="${alignment.evalue}">1</td>
-					<td th:text="${alignment.bitscore}">1</td>
-					<td th:text="${alignment.identity}">1</td>
-					<td th:text="${alignment.identp}">1</td>					
+				<tr th:each="residue : ${residues}">
+					<td th:text="${residue.alignmentId}">1</td>					
+					<td th:text="${residue.pdbId}">1</td>
+					<td th:text="${residue.chain}">1</td>
+					<td th:text="${residue.pdbSeg}">1</td>
+					<td th:text="${residue.pdbFrom}">1</td>
+					<td th:text="${residue.pdbTo}">1</td>
+					<td th:text="${residue.seqFrom}">1</td>
+					<td th:text="${residue.seqTo}">1</td>
+					<td th:text="${residue.evalue}">1</td>
+					<td th:text="${residue.bitscore}">1</td>
+					<td th:text="${residue.identity}">1</td>
+					<td th:text="${residue.identp}">1</td>
+					<td th:text="${residue.residueNum}">1</td>
+					<td th:text="${residue.residueName}">1</td>					
 				</tr>			
 			</tbody>
 		</table>
