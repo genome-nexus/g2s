@@ -61,13 +61,13 @@ public class PdbScriptsPipelineRunCommand {
 
         //blastp input genes against pdb
         paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.tmpdir + inputsequence.getId()+".fasta");
-        paralist.add(ReadConfig.tmpdir + this.db.resultfileName);
+        paralist.add(ReadConfig.uploaddir + inputsequence.getId()+".fasta");
+        paralist.add(ReadConfig.uploaddir + this.db.resultfileName);
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("blastp", paralist); 
         
         //parse results and output results
-        List<Alignment> outresults = parseblastresultsSingle(ReadConfig.tmpdir);
+        List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
         
         return outresults;       
     }
@@ -79,7 +79,7 @@ public class PdbScriptsPipelineRunCommand {
      */
     public void webInput2File(Inputsequence inputsequence){
         try{
-            FileUtils.writeStringToFile(new File(ReadConfig.tmpdir + inputsequence.getId()+".fasta"), inputsequence.getSequence());
+            FileUtils.writeStringToFile(new File(ReadConfig.uploaddir + inputsequence.getId()+".fasta"), inputsequence.getSequence());
         }catch(Exception ex){
             ex.printStackTrace();
         }

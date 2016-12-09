@@ -280,6 +280,36 @@ public class PdbScriptsPipelinePreprocessing {
         }
         return listOld;
     }
+    
+    /**
+     * 
+     * TODO
+     * de novo preprocess PDB sequence update
+     * Used for update complete, and got the updated pdb sequences files 
+     * 
+     * @param infileName
+     * @param outfileName
+     */
+    public void denovoPreprocessPDBsequencesUpdate(String infileName, String outfileName) {
+        try {
+            log.info("[Preprocessing] Preprocessing PDB sequences... ");
+            LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
+            StringBuffer sb = new StringBuffer();
+            for (Entry<String, ProteinSequence> entry : a.entrySet()) {
+                String[] tmp = entry.getValue().getOriginalHeader().toString().split("\\|");
+                String outstr = tmp[0].replaceAll(":", "_");
+                sb.append(">" + outstr + "\n" + entry.getValue().getSequenceAsString() + "\n");
+            }
+            // one line contains all AA
+            FileWriter fw = new FileWriter(new File(outfileName));
+            fw.write(sb.toString());
+            fw.close();
+        } catch (Exception ex) {
+            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
 
 
 }

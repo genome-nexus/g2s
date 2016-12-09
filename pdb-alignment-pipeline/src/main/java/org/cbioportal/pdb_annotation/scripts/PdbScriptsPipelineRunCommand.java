@@ -253,8 +253,18 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(currentDir + ReadConfig.sqlInsertFile);      
         cu.runCommand("mysql", paralist);
+        
+        // Step 7: After update all the new alignments,
+        //          Create complete PDB sequences for de novo sequence blast
+        preprocess.denovoPreprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresFastaFile, ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);      
 
-        // Step 7: Clean up
+        paralist = new ArrayList<String>();       
+        paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+        paralist.add(ReadConfig.workspace + this.db.dbName);       
+        cu.runCommand("makeblastdb", paralist);
+        
+
+        // Step 8: Clean up
         if(ReadConfig.saveSpaceTag.equals("true")){
             log.info("[PIPELINE] Start cleaning up in filesystem");
             paralist = new ArrayList<String>();
@@ -268,6 +278,8 @@ public class PdbScriptsPipelineRunCommand {
             paralist = new ArrayList<String>();	
             paralist.add(currentDir + this.db.resultfileName );
             cu.runCommand("rm", paralist);
+            //TODO
+            //keep sth
         }
     }
 }

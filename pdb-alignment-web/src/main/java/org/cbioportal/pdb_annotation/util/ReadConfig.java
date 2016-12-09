@@ -19,7 +19,7 @@ public class ReadConfig {
 
     public static String blastp;
     public static String workspace;
-    public static String tmpdir;
+    public static String uploaddir;
     public static String pdbSeqresFastaFile;
     public static String blastParaEvalue;
     public static String blastParaWordSize;
@@ -54,7 +54,7 @@ public class ReadConfig {
             // Set all constants
             ReadConfig.blastp = prop.getProperty("blastp");
             ReadConfig.workspace = prop.getProperty("workspace");
-            ReadConfig.tmpdir = prop.getProperty("tmpdir");
+            ReadConfig.uploaddir = prop.getProperty("uploaddir");
             ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file");
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue");
             ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size");
@@ -98,12 +98,12 @@ public class ReadConfig {
         ReadConfig.workspace = workspace;
     }
 
-    public static String getTmpdir() {
-        return tmpdir;
+    public static String getUploaddir() {
+        return uploaddir;
     }
 
-    public static void setTmpdir(String tmpdir) {
-        ReadConfig.tmpdir = tmpdir;
+    public static void setUploaddir(String uploaddir) {
+        ReadConfig.uploaddir = uploaddir;
     }
 
     public static String getPdbSeqresFastaFile() {
