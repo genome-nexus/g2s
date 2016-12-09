@@ -52,7 +52,7 @@ public class InputsequenceController {
         //inputsequence.setSequence(inputsequence.getSequence());
         
         PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand= new PdbScriptsPipelineRunCommand();        
-        List<Alignment> alignments = pdbScriptsPipelineRunCommand.runBlast(inputsequence);
+        List<Alignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
         
         List<Residue> residues = new ArrayList<Residue> ();
         int inputAA=0;

@@ -49,7 +49,7 @@ public class PdbScriptsPipelineRunCommand {
     /**
      * main steps of init pipeline
      */
-    public List<Alignment> runBlast(Inputsequence inputsequence) {   	
+    public List<Alignment> runCommand(Inputsequence inputsequence) {   	
 
         CommandProcessUtil cu = new CommandProcessUtil();
         ReadConfig rc = ReadConfig.getInstance();
@@ -68,6 +68,15 @@ public class PdbScriptsPipelineRunCommand {
         
         //parse results and output results
         List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
+        
+        //Clean Up
+        paralist = new ArrayList<String>(); 
+        paralist.add(ReadConfig.uploaddir + inputsequence.getId()+".fasta" );
+        cu.runCommand("rm", paralist);
+        
+        paralist = new ArrayList<String>(); 
+        paralist.add(ReadConfig.uploaddir + this.db.resultfileName );
+        cu.runCommand("rm", paralist);
         
         return outresults;       
     }

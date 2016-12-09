@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.io.FastaWriterHelper;
 import org.cbioportal.pdb_annotation.util.FTPClientUtil;
 import org.cbioportal.pdb_annotation.util.PdbSequenceUtil;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
@@ -283,23 +284,35 @@ public class PdbScriptsPipelinePreprocessing {
     
     /**
      * 
-     * TODO
      * de novo preprocess PDB sequence update
      * Used for update complete, and got the updated pdb sequences files 
      * 
+     * @param dataVersion
+     * @param listOld
      * @param infileName
      * @param outfileName
      */
-    public void denovoPreprocessPDBsequencesUpdate(String infileName, String outfileName) {
+    public void denovoPreprocessPDBsequencesUpdate( String dateVersion, List<String> listOld, String infileName, String outfileName) {
         try {
-            log.info("[Preprocessing] Preprocessing PDB sequences... ");
-            LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
+            log.info("[Update] Updating PDB sequences ... ");
+            HashMap<String,String> hm = new HashMap();
+            for(String deletePDB:listOld){
+                hm.put(deletePDB, "");
+            }
+            LinkedHashMap<String, ProteinSequence> a = FastaReaderHelper.readFastaProteinSequence(new File(outfileName));
             StringBuffer sb = new StringBuffer();
             for (Entry<String, ProteinSequence> entry : a.entrySet()) {
-                String[] tmp = entry.getValue().getOriginalHeader().toString().split("\\|");
-                String outstr = tmp[0].replaceAll(":", "_");
-                sb.append(">" + outstr + "\n" + entry.getValue().getSequenceAsString() + "\n");
+                String pdbName = entry.getValue().getOriginalHeader().toString().split("\\s+")[0].split("_")[0];
+                if(!hm.containsKey(pdbName)){
+                    sb.append(">" + entry.getValue().getOriginalHeader().toString() + "\n" + entry.getValue().getSequenceAsString() + "\n");
+                }
             }
+            
+            LinkedHashMap<String, ProteinSequence> b = FastaReaderHelper.readFastaProteinSequence(new File(infileName));
+            for (Entry<String, ProteinSequence> entry : b.entrySet()) {               
+                sb.append(">" + entry.getValue().getOriginalHeader().toString() + "\t" + dateVersion + "\n" + entry.getValue().getSequenceAsString() + "\n");                
+            }
+            
             // one line contains all AA
             FileWriter fw = new FileWriter(new File(outfileName));
             fw.write(sb.toString());
