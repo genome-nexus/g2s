@@ -15,16 +15,28 @@
 		<div class="navbar">
 			<div class="navbar-inner">
 				<a class="brand"
-					href="https://github.com/ultraq/thymeleaf-layout-dialect">
-					Thymeleaf - Layout </a>
+					th:href="@{/input}" href="input.html">
+					Pdb-Annotation </a>
 				<ul class="nav">
-					<li><a th:href="@{/}" href="messages.html"> Messages </a></li>
+					<li><a th:href="@{/input}" href="input.html"> De Novo Sequence </a></li>
+				</ul>
+				<ul class="nav">
+					<li><a th:href="@{/api}" href="api.html"> API </a></li>
+				</ul>
+				<ul class="nav">
+					<li><a th:href="@{/about}" href="about.html"> About </a></li>
+				</ul>
+				<ul class="nav">
+					<li><a th:href="@{/contact}" href="contact.html"> Contact </a></li>
+				</ul>
+				<ul class="nav">
+					<li><a href="https://github.com/cBioPortal/pdb-annotation"> Code </a></li>
 				</ul>
 			</div>
 		</div>
 		<h1 layout:fragment="header">Layout</h1>
 		<div layout:fragment="content">Fake content</div>
-		<div layout:fragment="footer">Footer</div>
+		<div layout:fragment="footer"><footer><p>© 2016 Company, Inc.</p></footer></div>
 	</div>
 </body>
 </html>

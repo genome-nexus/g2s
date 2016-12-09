@@ -6,7 +6,7 @@
 <title>Results:</title>
 </head>
 <body>
-	<h1 layout:fragment="header">Blast Results : View all</h1>
+	<h1 layout:fragment="header">Blast Results : </h1>
 	<div layout:fragment="content" class="container">
 	<div class="alert alert-success" th:if="${globalMessage}"
 			th:text="${globalMessage}">Some Success message</div>
@@ -50,7 +50,7 @@
 				</tr>			
 			</tbody>
 		</table>
-		<a href="/input">Submit another sequence</a>
+		<p href="/input">Submit another sequence</p>
 	</div>
 </body>
 </html>

@@ -36,29 +36,6 @@ public class InputsequenceController {
         return new ModelAndView("input");
     }   
     
-    /*
-    @PostMapping("/input")
-    public ModelAndView resultBack(@ModelAttribute @Valid Inputsequence inputsequence, BindingResult bindingResult, HttpServletRequest request) {
-        if (bindingResult.hasErrors()) {
-            return new ModelAndView ("input");
-        } 
-        
-        //is client behind something?
-        String ipAddress = request.getHeader("X-FORWARDED-FOR");
-        if (ipAddress == null) {
-               ipAddress = request.getRemoteAddr();
-        }
-        
-        inputsequence.setId(ipAddress);
-        inputsequence.setSequence(inputsequence.getSequence());
-        
-        PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand= new PdbScriptsPipelineRunCommand();        
-        List<Alignment> alignments = pdbScriptsPipelineRunCommand.runBlast(inputsequence);
-        
-        return new ModelAndView ("/result","alignments", alignments);
-    }
-    */
-    
     @PostMapping("/input")
     public ModelAndView resultBack(@ModelAttribute @Valid Inputsequence inputsequence, BindingResult bindingResult, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
@@ -111,9 +88,23 @@ public class InputsequenceController {
                 }
                 residues.add(re);
             }
-        }
-        
+        }       
         return new ModelAndView ("/result","residues", residues);
+    }
+    
+    @GetMapping("/api")
+    public ModelAndView apiInfo() {
+        return new ModelAndView ("api");
+    }
+    
+    @GetMapping("/about")
+    public ModelAndView aboutInfo() {
+        return new ModelAndView ("about");
+    }
+    
+    @GetMapping("/contact")
+    public ModelAndView contactInfo() {
+        return new ModelAndView ("contact");
     }
     
 }
