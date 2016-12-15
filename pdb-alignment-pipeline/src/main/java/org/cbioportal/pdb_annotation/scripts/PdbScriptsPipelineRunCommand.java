@@ -73,9 +73,10 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[PDB] A cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();	
         //pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);       
+        pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        //pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);       
         
+        /*
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));

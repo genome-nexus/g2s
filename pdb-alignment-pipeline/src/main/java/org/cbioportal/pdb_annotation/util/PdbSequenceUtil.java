@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,6 +85,28 @@ public class PdbSequenceUtil {
      * Generate new segment from parsing results 
      * @param start
      * @param end
+     * @param resiMap
+     * @return
+     */
+    SegmentRecord generateNewSegmentRecord (int start, int end, Map<Integer,String> resiMap){
+        SegmentRecord sr = new SegmentRecord();
+        sr.setSegmentStart(start);
+        sr.setSegmentEnd(end);
+        //System.out.println("###"+aaCount+"\t"+numPrior+"\t"+start);
+        String tmpSeq = "";
+        for(int i=start; i<=end; i++){
+            tmpSeq = tmpSeq + resiMap.get(i-1);
+        }       
+        sr.setAaSequence(tmpSeq);                             
+        
+        return sr;
+    }
+    
+    /**
+     * obsolete
+     * Generate new segment from parsing results 
+     * @param start
+     * @param end
      * @param aaCount
      * @param c
      * @param insertionCodeAl
@@ -108,6 +132,7 @@ public class PdbSequenceUtil {
     }
     
     /**
+     * Obsolete, need to delete late
      * read PDB file and generate the results to a String
      * 
      * Known bug for Insertion code of PDB:
@@ -116,7 +141,7 @@ public class PdbSequenceUtil {
      * @param pdbFileName
      * @return
      */
-    public String readPDB2Results(String pdbFileName) {
+    public String readPDB2Results_stepbystep(String pdbFileName) {
         String outstr = "";
         try {
             
@@ -244,18 +269,21 @@ public class PdbSequenceUtil {
                             //log.warn(s.getPDBCode()+"_"+c.getChainID()+": Have Fragments in decreasing order of Insertion codes, ignoring Former Insertion codes fragments");
                             aaCount = aaCount+numPrior-start+1+insertionCodeAl.size();
                             start = parseNumberfromMix(groups.get(i).getResidueNumber().toString()); 
-                            insertionCodeAl = new ArrayList<Integer>();                          
+                            insertionCodeAl = new ArrayList<Integer>();
                         }
                         // if contains Letter, as 1iao_B, 6-94, 94A, 95-188, 1T, 2T. we ignore the following 1T, return the fragment immediately
                         else if(!containsLetter(groups.get(i-1).getResidueNumber().toString()) && containsLetter(groups.get(i).getResidueNumber().toString())){
                             log.warn(s.getPDBCode()+"_"+c.getChainID()+": Have Fragments in decreasing order of Insertion codes, ignoring Later Insertion codes fragments");
                             end = parseNumberfromMix(groups.get(i-1).getResidueNumber().toString()); 
-                            insertionCodeAl = new ArrayList<Integer>();
+                            insertionCodeAl = new ArrayList<Integer>();                            
                             break;
                         }
                         //if does not contains Letter, then that is error here
                         else{
-                            log.warn(s.getPDBCode()+"_"+c.getChainID()+": Garbled! Have Fragments in decreasing order");                            
+                            log.warn(s.getPDBCode()+"_"+c.getChainID()+": Garbled! Have Fragments in decreasing order"); 
+                            System.out.println("Case3");
+                            System.out.println("numPrior:"+numPrior+"\tnumPresent:"+numPresent);
+                            System.out.println("start:"+start+"\tend:"+ end+"\taaCount:"+aaCount);
                             garbledCheck = true;
                             break;
                         }   
@@ -272,6 +300,206 @@ public class PdbSequenceUtil {
                 if(end-start>=Integer.parseInt(ReadConfig.pdbSegMinLengthSingle)){
                     srAl.add(sr); 
                 }
+                
+                //Check inner linker, link gaps
+                    ArrayList<SegmentRecord> srAlCopy = new ArrayList<SegmentRecord>();
+                    if(srAl.size()>0){
+                        srAlCopy.add(srAl.get(0));
+                    }else{
+                        //log.warn(s.getPDBCode()+"_"+c.getChainID()+": Fragments length is not long enough");
+                        continue;
+                    }                    
+                    
+                    for(int i=1; i<srAl.size(); i++){
+                        if(srAl.get(i).getSegmentStart()-srAlCopy.get(srAlCopy.size()-1).getSegmentEnd()-1<=Integer.parseInt(ReadConfig.pdbSegGapThreshold)){
+                            int linkNum = srAl.get(i).getSegmentStart()-srAlCopy.get(srAlCopy.size()-1).getSegmentEnd()-1;
+                            sr = srAlCopy.get(srAlCopy.size()-1);
+                            sr.setSegmentEnd(srAl.get(i).getSegmentEnd());
+                            String linkStr = "";
+                            for(int j=0; j<linkNum; j++){
+                                linkStr = linkStr + "X";
+                            }
+                            sr.setAaSequence(sr.getAaSequence()+linkStr+srAl.get(i).getAaSequence());
+                        }else{
+                            srAlCopy.add(srAl.get(i));
+                        }
+                    }               
+                
+                int segCount = 1;
+
+                for(SegmentRecord srr:srAlCopy){                    
+                    //System.out.println(headerStr + " " + segCount + " " + srr.getSegmentStart() + " " + srr.getSegmentEnd() + "\n" + srr.getAaSequence() + "\n");
+                    tmpstr = tmpstr + headstr + "_" + segCount + " " + molClassification
+                            + " length:" + seqLength + " " + srr.getSegmentStart() + " " + srr.getSegmentEnd() + "\n" + srr.getAaSequence() + "\n";
+                    segCount++;                                                      
+                }
+                
+                outstr = outstr + tmpstr;
+                }catch(Exception ex){
+                    log.error(s.getPDBCode()+"_"+c.getChainID()+": Exception");
+                    ex.printStackTrace();
+                }
+            }
+        } catch (Exception ex) {          
+            ex.printStackTrace();
+        }
+        return outstr;
+    }
+    
+    
+    /**
+     * read PDB file and generate the results to a String
+     * 
+     * New:
+     * Use HashMap to involve all the garbled proteins
+     * 
+     * Known bug for Insertion code of PDB:
+     * 1. For 1HAG_E, there are 1H, 1G, 1F, 1A,...1, the function will choose the first one: 1H, not 1 as it should be
+     * 
+     * @param pdbFileName
+     * @return
+     */
+    public String readPDB2Results(String pdbFileName) {
+        String outstr = "";
+        try {
+            
+            Structure s = StructureIO.getStructure(pdbFileName);
+            String molClassification = "mol:protein";
+            if (s.getPDBHeader().getClassification().equals("DNA-RNA HYBRID")
+                    || s.getPDBHeader().getClassification().equals("DNA/RNA HYBRID")
+                    || s.getPDBHeader().getClassification().equals("DNA BINDING PROTEIN/DNA")
+                    || s.getPDBHeader().getClassification().equals("COMPLEX (AMINOACYL-TRNA SYNTHASE/TRNA)")
+                    || s.getPDBHeader().getClassification().equals("TRANSCRIPTION/DNA")
+                    || s.getPDBHeader().getClassification().equals("HYDROLASE/DNA")
+                    || s.getPDBHeader().getClassification().equals("HYDROLASE/RNA")
+                    || s.getPDBHeader().getClassification().equals("GENE REGULATION/RNA")
+                    || s.getPDBHeader().getClassification().equals("DNA")
+                    || s.getPDBHeader().getClassification().equals("RNA")) {
+                molClassification = "mol:na";
+                //Directly use only protein
+                return "";
+            }
+            for (Chain c : s.getChains()) {
+                try{
+                //System.out.println("*"+s.getPDBCode().toLowerCase()+"*"+c.getChainID());
+                /*
+                System.out.println(s.getDBRefs().size());
+                for(DBRef dbref:s.getDBRefs()){
+                    System.out.println(dbref.getChainId()+"\t"+dbref.getSeqBegin()+"\t"+dbref.getSeqEnd()+"\t"+dbref.getDbSeqBegin()+"\t"+dbref.getDbSeqEnd());
+                }
+                */                              
+                ArrayList<SegmentRecord> srAl = new ArrayList<SegmentRecord>();
+                List<Group> groups = c.getAtomGroups();
+                int aaCount = 0;
+                if(c.getAtomSequence().length()<1){
+                    //log.warn(s.getPDBCode()+"_"+c.getChainID()+": No Chain for AtomSequence<1");
+                    continue;
+                }
+                //One possible bug for biojava, e.g. 3igv_A, the end of chain should be 269Y, not Hetatm 1K
+                //Set endCheck to amend this
+                boolean endCheck = false;
+                
+                //PDB is garbled, e.g. 1IAO
+                boolean garbledCheck = false;
+
+                /*
+                //Test
+                for(Group group: c.getSeqResGroups()){
+                    System.out.print(group.getChemComp().getOne_letter_code());                   
+                }               
+                
+                System.out.println();                
+                System.out.println(c.getSeqResGroups().size());
+                System.out.println();
+                
+                for(Group group: c.getAtomGroups()){
+                    System.out.print(group.getChemComp().getOne_letter_code());                   
+                }
+                
+                System.out.println();
+                System.out.println("c.getAtomGroups().size():\t"+c.getAtomGroups().size());                
+                
+                System.out.println(c.getAtomLength());
+                System.out.println(c.getAtomSequence());
+                System.out.println("c.getAtomSequence().length():\t"+c.getAtomSequence().length());
+                
+                //int tcount =0;
+                //for(Group group: c.getAtomGroups()){
+                //    System.out.println(tcount+"\t"+group.getResidueNumber()+"&\t"+group); 
+                //    tcount++;
+                //}
+                
+                for(int k=0;k<c.getAtomSequence().length();k++){
+                    System.out.println(k+"\t"+c.getAtomGroup(k).getResidueNumber()+"&\t"+c.getAtomGroup(k)); 
+                }
+                //Test End
+                */
+                                
+                
+                int seqLength = c.getAtomSequence().length();
+                
+              //Check error for biojava bugs in 3h1r : getAtomSequence().length is 226, it should be 224
+                if(c.getAtomSequence().length()>c.getAtomLength()){
+                    seqLength = c.getAtomLength();
+                } 
+                  
+                
+                String headstr = ">" + s.getPDBCode().toLowerCase() + "_" + c.getChainID() ;
+                String tmpstr= "";
+                
+                
+                //Generate one HashMap to store all the residue information
+                Map<Integer,String> resiMap = new HashMap<Integer,String>();
+                
+                for(int i=0;i<seqLength;i++){
+                    int resiNo = parseNumberfromMix(groups.get(i).getResidueNumber().toString());
+                    if(resiMap.containsKey(resiNo)){
+                        if(containsLetter(groups.get(i).getResidueNumber().toString())){
+                            //If contains letters, then do nothing
+                        }else{
+                            //Overwrite if contains no letters
+                            resiMap.put(resiNo, c.getAtomSequence().substring(i, i+1));
+                        }
+                    }else{
+                        resiMap.put(resiNo, c.getAtomSequence().substring(i, i+1));
+                    }                   
+                }
+                
+                //sort
+                Map<Integer,String> treeResiMap = new TreeMap<Integer,String>(resiMap);
+                
+                //Regenerate residues from scratch
+                ArrayList<Integer> resiAl = new ArrayList<Integer>();                
+                for(int resiNo:treeResiMap.keySet()){
+                    resiAl.add(resiNo);
+                }
+                
+                //Check               
+                int start = resiAl.get(0);
+                int end = resiAl.get(resiAl.size()-1);
+                
+                                
+                // Generate Segments
+                for(int i=1;i<resiAl.size();i++){
+                    int numPresent = resiAl.get(i);
+                    int numPrior = resiAl.get(i-1);
+                    if((numPresent-numPrior)>1 ){            
+                        
+                        SegmentRecord sr = generateNewSegmentRecord (start, numPrior, resiMap);                                                                                   
+                        if(numPrior-start>=Integer.parseInt(ReadConfig.pdbSegMinLengthMulti)){
+                            srAl.add(sr); 
+                        }                                                                        
+                        start = numPresent; 
+                        
+                    }
+                    
+                }
+                
+                SegmentRecord sr = generateNewSegmentRecord (start, end, resiMap);  
+                
+                if(end-start>=Integer.parseInt(ReadConfig.pdbSegMinLengthSingle)){
+                    srAl.add(sr); 
+                }         
                 
                 //Check inner linker, link gaps
                     ArrayList<SegmentRecord> srAlCopy = new ArrayList<SegmentRecord>();
