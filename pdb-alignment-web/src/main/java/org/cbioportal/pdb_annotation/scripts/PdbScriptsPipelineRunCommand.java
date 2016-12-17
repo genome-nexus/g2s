@@ -37,7 +37,6 @@ public class PdbScriptsPipelineRunCommand {
     /**
      * Constructor
      */
-
     public BlastDataBase getDb() {
         return db;
     }

@@ -143,7 +143,7 @@ public class CommandProcessUtil {
                 break;
             case "rsync":
                 log.info("[SHELL] Running rsync command and clone whole PDB to" + paralist.get(0) + "...");
-                pb = new ProcessBuilder("rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ " + paralist.get(0));
+                pb = new ProcessBuilder(makdeRsyncCommand(paralist.get(0)));
                 break;
             case "rm":
                 log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
@@ -232,7 +232,7 @@ public class CommandProcessUtil {
 
     /**
      * Helper Function for building the following command :
-     * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue  1e-60 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
+     * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue  1e-60 -max_target_seqs 500 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
      *
      * @return A List of command arguments for the processbuilder
      */
@@ -247,6 +247,8 @@ public class CommandProcessUtil {
         list.add(ReadConfig.blastParaWordSize);
         list.add("-evalue");
         list.add(ReadConfig.blastParaEvalue);
+        list.add("-max_target_seqs");
+        list.add(ReadConfig.blastParaMaxTargetSeqs);
         list.add("-num_threads");
         list.add(ReadConfig.blastParaThreads);
         list.add("-outfmt");
@@ -272,10 +274,35 @@ public class CommandProcessUtil {
         return list;
     }
 
+    /**
+     * generate rm command
+     * 
+     * @param inFilename
+     * @return
+     */
     private List<String> makdeRmCommand(String inFilename) {
         List<String> list = new ArrayList<String>();
         list.add("rm");
         list.add("-fr");
+        list.add(inFilename);
+        return list;
+    }
+    
+    /**
+     * generate rsync command to synchronize the PDB
+     * 
+     * @param inFilename
+     * @return
+     */
+    private List<String> makdeRsyncCommand(String inFilename) {
+        List<String> list = new ArrayList<String>();
+        list.add("rsync");
+        list.add("-rlpt");
+        list.add("-v");
+        list.add("-z");
+        list.add("--delete");
+        list.add("--port=33444");
+        list.add("rsync.rcsb.org::ftp_data/structures/divided/pdb/");
         list.add(inFilename);
         return list;
     }

@@ -21,6 +21,7 @@ public class PdbScriptsPipelineStarter {
     public static final String INITIALIZE_DATABASE_COMMAND = "init";
     public static final String WEEKLY_UPDATE_COMMAND = "updateweekly";
     public static final String IMMEDIATE_UPDATE_COMMAND = "update";
+    
     /**
      * main function, run the commands
      *

@@ -19,7 +19,7 @@ import org.cbioportal.pdb_annotation.util.blast.Iteration;
 import org.cbioportal.pdb_annotation.util.blast.IterationHits;
 
 /**
- * SQL Insert statments Generation
+ * SQL Insert statements Generation
  * 
  * @author Juexin Wang
  *

@@ -1,9 +1,8 @@
 package org.cbioportal.pdb_annotation.util;
 
 import java.util.*;
-
 import org.apache.log4j.Logger;
-import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
+
 
 /**
  *

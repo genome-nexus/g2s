@@ -36,6 +36,7 @@ public class ReadConfig {
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
     public static String blastParaEvalue;
+    public static String blastParaMaxTargetSeqs;
     public static String blastParaWordSize;
     public static String blastParaThreads;
     public static String ensemblInputInterval;
@@ -113,6 +114,7 @@ public class ReadConfig {
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file");
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file");
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue");
+            ReadConfig.blastParaMaxTargetSeqs = prop.getProperty("blast_para_max_target_seqs");
             ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size");
             ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads");
             ReadConfig.ensemblInputInterval = prop.getProperty("ensembl_input_interval");
@@ -160,6 +162,14 @@ public class ReadConfig {
             rcObj = new ReadConfig();
         }
         return rcObj;
+    }
+
+    public static String getBlastParaMaxTargetSeqs() {
+        return blastParaMaxTargetSeqs;
+    }
+
+    public static void setBlastParaMaxTargetSeqs(String blastParaMaxTargetSeqs) {
+        ReadConfig.blastParaMaxTargetSeqs = blastParaMaxTargetSeqs;
     }
 
     public static ReadConfig getRcObj() {

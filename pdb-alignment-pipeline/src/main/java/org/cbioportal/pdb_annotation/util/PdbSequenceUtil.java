@@ -3,14 +3,12 @@ package org.cbioportal.pdb_annotation.util;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -22,14 +20,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.log4j.Logger;
 import org.biojava.nbio.structure.Chain;
-import org.biojava.nbio.structure.DBRef;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureIO;
 import org.cbioportal.pdb_annotation.util.pdb.SegmentRecord;
 
 /**
- * Read PDB local file Utils
+ * Read PDB files Utils
  * 
  * @author Juexin Wang
  *
@@ -57,7 +54,8 @@ public class PdbSequenceUtil {
     }
     
     /**
-     * Wheather contains non-number from string
+     * Whether contains non-number from string
+     * 
      * @param str
      * @return
      */
@@ -71,6 +69,7 @@ public class PdbSequenceUtil {
     
     /**
      * Remove ith character from string s 
+     * 
      * @param s
      * @param i
      * @return
@@ -83,19 +82,19 @@ public class PdbSequenceUtil {
     
     /**
      * Generate new segment from parsing results 
+     * 
      * @param start
      * @param end
-     * @param resiMap
+     * @param resiMap <int residueNumber, String residueName > 
      * @return
      */
     SegmentRecord generateNewSegmentRecord (int start, int end, Map<Integer,String> resiMap){
         SegmentRecord sr = new SegmentRecord();
         sr.setSegmentStart(start);
         sr.setSegmentEnd(end);
-        //System.out.println("###"+aaCount+"\t"+numPrior+"\t"+start);
         String tmpSeq = "";
         for(int i=start; i<=end; i++){
-            tmpSeq = tmpSeq + resiMap.get(i-1);
+            tmpSeq = tmpSeq + resiMap.get(i);
         }       
         sr.setAaSequence(tmpSeq);                             
         
@@ -103,8 +102,9 @@ public class PdbSequenceUtil {
     }
     
     /**
-     * obsolete
+     * Obsolete:
      * Generate new segment from parsing results 
+     * 
      * @param start
      * @param end
      * @param aaCount
@@ -261,8 +261,8 @@ public class PdbSequenceUtil {
                     else if((numPresent-numPrior)==0){
                         insertionCodeAl.add(i-aaCount);
                     }
-                    //TODO: potential improvements on these < 0, 1yra for example
-                    //TODO: how to deal with minus number, such as 4mf6
+                    
+                    //Notes: Deal with minus number, such as 4mf6, the minus residue numbers are kept
                     else if ((numPresent-numPrior)<0 ){
                         //if contains Letter, as 1nsa_A, we ignore first 7A-95A
                         if(containsLetter(groups.get(i-1).getResidueNumber().toString()) && !containsLetter(groups.get(i).getResidueNumber().toString())){
@@ -346,22 +346,53 @@ public class PdbSequenceUtil {
         return outstr;
     }
     
-    
     /**
-     * read PDB file and generate the results to a String
-     * 
-     * New:
-     * Use HashMap to involve all the garbled proteins
-     * 
-     * Known bug for Insertion code of PDB:
-     * 1. For 1HAG_E, there are 1H, 1G, 1F, 1A,...1, the function will choose the first one: 1H, not 1 as it should be
+     * To avoid some exceptions in file system, if happens, read the file from web
      * 
      * @param pdbFileName
      * @return
      */
-    public String readPDB2Results(String pdbFileName) {
+    public String readPDB2Results(String pdbFileName){
+        try{
+        //if does not read file from local system, read the file from web
+        if(pdbFileName.indexOf(".")==-1){
+            return readPDB2ResultsProcess(pdbFileName);
+        }else{
+        //if read file from local system, check it, if bug continues, read the file from web
+            try{
+                return readPDB2ResultsProcess(pdbFileName);
+            }catch(IndexOutOfBoundsException ex){
+                //just use PDB name in four characters in the web              
+                String tmpstr = pdbFileName.split("\\.")[0];
+                String pdbnameWeb = tmpstr.substring(tmpstr.length()-4, tmpstr.length());
+                log.info("Bugs of Biojava, "+pdbFileName+"Error; Read " + pdbnameWeb + " from web instead.");
+                return readPDB2ResultsProcess(pdbnameWeb);
+            }catch(Exception ex){
+                log.error("Error in "+pdbFileName+" Please Check!");
+                ex.printStackTrace();
+                return "";
+            }               
+        }  
+        }catch(Exception ex){
+            log.error("Error in "+pdbFileName+" Please Check!");
+            ex.printStackTrace();
+            return "";
+        }
+    }
+    
+    
+    /**
+     * Read PDB file and generate the results to a String
+     * Use HashMap to involve all the protein residues
+     * 
+     * Throw Exception to help decide read file from local or web
+     * 
+     * 
+     * @param pdbFileName
+     * @return
+     */
+    public String readPDB2ResultsProcess(String pdbFileName) throws Exception {
         String outstr = "";
-        try {
             
             Structure s = StructureIO.getStructure(pdbFileName);
             String molClassification = "mol:protein";
@@ -380,73 +411,23 @@ public class PdbSequenceUtil {
                 return "";
             }
             for (Chain c : s.getChains()) {
-                try{
-                //System.out.println("*"+s.getPDBCode().toLowerCase()+"*"+c.getChainID());
-                /*
-                System.out.println(s.getDBRefs().size());
-                for(DBRef dbref:s.getDBRefs()){
-                    System.out.println(dbref.getChainId()+"\t"+dbref.getSeqBegin()+"\t"+dbref.getSeqEnd()+"\t"+dbref.getDbSeqBegin()+"\t"+dbref.getDbSeqEnd());
-                }
-                */                              
+                try{                             
                 ArrayList<SegmentRecord> srAl = new ArrayList<SegmentRecord>();
                 List<Group> groups = c.getAtomGroups();
-                int aaCount = 0;
                 if(c.getAtomSequence().length()<1){
                     //log.warn(s.getPDBCode()+"_"+c.getChainID()+": No Chain for AtomSequence<1");
                     continue;
-                }
-                //One possible bug for biojava, e.g. 3igv_A, the end of chain should be 269Y, not Hetatm 1K
-                //Set endCheck to amend this
-                boolean endCheck = false;
-                
-                //PDB is garbled, e.g. 1IAO
-                boolean garbledCheck = false;
-
-                /*
-                //Test
-                for(Group group: c.getSeqResGroups()){
-                    System.out.print(group.getChemComp().getOne_letter_code());                   
-                }               
-                
-                System.out.println();                
-                System.out.println(c.getSeqResGroups().size());
-                System.out.println();
-                
-                for(Group group: c.getAtomGroups()){
-                    System.out.print(group.getChemComp().getOne_letter_code());                   
-                }
-                
-                System.out.println();
-                System.out.println("c.getAtomGroups().size():\t"+c.getAtomGroups().size());                
-                
-                System.out.println(c.getAtomLength());
-                System.out.println(c.getAtomSequence());
-                System.out.println("c.getAtomSequence().length():\t"+c.getAtomSequence().length());
-                
-                //int tcount =0;
-                //for(Group group: c.getAtomGroups()){
-                //    System.out.println(tcount+"\t"+group.getResidueNumber()+"&\t"+group); 
-                //    tcount++;
-                //}
-                
-                for(int k=0;k<c.getAtomSequence().length();k++){
-                    System.out.println(k+"\t"+c.getAtomGroup(k).getResidueNumber()+"&\t"+c.getAtomGroup(k)); 
-                }
-                //Test End
-                */
-                                
+                }                
                 
                 int seqLength = c.getAtomSequence().length();
                 
               //Check error for biojava bugs in 3h1r : getAtomSequence().length is 226, it should be 224
                 if(c.getAtomSequence().length()>c.getAtomLength()){
                     seqLength = c.getAtomLength();
-                } 
-                  
+                }                   
                 
                 String headstr = ">" + s.getPDBCode().toLowerCase() + "_" + c.getChainID() ;
-                String tmpstr= "";
-                
+                String tmpstr= "";               
                 
                 //Generate one HashMap to store all the residue information
                 Map<Integer,String> resiMap = new HashMap<Integer,String>();
@@ -465,7 +446,7 @@ public class PdbSequenceUtil {
                     }                   
                 }
                 
-                //sort
+                //sort all the residues in TreeMap
                 Map<Integer,String> treeResiMap = new TreeMap<Integer,String>(resiMap);
                 
                 //Regenerate residues from scratch
@@ -477,26 +458,23 @@ public class PdbSequenceUtil {
                 //Check               
                 int start = resiAl.get(0);
                 int end = resiAl.get(resiAl.size()-1);
-                
-                                
+                                              
                 // Generate Segments
                 for(int i=1;i<resiAl.size();i++){
                     int numPresent = resiAl.get(i);
                     int numPrior = resiAl.get(i-1);
-                    if((numPresent-numPrior)>1 ){            
-                        
+                    //if Gap is found there
+                    if((numPresent-numPrior)>1 ){                                   
                         SegmentRecord sr = generateNewSegmentRecord (start, numPrior, resiMap);                                                                                   
                         if(numPrior-start>=Integer.parseInt(ReadConfig.pdbSegMinLengthMulti)){
                             srAl.add(sr); 
                         }                                                                        
-                        start = numPresent; 
-                        
-                    }
-                    
+                        start = numPresent;                       
+                    }                   
                 }
                 
-                SegmentRecord sr = generateNewSegmentRecord (start, end, resiMap);  
-                
+                // Once finished traversing all the residues, add segments
+                SegmentRecord sr = generateNewSegmentRecord (start, end, resiMap);                 
                 if(end-start>=Integer.parseInt(ReadConfig.pdbSegMinLengthSingle)){
                     srAl.add(sr); 
                 }         
@@ -510,6 +488,7 @@ public class PdbSequenceUtil {
                         continue;
                     }                    
                     
+                    //Add linked residues to srAlCopy
                     for(int i=1; i<srAl.size(); i++){
                         if(srAl.get(i).getSegmentStart()-srAlCopy.get(srAlCopy.size()-1).getSegmentEnd()-1<=Integer.parseInt(ReadConfig.pdbSegGapThreshold)){
                             int linkNum = srAl.get(i).getSegmentStart()-srAlCopy.get(srAlCopy.size()-1).getSegmentEnd()-1;
@@ -540,9 +519,7 @@ public class PdbSequenceUtil {
                     ex.printStackTrace();
                 }
             }
-        } catch (Exception ex) {          
-            ex.printStackTrace();
-        }
+        
         return outstr;
     }
 
@@ -744,7 +721,6 @@ public class PdbSequenceUtil {
                             startHm.put("startnot1", startHm.get("startnot1") + 1);
                         }
                     }
-
                 }
             }
 

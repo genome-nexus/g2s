@@ -1,6 +1,5 @@
 package org.cbioportal.pdb_annotation.util;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,34 +111,10 @@ public class CommandProcessUtil {
             checkCommandParam(commandName, paralist);
             ProcessBuilder pb = null;
             switch (commandName) {
-            case "wget":
-                log.info("[SHELL] Download file " + paralist.get(0) + " to " + paralist.get(1) + " ...");
-                pb = new ProcessBuilder(makeDownloadCommand(paralist.get(0), paralist.get(1)));
-                break;
-            case "gunzip":
-                if (!paralist.get(0).endsWith(".gz")) {
-                    return 0;
-                }
-                log.info("[SHELL] Gunzip file from " + paralist.get(0) + " to " + paralist.get(1) + " ...");
-                pb = new ProcessBuilder(makeGunzipCommand(paralist.get(0)));
-                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
-                break;
-            case "gzip":
-                log.info("[SHELL] Gzip file from " + paralist.get(0) + " ...");
-                pb = new ProcessBuilder(makeGzipCommand(paralist.get(0)));
-                break;
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
                 pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
-                break;
-            case "rsync":
-                log.info("[SHELL] Running rsync command and clone whole PDB to" + paralist.get(0) + "...");
-                pb = new ProcessBuilder("rsync -rlpt -v -z --delete --port=33444 rsync.rcsb.org::ftp_data/structures/divided/pdb/ " + paralist.get(0));
-                break;
-            case "rm":
-                log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
-                pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
-                break;
+                break;           
             default:
                 log.error("[SHELL] Command " + commandName + " does not support now");
                 break;
@@ -184,55 +159,5 @@ public class CommandProcessUtil {
         return list;
     }
 
-    /**
-     * generate wget command
-     *
-     * @param inFilename
-     * @param outFilename
-     * @return
-     */
-    public List<String> makeDownloadCommand(String inFilename, String outFilename) {
-        List<String> list = new ArrayList<String>();
-        list.add("wget");
-        list.add("-O");
-        list.add(outFilename);
-        list.add(inFilename);
-        return list;
-    }
 
-    /**
-     * generate gunzip command
-     *
-     * @param inputname
-     * @return
-     */
-    private List<String> makeGunzipCommand(String inFilename) {
-        List<String> list = new ArrayList<String>();
-        list.add("gunzip");
-        list.add("-c");
-        list.add("-d");
-        list.add(inFilename);
-        return list;
-    }
-
-    /**
-     * generate gzip command
-     *
-     * @param inFilename
-     * @return
-     */
-    private List<String> makeGzipCommand(String inFilename) {
-        List<String> list = new ArrayList<String>();
-        list.add("gzip");
-        list.add(inFilename);
-        return list;
-    }
-
-    private List<String> makdeRmCommand(String inFilename) {
-        List<String> list = new ArrayList<String>();
-        list.add("rm");
-        list.add("-fr");
-        list.add(inFilename);
-        return list;
-    }
 }

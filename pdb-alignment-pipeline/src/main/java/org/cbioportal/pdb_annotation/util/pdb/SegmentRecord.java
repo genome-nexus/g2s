@@ -1,5 +1,11 @@
 package org.cbioportal.pdb_annotation.util.pdb;
 
+/**
+ * Segment for PDB sequences
+ * 
+ * @author Juexin Wang
+ *
+ */
 public class SegmentRecord {
     int segmentStart;
     int segmentEnd;

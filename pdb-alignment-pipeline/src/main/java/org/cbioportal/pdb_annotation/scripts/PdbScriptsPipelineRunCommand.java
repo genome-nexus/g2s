@@ -73,10 +73,9 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[PDB] A cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();	
         //pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        //pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);       
+        //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);       
         
-        /*
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
@@ -85,8 +84,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblDownloadFile);
-        cu.runCommand("gunzip", paralist);
-        
+        cu.runCommand("gunzip", paralist);      
         
         FTPClientUtil fc = new FTPClientUtil();
         fc.downloadFilefromFTP(ReadConfig.swissprotWholeSource, ReadConfig.workspace + ReadConfig.swissprotWholeSource.substring(ReadConfig.swissprotWholeSource.lastIndexOf("/") + 1));
@@ -94,19 +92,21 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.swissprotWholeSource.substring(ReadConfig.swissprotWholeSource.lastIndexOf("/") + 1));
         paralist.add(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
-        cu.runCommand("gunzip", paralist);
+        cu.runCommand("gunzip", paralist);       
         
-        
-        //TrTembl, it is huge and needs to be careful
-        //paralist = new ArrayList<String>();
-        //paralist.add(ReadConfig.tremblWholeSource);
-        //paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
-        //cu.runCommand("wgetftp", paralist);
+        /* TrTembl, it is huge and needs to be careful
+         * Normally we do not encourage use this
+         *
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.tremblWholeSource);
+        paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
+        cu.runCommand("wgetftp", paralist);
 
-        //paralist = new ArrayList<String>();
-        //paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
-        //paralist.add(ReadConfig.workspace + ReadConfig.tremblDownloadFile);
-        //cu.runCommand("gunzip", paralist);
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
+        paralist.add(ReadConfig.workspace + ReadConfig.tremblDownloadFile);
+        cu.runCommand("gunzip", paralist);
+        */
         
         fc.downloadFilefromFTP(ReadConfig.isoformWholeSource, ReadConfig.workspace + ReadConfig.isoformWholeSource.substring(ReadConfig.isoformWholeSource.lastIndexOf("/") + 1));
 
@@ -292,8 +292,6 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + this.db.resultfileName );
             cu.runCommand("rm", paralist);           
             //keep sth
-        }
-        
-        
+        }       
     }
 }
