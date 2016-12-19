@@ -68,14 +68,19 @@ public class PdbScriptsPipelineRunCommand {
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
 
-        // Step 1: Download essential PDB, Ensembl and uniprot
-        // Read Sequences from cloned whole PDB, need at least 22G free spaces and at least 12 hours
-        log.info("[PDB] A cloned copy of whole PDB will be downloaded, unziped and parsing to get the PDB sequences");
+        /*
+        // Step 1
+        // Read Sequences from cloned whole PDB, need at least 24G free spaces and at least 12 hours
+        log.info("********************[STEP 1]********************");
+        log.info("Download PDB and parse to sequences");
+        log.info("[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();	
         //pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         //pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);       
+        pu.initSequencefromAll(ReadConfig.pdbRepo,ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);               
         
+        log.info("********************[STEP 2]********************");
+        log.info("[Download] Download and unzip Ensembl, Uniprot and Isoform");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
         paralist.add(ReadConfig.workspace + ReadConfig.ensemblWholeSource.substring(ReadConfig.ensemblWholeSource.lastIndexOf("/") + 1));
@@ -94,20 +99,20 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
         cu.runCommand("gunzip", paralist);       
         
-        /* TrTembl, it is huge and needs to be careful
-         * Normally we do not encourage use this
-         *
-        paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.tremblWholeSource);
-        paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
-        cu.runCommand("wgetftp", paralist);
+        // TrTembl, it is huge and needs to be careful
+        //Normally we do not encourage use this
+         
+        //paralist = new ArrayList<String>();
+        //paralist.add(ReadConfig.tremblWholeSource);
+        //paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
+        //cu.runCommand("wgetftp", paralist);
 
-        paralist = new ArrayList<String>();
-        paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
-        paralist.add(ReadConfig.workspace + ReadConfig.tremblDownloadFile);
-        cu.runCommand("gunzip", paralist);
-        */
+        //paralist = new ArrayList<String>();
+        //paralist.add(ReadConfig.workspace + ReadConfig.tremblWholeSource.substring(ReadConfig.tremblWholeSource.lastIndexOf("/") + 1));
+        //paralist.add(ReadConfig.workspace + ReadConfig.tremblDownloadFile);
+        //cu.runCommand("gunzip", paralist);
         
+       
         fc.downloadFilefromFTP(ReadConfig.isoformWholeSource, ReadConfig.workspace + ReadConfig.isoformWholeSource.substring(ReadConfig.isoformWholeSource.lastIndexOf("/") + 1));
 
         paralist = new ArrayList<String>();
@@ -115,11 +120,16 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.isoformDownloadFile);
         cu.runCommand("gunzip", paralist);        
 
-        // Step 2: choose only protein entries of all pdb
-        preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile, ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
-      
         
-        // Step 3: preprocess sequence files, incorprate ensembl, swissprot, trembl and isoform together; This step takes memory
+        // Step 3: 
+        log.info("********************[STEP 3]********************");
+        log.info("[Processing] Preprocess PDB sequence and sequence files; Then Incorprate ensembl, swissprot, trembl and isoform togethe");
+        // Select only PDB files of proteins, parse PDB files to sequences
+        preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile, ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+
+        
+
+        // Incorprate ensembl, swissprot, trembl and isoform together; This step takes memory
         // Then split into small files to save the running memory               
         HashMap<String,String> uniqSeqHm = new HashMap<String,String>();
         uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.ensemblDownloadFile,uniqSeqHm);
@@ -129,13 +139,17 @@ public class PdbScriptsPipelineRunCommand {
         
         this.seqFileCount = preprocess.preprocessGENEsequences(uniqSeqHm, ReadConfig.workspace + ReadConfig.seqFastaFile);
         
-        // Step 4: build the database by makeblastdb
+        // Step 4: 
+        log.info("********************[STEP 4]********************");
+        log.info("[PrepareBlast] Build the database by makeblastdb");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
         paralist.add(ReadConfig.workspace + this.db.dbName);       
         cu.runCommand("makeblastdb", paralist);
 
-        // Step 5: blastp ensembl genes against pdb (Warning: This step takes time)
+        // Step 5: 
+        log.info("********************[STEP 5]********************");
+        log.info("[Blast] blastp ensembl genes against pdb (Warning: This step takes time)");
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
@@ -151,23 +165,34 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);           
         }
+        */
         
-        PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
+        this.seqFileCount = 1;
+        PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);       
 
-        // Step 6: parse results and output as input sql statments
+        // Step 6: 
+        log.info("********************[STEP 6]********************");
+        log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace);
         
-        // Step 7: create data schema
+        /*
+        // Step 7: 
+        log.info("********************[STEP 7]********************");
+        log.info("[SQL] Create data schema");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);      
         cu.runCommand("mysql", paralist);
 
-        // Step 8: import gene sequence SQL statements into the database
+        // Step 8: 
+        log.info("********************[STEP 8]********************");
+        log.info("[SQL] Import gene sequence SQL statements into the database");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);      
         cu.runCommand("mysql", paralist);
 
-        // Step 9: import INSERT SQL statements into the database (Warning: This step takes time)
+        // Step 9: 
+        log.info("********************[STEP 9]********************");
+        log.info("[SQL] Import INSERT SQL statements into the database (Warning: This step takes time)");
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
@@ -181,7 +206,10 @@ public class PdbScriptsPipelineRunCommand {
         }
 
         /*
-        // Step 10: Clean up
+        // Step 10: 
+        log.info("********************[STEP 10]********************");
+        log.info("[FileSystem] Clean Up");
+         
         if(ReadConfig.saveSpaceTag.equals("true")){
             log.info("[PIPELINE] Start cleaning up in filesystem");
             paralist = new ArrayList<String>();

@@ -142,11 +142,13 @@ public class PdbScriptsPipelineRunCommand {
      */
     public Alignment parseSingleAlignment(String querytext, Hit hit, int count) {
         Alignment alignment = new Alignment(count);
+        
         alignment.setSeqId(querytext.split("\\s+")[0]);
         alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
         alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
         alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
         alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
+        System.out.println("alignment.getSeqId():"+alignment.getSeqId());
         for (Hsp tmp : hit.getHitHsps().getHsp()) {
             alignment.setIdentity(Double.parseDouble(tmp.getHspIdentity()));
             alignment.setIdentp(Double.parseDouble(tmp.getHspPositive()));

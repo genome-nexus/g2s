@@ -556,18 +556,22 @@ public class PdbSequenceUtil {
             log.info("[PDB] Write PDB sequences ...");
             FileUtils.writeLines(new File(outfilename), outlist, "");
             log.info("[PDB] PDB sequences generation done");
+            /*
             log.info("[PDB] Deleting the local copy of whole PDB ... ");
             paralist = new ArrayList<String>();
             paralist.add(dirname);
             cu.runCommand("rm", paralist);		
             log.info("[PDB] The local copy of whole PDB has deleted");
+            */
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
     
     /**
+     * For Test
      * Get sequences from defined folder, part of all the PDB
+     * The Use here in the project should be the function initSequencefromAll
      * 
      * @param dirname
      * @param outfilename

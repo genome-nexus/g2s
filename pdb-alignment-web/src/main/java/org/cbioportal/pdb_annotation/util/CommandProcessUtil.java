@@ -114,7 +114,11 @@ public class CommandProcessUtil {
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
                 pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
-                break;           
+                break; 
+            case "rm":
+                log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
+                pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
+                break;
             default:
                 log.error("[SHELL] Command " + commandName + " does not support now");
                 break;
@@ -156,6 +160,21 @@ public class CommandProcessUtil {
         list.add("5");
         list.add("-out");
         list.add(outFilename);
+        return list;
+    }
+    
+    
+    /**
+     * generate rm command
+     * 
+     * @param inFilename
+     * @return
+     */
+    private List<String> makdeRmCommand(String inFilename) {
+        List<String> list = new ArrayList<String>();
+        list.add("rm");
+        list.add("-fr");
+        list.add(inFilename);
         return list;
     }
 

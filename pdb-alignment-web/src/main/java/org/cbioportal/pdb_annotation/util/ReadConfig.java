@@ -51,13 +51,13 @@ public class ReadConfig {
             prop.load(CommandProcessUtil.class.getClassLoader().getResourceAsStream("application.properties"));
 
             // Set all constants
-            ReadConfig.blastp = prop.getProperty("blastp");
-            ReadConfig.workspace = prop.getProperty("workspace");
-            ReadConfig.uploaddir = prop.getProperty("uploaddir");
-            ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file");
-            ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue");
-            ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size");
-            ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads");
+            ReadConfig.blastp = prop.getProperty("blastp").trim();
+            ReadConfig.workspace = prop.getProperty("workspace").trim();
+            ReadConfig.uploaddir = prop.getProperty("uploaddir").trim();
+            ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file").trim();
+            ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
+            ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
+            ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads").trim();
 
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
