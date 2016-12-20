@@ -189,7 +189,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return generated SQL statements
      */
     public String makeTable_pdb_ensembl_insert(BlastResult br) {
-        String[] strarrayQ = br.getQseqid().split("\\s+");
+        String[] strarrayQ = br.getQseqid().split(";");
         String[] strarrayS = br.getSseqid().split("_");
         String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
                 + br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + strarrayQ[0] + "',"

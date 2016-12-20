@@ -167,7 +167,6 @@ public class PdbScriptsPipelineRunCommand {
         }
         */
         
-        this.seqFileCount = 1;
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);       
 
         // Step 6: 
@@ -175,7 +174,7 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace);
         
-        /*
+/*        
         // Step 7: 
         log.info("********************[STEP 7]********************");
         log.info("[SQL] Create data schema");
