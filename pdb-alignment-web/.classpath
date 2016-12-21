@@ -27,32 +27,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/wangjue/.m2/repository/org/springframework/spring-web/5.0.0.BUILD-SNAPSHOT/spring-web-5.0.0.BUILD-SNAPSHOT.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.springframework"/>
-			<attribute name="maven.artifactId" value="spring-web"/>
-			<attribute name="maven.version" value="5.0.0.BUILD-SNAPSHOT"/>
-			<attribute name="maven.scope" value="compile"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/wangjue/.m2/repository/org/springframework/spring-test/5.0.0.BUILD-SNAPSHOT/spring-test-5.0.0.BUILD-SNAPSHOT.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.springframework"/>
-			<attribute name="maven.artifactId" value="spring-test"/>
-			<attribute name="maven.version" value="5.0.0.BUILD-SNAPSHOT"/>
-			<attribute name="maven.scope" value="test"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/home/wangjue/.m2/repository/org/springframework/boot/spring-boot-test/2.0.0.BUILD-SNAPSHOT/spring-boot-test-2.0.0.BUILD-SNAPSHOT.jar">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="maven.groupId" value="org.springframework.boot"/>
-			<attribute name="maven.artifactId" value="spring-boot-test"/>
-			<attribute name="maven.version" value="2.0.0.BUILD-SNAPSHOT"/>
-			<attribute name="maven.scope" value="test"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

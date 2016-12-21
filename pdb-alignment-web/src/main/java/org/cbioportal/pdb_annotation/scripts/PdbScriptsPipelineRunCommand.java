@@ -69,6 +69,7 @@ public class PdbScriptsPipelineRunCommand {
         List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
         
         //Clean Up
+	/*
         paralist = new ArrayList<String>(); 
         paralist.add(ReadConfig.uploaddir + inputsequence.getId()+".fasta" );
         cu.runCommand("rm", paralist);
@@ -76,7 +77,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>(); 
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName );
         cu.runCommand("rm", paralist);
-        
+        */
         return outresults;       
     }
     
@@ -111,6 +112,9 @@ public class PdbScriptsPipelineRunCommand {
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
+	    System.out.println("blast.getBlastOutputVersion(): "+blast.getBlastOutputVersion());
+            System.out.println("blast.getBlastOutputReference(): "+blast.getBlastOutputReference());
+            System.out.println("blast.getBlastOutputOutputParam(): "+blast.getBlastOutputParam().toString());
             BlastOutputIterations iterations = blast.getBlastOutputIterations();
             int count = 1;
             for (Iteration iteration : iterations.getIteration()) {
