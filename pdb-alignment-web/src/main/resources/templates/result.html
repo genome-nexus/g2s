@@ -6,11 +6,11 @@
 <title>Results:</title>
 </head>
 <body>
-	<h1 layout:fragment="header">Blast Results : </h1>
+	<h1 layout:fragment="header">Blast Results :</h1>
 	<div layout:fragment="content" class="container">
-	<div class="alert alert-success" th:if="${globalMessage}"
+		<div class="alert alert-success" th:if="${globalMessage}"
 			th:text="${globalMessage}">Some Success message</div>
-		<table class="table table-bordered table-striped">	
+		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
 					<td>ID</td>
@@ -33,7 +33,8 @@
 					<td colspan="12">No results</td>
 				</tr>
 				<tr th:each="residue : ${residues}">
-					<td th:text="${residue.alignmentId}">1</td>					
+				<tr class="table-info">
+					<td th:text="${residue.alignmentId}">1</td>
 					<td th:text="${residue.pdbId}">1</td>
 					<td th:text="${residue.chain}">1</td>
 					<td th:text="${residue.pdbSeg}">1</td>
@@ -46,11 +47,123 @@
 					<td th:text="${residue.identity}">1</td>
 					<td th:text="${residue.identp}">1</td>
 					<td th:text="${residue.residueNum}">1</td>
-					<td th:text="${residue.residueName}">1</td>					
-				</tr>			
+					<td th:text="${residue.residueName}">1</td>
+				</tr>
+				<!--  
+					<tr>
+					<td class="alignment" colspan="14" th:text="${residue.seqAlign}">1</td>
+					</tr>
+					<tr>
+					<td class="alignment" colspan="14" th:text="${residue.midlineAlign}">1</td>
+					</tr>
+					<tr>
+					<td class="alignment" colspan="14" th:text="${residue.pdbAlign}">1</td>
+					</tr>
+					-->
+
+
+
+				</tr>
 			</tbody>
 		</table>
-		<p href="/input">Submit another sequence</p>
+
+		<div class="panel-group">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" href="#collapse1">Blast Details</a>
+					</h4>
+				</div>
+				<div id="collapse1" class="panel-collapse collapse">
+					<div class="panel-body">
+
+						<table class="table table-bordered table-inverse table-sm table-condensed" style="width:50%">
+							<thead>
+								<tr>
+									<td colspan="2">Search parameters</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Expected value</td>
+									<td th:text="${residues[0].paraEvalue}">paraEvalue</td>
+								</tr>
+								<tr>
+									<td>Word Size</td>
+									<td th:text="${residues[0].word_size}">Word Size</td>
+								</tr>
+								<tr>
+									<td>Gap Open</td>
+									<td th:text="${residues[0].gapopen}">Gap Open</td>
+								</tr>
+								<tr>
+									<td>Gap Extend</td>
+									<td th:text="${residues[0].gapextend}">Gap Extend</td>
+								</tr>
+								<tr>
+									<td>Matrix</td>
+									<td th:text="${residues[0].matrix}">Matrix</td>
+								</tr>
+								<tr>
+									<td>Composition-based stats</td>
+									<td th:text="${residues[0].comp_based_stats}">Composition-based
+										stats</td>
+								</tr>
+								<tr>
+									<td>Threshold</td>
+									<td th:text="${residues[0].threshold}">Threshold</td>
+								</tr>
+								<tr>
+									<td>Window Size</td>
+									<td th:text="${residues[0].window_size}">Window Size</td>
+								</tr>
+							</tbody>
+						</table>
+						
+						<table class="table table-bordered table-inverse table-sm table-condensed" style="width:50%">
+							<thead>
+								<tr>
+									<td colspan="2">Statistics</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Number of Sequences</td>
+									<td th:text="${residues[0].blast_dblen}">Number of Sequences</td>
+								</tr>
+								<tr>
+									<td>Number of Letters</td>
+									<td th:text="${residues[0].blast_dbnum}">Number of Letters</td>
+								</tr>								
+								<tr>
+									<td>Lambda</td>
+									<td th:text="${residues[0].blast_lambda}">paraEvalue</td>
+								</tr>
+								<tr>
+									<td>Kappa</td>
+									<td th:text="${residues[0].blast_kappa}">paraEvalue</td>
+								</tr>
+								<tr>
+									<td>Entropy</td>
+									<td th:text="${residues[0].blast_entropy}">Entropy</td>
+								</tr>
+							</tbody>
+						</table>
+						
+							<p th:text="${residues[0].blast_version}">1</p>
+							<p th:text="${residues[0].blast_reference}">1</p>
+							
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<p>
+			<a th:href="@{/input}" href="input.html">Submit another sequence
+			</a>
+		</p>
 	</div>
 </body>
 </html>

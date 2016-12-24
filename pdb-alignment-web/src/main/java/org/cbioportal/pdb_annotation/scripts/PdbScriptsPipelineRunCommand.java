@@ -18,6 +18,7 @@ import org.cbioportal.pdb_annotation.util.blast.Hit;
 import org.cbioportal.pdb_annotation.util.blast.Hsp;
 import org.cbioportal.pdb_annotation.util.blast.Iteration;
 import org.cbioportal.pdb_annotation.util.blast.IterationHits;
+import org.cbioportal.pdb_annotation.util.blast.Statistics;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Inputsequence;
 
@@ -63,7 +64,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.uploaddir + inputsequence.getId()+".fasta");
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName);
         paralist.add(ReadConfig.workspace + this.db.dbName);
-        cu.runCommand("blastp", paralist); 
+        cu.runCommand("blastp", paralist, inputsequence); 
         
         //parse results and output results
         List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
@@ -112,19 +113,27 @@ public class PdbScriptsPipelineRunCommand {
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
-	    System.out.println("blast.getBlastOutputVersion(): "+blast.getBlastOutputVersion());
-            System.out.println("blast.getBlastOutputReference(): "+blast.getBlastOutputReference());
-            System.out.println("blast.getBlastOutputOutputParam(): "+blast.getBlastOutputParam().toString());
             BlastOutputIterations iterations = blast.getBlastOutputIterations();
             int count = 1;
             for (Iteration iteration : iterations.getIteration()) {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
+                Statistics stat = iteration.getIterationStat().getStatistics();
                 for (Hit hit : hits.getHit()) {
                     Alignment alignment = parseSingleAlignment(querytext, hit, count);
+                    alignment.setBlast_dblen(stat.getStatisticsDbLen());
+                    alignment.setBlast_dbnum(stat.getStatisticsDbNum());
+                    alignment.setBlast_effspace(stat.getStatisticsEffSpace());
+                    alignment.setBlast_entropy(stat.getStatisticsEntropy());
+                    alignment.setBlast_hsplen(stat.getStatisticsHspLen());
+                    alignment.setBlast_kappa(stat.getStatisticsKappa());
+                    alignment.setBlast_lambda(stat.getStatisticsLambda());
+                    alignment.setBlast_reference(blast.getBlastOutputReference());
+                    alignment.setBlast_version(blast.getBlastOutputVersion());
                     results.add(alignment);
                     count++;
                 }
+                
             }
             log.info("[BLAST] Total Insert " + (count - 1) + " alignments");
         } catch (Exception ex) {
@@ -153,8 +162,8 @@ public class PdbScriptsPipelineRunCommand {
         alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
         alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
         for (Hsp tmp : hit.getHitHsps().getHsp()) {
-            alignment.setIdentity(Double.parseDouble(tmp.getHspIdentity()));
-            alignment.setIdentp(Double.parseDouble(tmp.getHspPositive()));
+            alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
+            alignment.setIdentp(Integer.parseInt(tmp.getHspPositive()));
             alignment.setEvalue(Double.parseDouble(tmp.getHspEvalue()));
             alignment.setBitscore(Double.parseDouble(tmp.getHspBitScore()));
             alignment.setSeqFrom(Integer.parseInt(tmp.getHspQueryFrom()));

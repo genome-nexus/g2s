@@ -84,6 +84,27 @@ public class InputsequenceController {
                     re.setResidueName(ali.getPdbAlign().substring(inputAA-ali.getSeqFrom(), inputAA-ali.getSeqFrom()+1));
                     re.setResidueNum(new Integer(ali.getPdbFrom()+(inputAA-ali.getSeqFrom())).toString());                   
                 }
+                
+                //Parameters for output TODO: not optimize
+                re.setParaEvalue(inputsequence.getEvalue());
+                re.setWord_size(inputsequence.getWord_size());
+                re.setGapopen(inputsequence.getGapopen());
+                re.setGapextend(inputsequence.getGapextend());
+                re.setMatrix(inputsequence.getMatrix());
+                re.setComp_based_stats(inputsequence.getComp_based_stats());
+                re.setThreshold(inputsequence.getThreshold());
+                re.setWindow_size(inputsequence.getWindow_size());
+                
+                re.setBlast_dblen(ali.getBlast_dblen());
+                re.setBlast_dbnum(ali.getBlast_dbnum());
+                re.setBlast_effspace(ali.getBlast_effspace());
+                re.setBlast_entropy(ali.getBlast_entropy());
+                re.setBlast_hsplen(ali.getBlast_hsplen());
+                re.setBlast_kappa(ali.getBlast_kappa());
+                re.setBlast_lambda(ali.getBlast_lambda());
+                re.setBlast_reference(ali.getBlast_reference());
+                re.setBlast_version(ali.getBlast_version());
+                
                 residues.add(re);
             }
         }       

@@ -20,8 +20,6 @@ public class ReadConfig {
     public static String workspace;
     public static String uploaddir;
     public static String pdbSeqresFastaFile;
-    public static String blastParaEvalue;
-    public static String blastParaWordSize;
     public static String blastParaThreads;
 
     public static boolean isPositiveInteger(String str) {
@@ -55,8 +53,6 @@ public class ReadConfig {
             ReadConfig.workspace = prop.getProperty("workspace").trim();
             ReadConfig.uploaddir = prop.getProperty("uploaddir").trim();
             ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file").trim();
-            ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
-            ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
             ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads").trim();
 
         } catch (Exception ex) {
@@ -111,22 +107,6 @@ public class ReadConfig {
 
     public static void setPdbSeqresFastaFile(String pdbSeqresFastaFile) {
         ReadConfig.pdbSeqresFastaFile = pdbSeqresFastaFile;
-    }
-
-    public static String getBlastParaEvalue() {
-        return blastParaEvalue;
-    }
-
-    public static void setBlastParaEvalue(String blastParaEvalue) {
-        ReadConfig.blastParaEvalue = blastParaEvalue;
-    }
-
-    public static String getBlastParaWordSize() {
-        return blastParaWordSize;
-    }
-
-    public static void setBlastParaWordSize(String blastParaWordSize) {
-        ReadConfig.blastParaWordSize = blastParaWordSize;
     }
 
     public static String getBlastParaThreads() {

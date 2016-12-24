@@ -2,26 +2,93 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
-<head> 
-    <title>Getting Started: Handling Form Submission</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head>
+<title>Getting Started: Handling Form Submission</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 	<h1 layout:fragment="header">Pdb-Annotation</h1>
+
 	<div layout:fragment="content" class="container">
-	<p>Introduction here</p>
-    	<form action="#" th:action="@{/input}" th:object="${inputsequence}" method="post">   		
-        	<p>Input protein sequences here:</p>        	
-        	<textarea rows="10" cols="100" th:field="*{sequence}"></textarea> 
-        	<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence Error</p> 
-        	<p>Input interested residue number here:(Optional)</p> 
-        	<p th:if="${#fields.hasErrors('residueNum')}" th:errors="*{residueNum}">Residue Number Error</p> 
-        	<input type="text" th:field="*{residueNum}"></input> 
+		<p>Introduction here</p>
+
+		<form action="#" th:action="@{/input}" th:object="${inputsequence}"
+			method="post">
+			<p>Input protein sequences here:</p>
+			<textarea rows="10" cols="100" th:field="*{sequence}"></textarea>
+			<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence
+				Error</p>
+			<p>Input interested residue number here:(Optional)</p>
+			<p th:if="${#fields.hasErrors('residueNum')}"
+				th:errors="*{residueNum}">Residue Number Error</p>
+			<input type="text" th:field="*{residueNum}"></input>
+			<!-- 
         	<p>Input corresponding residue name here:(Optional)</p> 
         	<p th:if="${#fields.hasErrors('residueName')}" th:errors="*{residueName}">Residue Name Error</p> 
-        	<input type="text" th:field="*{residueName}"></input>  	       	
-        	<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-    	</form>
-    </div>
+        	<input type="text" th:field="*{residueName}"></input> 
+        	 -->
+
+
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" href="#collapse1">Algorithm
+								Parameters: (Optional)</a>
+						</h4>
+					</div>
+					<div id="collapse1" class="panel-collapse collapse">
+						<div class="panel-body">
+							<p>E value:</p>
+							<p th:if="${#fields.hasErrors('evalue')}" th:errors="*{evalue}">Evalue
+								Error</p>
+							<input type="text" th:value="1e-10" th:name="evalue"
+								th:id="evalue"></input>
+							<p>Word Size:</p>
+							<input type="text" th:value="3" th:name="word_size"
+								th:id="word_size" th:errorclass="fieldError" />
+							<p>Gapopen:</p>
+							<input type="text" th:value="11" th:name="gapopen"
+								th:id="gapopen" th:errorclass="fieldError" />
+							<p>Gapextend:</p>
+							<input type="text" th:value="1" th:name="gapextend"
+								th:id="gapextend" th:errorclass="fieldError" />								 
+							<p>Matrix:</p>
+							<select th:field="*{matrix}">
+									<option selected="selected" value="BLOSUM62">BLOSUM62</option>
+									<option value="PAM30">PAM30</option>
+									<option value="PAM70">PAM70</option>
+									<option value="PAM250">PAM250</option>
+									<option value="BLOSUM80">BLOSUM80</option>									
+									<option value="BLOSUM45">BLOSUM45</option>
+									<option value="BLOSUM50">BLOSUM50</option>
+									<option value="BLOSUM90">BLOSUM90</option>
+							</select>
+							<p>Comp_based_stats:</p>
+							<input type="text" th:value="2" th:name="comp_based_stats"
+								th:id="comp_based_stats" th:errorclass="fieldError" />
+							<p>threshold:</p>
+							<input type="text" th:value="11" th:name="threshold"
+								th:id="threshold" th:errorclass="fieldError" />
+							<p>window_size:</p>
+							<input type="text" th:value="40" th:name="window_size"
+								th:id="window_size" th:errorclass="fieldError" />
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<p>
+				<input type="submit" value="Submit" /> <input type="reset"
+					value="Reset" />
+			</p>
+		</form>
+
+
+	</div>
+
+
+
 </body>
 </html>

@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.cbioportal.pdb_annotation.web.models.Inputsequence;
 
 /**
  * Command Utils for dealing with the processes invoked by JAVA
@@ -103,9 +104,10 @@ public class CommandProcessUtil {
      *
      * @param commandName
      * @param paralist
+     * @param inputsequence 
      * @return
      */
-    public int runCommand(String commandName, ArrayList<String> paralist) {
+    public int runCommand(String commandName, ArrayList<String> paralist, Inputsequence inputsequence) {
         int shellReturnCode=0;
         try {
             checkCommandParam(commandName, paralist);
@@ -113,7 +115,7 @@ public class CommandProcessUtil {
             switch (commandName) {
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
-                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2)));
+                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2), inputsequence));
                 break; 
             case "rm":
                 log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
@@ -143,17 +145,32 @@ public class CommandProcessUtil {
      *
      * @return A List of command arguments for the processbuilder
      */
-    private List<String> makeBlastPCommand(String queryFilename, String outFilename, String dbFilename) {
+    private List<String> makeBlastPCommand(String queryFilename, String outFilename, String dbFilename, Inputsequence inputsequence) {
         List<String> list = new ArrayList<String>();
         list.add(ReadConfig.blastp);
         list.add("-db");
         list.add(dbFilename);
         list.add("-query");
         list.add(queryFilename);
-        list.add("-word_size");
-        list.add(ReadConfig.blastParaWordSize);
+
+        //parameters from the form
         list.add("-evalue");
-        list.add(ReadConfig.blastParaEvalue);
+        list.add(inputsequence.getEvalue());       
+        list.add("-word_size");
+        list.add(Integer.toString(inputsequence.getWord_size()));        
+        list.add("-gapopen");
+        list.add(Integer.toString(inputsequence.getGapopen()));
+        list.add("-gapextend");
+        list.add(Integer.toString(inputsequence.getGapextend()));
+        list.add("-matrix");
+        list.add(inputsequence.getMatrix());
+        list.add("-comp_based_stats");
+        list.add(Integer.toString(inputsequence.getComp_based_stats()));
+        list.add("-threshold");
+        list.add(Integer.toString(inputsequence.getThreshold()));
+        list.add("-window_size");
+        list.add(Integer.toString(inputsequence.getWindow_size())); 
+        
         list.add("-num_threads");
         list.add(ReadConfig.blastParaThreads);
         list.add("-outfmt");
