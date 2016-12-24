@@ -70,15 +70,15 @@ public class PdbScriptsPipelineRunCommand {
         List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
         
         //Clean Up
-	/*
+	
         paralist = new ArrayList<String>(); 
         paralist.add(ReadConfig.uploaddir + inputsequence.getId()+".fasta" );
-        cu.runCommand("rm", paralist);
+        cu.runCommand("rm", paralist, inputsequence);
         
         paralist = new ArrayList<String>(); 
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName );
-        cu.runCommand("rm", paralist);
-        */
+        cu.runCommand("rm", paralist, inputsequence);
+        
         return outresults;       
     }
     
