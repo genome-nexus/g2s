@@ -1,5 +1,7 @@
 package org.cbioportal.pdb_annotation.web.controllers;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,10 @@ public class InputsequenceController {
         
         PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand= new PdbScriptsPipelineRunCommand();        
         List<Alignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
+        
+        //Instant instant = Instant.now ();
+        //inputsequence.setTimenow(instant.toString());
+        inputsequence.setTimenow(LocalDateTime.now ( ).toString ().replace ( "T", " " ));
         
         List<Residue> residues = new ArrayList<Residue> ();
         int inputAA=0;
@@ -104,6 +110,8 @@ public class InputsequenceController {
                 re.setBlast_lambda(ali.getBlast_lambda());
                 re.setBlast_reference(ali.getBlast_reference());
                 re.setBlast_version(ali.getBlast_version());
+                
+                re.setTimenow(inputsequence.getTimenow());
                 
                 residues.add(re);
             }

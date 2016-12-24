@@ -325,6 +325,10 @@ public class PdbScriptsPipelineMakeSQL {
         BlastResult br = new BlastResult(count);
         br.qseqid = querytext;
         br.sseqid = hit.getHitDef().split("\\s+")[0];
+        
+        //TODO: careful, choose first or last alignments?
+        // Original implementation, only choose last alignments
+        /*       
         for (Hsp tmp : hit.getHitHsps().getHsp()) {
             br.ident = Double.parseDouble(tmp.getHspIdentity());
             br.identp = Double.parseDouble(tmp.getHspPositive());
@@ -338,6 +342,20 @@ public class PdbScriptsPipelineMakeSQL {
             br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
         }
+        */
+        List<Hsp> tmplist = hit.getHitHsps().getHsp();
+        Hsp tmp = tmplist.get(0);
+        br.ident = Double.parseDouble(tmp.getHspIdentity());
+        br.identp = Double.parseDouble(tmp.getHspPositive());
+        br.evalue = Double.parseDouble(tmp.getHspEvalue());
+        br.bitscore = Double.parseDouble(tmp.getHspBitScore());
+        br.qStart = Integer.parseInt(tmp.getHspQueryFrom());
+        br.qEnd = Integer.parseInt(tmp.getHspQueryTo());
+        br.sStart = Integer.parseInt(tmp.getHspHitFrom());
+        br.sEnd = Integer.parseInt(tmp.getHspHitTo());
+        br.seq_align = tmp.getHspQseq();
+        br.pdb_align = tmp.getHspHseq();
+        br.midline_align = tmp.getHspMidline();
         return br;
     }
 

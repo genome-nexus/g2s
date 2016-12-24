@@ -30,7 +30,7 @@
 			</thead>
 			<tbody>
 				<tr th:if="${residues.empty}">
-					<td colspan="12">No results</td>
+					<td colspan="13">No results</td>
 				</tr>
 				<tr th:each="residue : ${residues}">
 				<tr class="table-info">
@@ -67,7 +67,7 @@
 			</tbody>
 		</table>
 
-		<div class="panel-group">
+		<div th:if="${not #lists.isEmpty(residues)}" class="panel-group">
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title">
@@ -77,7 +77,9 @@
 				<div id="collapse1" class="panel-collapse collapse">
 					<div class="panel-body">
 
-						<table class="table table-bordered table-inverse table-sm table-condensed" style="width:50%">
+						<table
+							class="table table-bordered table-inverse table-sm table-condensed"
+							style="width: 50%">
 							<thead>
 								<tr>
 									<td colspan="2">Search parameters</td>
@@ -119,8 +121,12 @@
 								</tr>
 							</tbody>
 						</table>
-						
-						<table class="table table-bordered table-inverse table-sm table-condensed" style="width:50%">
+
+
+
+						<table
+							class="table table-bordered table-inverse table-sm table-condensed"
+							style="width: 50%">
 							<thead>
 								<tr>
 									<td colspan="2">Statistics</td>
@@ -128,13 +134,18 @@
 							</thead>
 							<tbody>
 								<tr>
+									<td>Posted Time</td>
+									<td th:text="${residues[0].timenow}">Time Now</td>
+								</tr>
+								<tr>
 									<td>Number of Sequences</td>
-									<td th:text="${residues[0].blast_dblen}">Number of Sequences</td>
+									<td th:text="${residues[0].blast_dblen}">Number of
+										Sequences</td>
 								</tr>
 								<tr>
 									<td>Number of Letters</td>
 									<td th:text="${residues[0].blast_dbnum}">Number of Letters</td>
-								</tr>								
+								</tr>
 								<tr>
 									<td>Lambda</td>
 									<td th:text="${residues[0].blast_lambda}">paraEvalue</td>
@@ -149,10 +160,10 @@
 								</tr>
 							</tbody>
 						</table>
-						
-							<p th:text="${residues[0].blast_version}">1</p>
-							<p th:text="${residues[0].blast_reference}">1</p>
-							
+
+						<p th:text="${residues[0].blast_version}">1</p>
+						<p th:text="${residues[0].blast_reference}">1</p>
+
 
 
 					</div>
@@ -160,10 +171,13 @@
 			</div>
 		</div>
 
-		<p>
-			<a th:href="@{/input}" href="input.html">Submit another sequence
-			</a>
-		</p>
+		<p></p>
+		<div class="btn-group">
+			<a th:href="@{/input}" href="input.html"><button
+					class="btn btn-primary dropdown-toggle">Submit another
+					sequence</button></a>
+		</div>
+
 	</div>
 </body>
 </html>

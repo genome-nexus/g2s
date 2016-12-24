@@ -13,7 +13,7 @@ public class Inputsequence {
     @NotNull
     //@Size(min=1, max=10000)
     //@Pattern(regexp="(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw]+[\\n|\\r]*$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw]+[\\n|\\r]*$)",message="Fasta format error, please check and resubmit!")
-    @Pattern(regexp="(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)",message="incorrect")
+    @Pattern(regexp="(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)",message="Fasta format error, please check and resubmit!")
     private String sequence;
     
     //@Digits(fraction = 0, integer = 5)
@@ -27,14 +27,15 @@ public class Inputsequence {
     
     //2,3,6
     //default 3
+    @Min(1)
     private int word_size;
     
-    @Digits(fraction = 0, integer = 5)
+    //@Digits(fraction = 0, integer = 5)
     @Min(1)
     //default 11
     private int gapopen;
     
-    @Digits(fraction = 0, integer = 5)
+    //@Digits(fraction = 0, integer = 5)
     @Min(1)
     //default 1
     private int gapextend;
@@ -47,19 +48,34 @@ public class Inputsequence {
     
     //default 11
     //Neighboring words threshold
-    @Min(0)
+    @Min(1)
+    @Digits(fraction = 0, integer = 5)
     private int threshold;
     
     //default 40
     //Window for multiple hits
-    @Min(0)
+    @Min(1)
+    @Digits(fraction = 0, integer = 5)
     private int window_size;
     
+    //Time
+    private String timenow;
+    
+    
+
     /**
      * 
      * Getter and setter
      * 
      */
+    
+    public String getTimenow() {
+        return timenow;
+    }
+
+    public void setTimenow(String timenow) {
+        this.timenow = timenow;
+    }
     
     public int getThreshold() {
         return threshold;

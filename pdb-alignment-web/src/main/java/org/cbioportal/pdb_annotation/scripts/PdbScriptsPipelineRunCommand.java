@@ -120,6 +120,7 @@ public class PdbScriptsPipelineRunCommand {
                 IterationHits hits = iteration.getIterationHits();
                 Statistics stat = iteration.getIterationStat().getStatistics();
                 for (Hit hit : hits.getHit()) {
+                    
                     Alignment alignment = parseSingleAlignment(querytext, hit, count);
                     alignment.setBlast_dblen(stat.getStatisticsDbLen());
                     alignment.setBlast_dbnum(stat.getStatisticsDbNum());
@@ -161,6 +162,9 @@ public class PdbScriptsPipelineRunCommand {
         alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
         alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
         alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
+        //TODO: careful, choose first or last alignments?
+        // Original implementation, only choose last alignments
+        /*
         for (Hsp tmp : hit.getHitHsps().getHsp()) {
             alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
             alignment.setIdentp(Integer.parseInt(tmp.getHspPositive()));
@@ -173,7 +177,22 @@ public class PdbScriptsPipelineRunCommand {
             alignment.setSeqAlign(tmp.getHspQseq());
             alignment.setPdbAlign(tmp.getHspHseq());
             alignment.setMidlineAlign(tmp.getHspMidline());
-        }
+        }*/
+        
+        List<Hsp> tlist = hit.getHitHsps().getHsp();
+        Hsp tmp = tlist.get(0);
+        alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
+        alignment.setIdentp(Integer.parseInt(tmp.getHspPositive()));
+        alignment.setEvalue(Double.parseDouble(tmp.getHspEvalue()));
+        alignment.setBitscore(Double.parseDouble(tmp.getHspBitScore()));
+        alignment.setSeqFrom(Integer.parseInt(tmp.getHspQueryFrom()));
+        alignment.setSeqTo(Integer.parseInt(tmp.getHspQueryTo()));
+        alignment.setPdbFrom(Integer.parseInt(tmp.getHspHitFrom()));
+        alignment.setPdbTo(Integer.parseInt(tmp.getHspHitTo()));
+        alignment.setSeqAlign(tmp.getHspQseq());
+        alignment.setPdbAlign(tmp.getHspHseq());
+        alignment.setMidlineAlign(tmp.getHspMidline());
+        
         return alignment;
     }
     

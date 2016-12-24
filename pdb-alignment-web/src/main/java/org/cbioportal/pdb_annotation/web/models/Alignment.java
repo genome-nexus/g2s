@@ -94,7 +94,7 @@ public class Alignment {
     @Min(0)
     private int window_size;
     
-    
+    private String timenow;
 
     // ------------------------
     // Constructors
@@ -102,6 +102,14 @@ public class Alignment {
 
     public String getParaEvalue() {
         return paraEvalue;
+    }
+
+    public String getTimenow() {
+        return timenow;
+    }
+
+    public void setTimenow(String timenow) {
+        this.timenow = timenow;
     }
 
     public void setParaEvalue(String paraEvalue) {

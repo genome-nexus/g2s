@@ -10,11 +10,11 @@
 	<h1 layout:fragment="header">Pdb-Annotation</h1>
 
 	<div layout:fragment="content" class="container">
-		<p>Introduction here</p>
+		<p>Introduction of the project is here</p>
 
 		<form action="#" th:action="@{/input}" th:object="${inputsequence}"
 			method="post">
-			<p>Input protein sequences here:</p>
+			<p>Input protein sequences here:(Please Input only one sequence, Only top ONE sequence will be blast, others will be ignored)</p>
 			<textarea rows="10" cols="100" th:field="*{sequence}"></textarea>
 			<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence
 				Error</p>
@@ -66,7 +66,7 @@
 							</select>
 							<p>Comp_based_stats:</p>
 							<input type="text" th:value="2" th:name="comp_based_stats"
-								th:id="comp_based_stats" th:errorclass="fieldError" />
+								th:id="comp_based_stats" th:errorclass="fieldError" />								 
 							<p>threshold:</p>
 							<input type="text" th:value="11" th:name="threshold"
 								th:id="threshold" th:errorclass="fieldError" />
