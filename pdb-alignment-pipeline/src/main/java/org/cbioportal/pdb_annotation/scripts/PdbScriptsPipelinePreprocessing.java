@@ -75,7 +75,7 @@ public class PdbScriptsPipelinePreprocessing {
     }
 
     /**
-     * preprocess PDB sequence update
+     * preprocess PDB sequence update for single file
      * 
      * @param infileName
      * @param outfileName
@@ -123,6 +123,66 @@ public class PdbScriptsPipelinePreprocessing {
             // line count of the original FASTA file, Start from 1
             int count = 1; 
             for (Entry<String, String> entry : uniqSeqHm.entrySet()) {
+                c.add(">"+count+";"+entry.getValue()+"\n"+entry.getKey());
+                list.add(count+";"+entry.getValue());
+                if (count % this.seqInputInterval == this.seqInputInterval - 1) {
+                    FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount).toString()), c);
+                    FileUtils.writeLines(new File(outfilename), c, true);
+                    c.clear();
+                    filecount++;
+                }
+                count++;
+            }
+            if(c.size()!=0){
+                FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount++).toString()), c);
+                FileUtils.writeLines(new File(outfilename), c, true);
+            }           
+            setSeq_file_count(filecount);
+            generateSeqSQLTmpFile(list);
+        } catch (Exception ex) {
+            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing gene sequences");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return filecount;        
+    }
+    
+    
+    /**
+     * Update! New!
+     * Preprocess the Gene sequences download from Ensembl, uniprot
+     * This function is designed to split the original FASTA file into several small files. Each small files contains
+     * Constants.ensembl_input_interval lines The purpose of doing this is
+     * saving memory in next step
+     * 
+     * @param infilename
+     * @param outfilename
+     * @return
+     */
+    public int preprocessGENEsequences(String infilename, String outfilename) {
+        // count of all generated small files
+        int filecount = 0;
+        try {
+            log.info("[Preprocessing] Preprocessing gene sequences... ");
+            
+            LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper.readFastaProteinSequence(new File(infilename));           
+            HashMap<String,String> outHm = new HashMap<String,String>();
+            for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
+                if(outHm.containsKey(entry.getValue().getSequenceAsString())){
+                    String tmpStr = outHm.get(entry.getValue().getSequenceAsString());
+                    tmpStr = tmpStr + ";" + getUniqueSeqID(entry.getKey());
+                    outHm.put(entry.getValue().getSequenceAsString(), tmpStr);
+                }else{
+                    outHm.put(entry.getValue().getSequenceAsString(), getUniqueSeqID(entry.getKey()));
+                }
+            }           
+            
+            List<String> list = new ArrayList<String>();
+            
+            Collection<String> c = new ArrayList<String>();
+            // line count of the original FASTA file, Start from 1
+            int count = 1; 
+            for (Entry<String, String> entry : outHm.entrySet()) {
                 c.add(">"+count+";"+entry.getValue()+"\n"+entry.getKey());
                 list.add(count+";"+entry.getValue());
                 if (count % this.seqInputInterval == this.seqInputInterval - 1) {

@@ -47,7 +47,7 @@ CREATE TABLE `pdb_seq_alignment` (
   `PDB_TO` int NOT NULL,
   `SEQ_FROM` int NOT NULL,
   `SEQ_TO` int NOT NULL,
-  `EVALUE` VARCHAR(13),
+  `EVALUE` double,
   `BITSCORE` float,
   `IDENTITY` float,
   `IDENTP` float,

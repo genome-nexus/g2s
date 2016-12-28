@@ -61,10 +61,12 @@ public class PdbScriptsPipelineMakeSQL {
      * @param oneInputTag  multiple SQL or not
      * @param currentDir   on which directory to store this sql
      */
-    public void parse2sql(boolean oneInputTag, String currentDir) {
+    public void parse2sql(boolean oneInputTag, String currentDir, int countnum) {
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); //http.agent is needed to fetch dtd from some servers
         System.out.println("this.seqFileCount:"+this.seqFileCount);
+        this.workspace = currentDir;
+        this.seqFileCount = countnum;
         if (!oneInputTag) {      
             // multiple input, multiple sql generated incrementally
             if (this.seqFileCount == -1) {

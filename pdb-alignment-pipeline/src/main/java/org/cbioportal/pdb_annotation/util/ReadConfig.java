@@ -60,6 +60,7 @@ public class ReadConfig {
     public static String updateSECOND;
     public static String updateMILLISECOND;
     public static String updateDELAY;
+    public static String updateSeqFastaFileNum;
     public static String insertSequenceSQL;
     public static String updateAdded;
     public static String updateModified;
@@ -138,6 +139,7 @@ public class ReadConfig {
             ReadConfig.updateSECOND = prop.getProperty("update.SECOND").trim();
             ReadConfig.updateMILLISECOND = prop.getProperty("update.MILLISECOND").trim();
             ReadConfig.updateDELAY = prop.getProperty("update.DELAY").trim();
+            ReadConfig.updateSeqFastaFileNum = prop.getProperty("update.seq_fasta_file_num").trim();
             ReadConfig.insertSequenceSQL = prop.getProperty("insert_sequence_SQL").trim();
             ReadConfig.updateAdded = prop.getProperty("update.added").trim();
             ReadConfig.updateModified = prop.getProperty("update.modified").trim();
@@ -161,6 +163,14 @@ public class ReadConfig {
             rcObj = new ReadConfig();
         }
         return rcObj;
+    }
+
+    public static String getUpdateSeqFastaFileNum() {
+        return updateSeqFastaFileNum;
+    }
+
+    public static void setUpdateSeqFastaFileNum(String updateSeqFastaFileNum) {
+        ReadConfig.updateSeqFastaFileNum = updateSeqFastaFileNum;
     }
 
     public static String getBlastParaMaxTargetSeqs() {
