@@ -380,7 +380,7 @@ public class AlignmentController {
         List<GenomeResidueInput> grlistValid = new ArrayList<GenomeResidueInput>();
         for(GenomeResidueInput gr: grlist){
             List<Ensembl> ensembllist=ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
-            System.out.println(gr.getEnsembl().getEnsemblid());
+            //System.out.println(gr.getEnsembl().getEnsemblid());
             
             if(geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size()!=0){
                 Ensembl es = gr.getEnsembl();
@@ -391,7 +391,7 @@ public class AlignmentController {
             }
         }
         
-        System.out.println("grlistValid size is "+grlistValid.size());
+        //System.out.println("grlistValid size is "+grlistValid.size());
         
         if(grlistValid.size()>=1){
             List<GenomeResidue> outlist = new ArrayList<GenomeResidue>(); 
