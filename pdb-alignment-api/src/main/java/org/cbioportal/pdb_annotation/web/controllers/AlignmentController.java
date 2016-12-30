@@ -391,14 +391,21 @@ public class AlignmentController {
             }
         }
         
-        //System.out.println("grlistValid size is "+grlistValid.size());
-        
         if(grlistValid.size()>=1){
             List<GenomeResidue> outlist = new ArrayList<GenomeResidue>(); 
             for(GenomeResidueInput gr:grlistValid){
-                //System.out.println("Out:\t"+gr.getEnsembl().getSeqId()+"\t:"+Integer.toString(gr.getResidue().getResidueNum()));
+                System.out.println("Out:\t"+gr.getEnsembl().getSeqId()+"\t:"+Integer.toString(gr.getResidue().getResidueNum()));
                 List<Residue> list= getPdbResidueBySeqId(gr.getEnsembl().getSeqId(),Integer.toString(gr.getResidue().getResidueNum()));
                 Ensembl en = gr.getEnsembl();
+                GenomeResidue ge = new GenomeResidue();
+                try{
+                    BeanUtils.copyProperties(ge, en);
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+                ge.setAlignments(list);
+                outlist.add(ge);
+                /*
                 for(Residue re:list){
                     GenomeResidue ge = new GenomeResidue();
                     try{
@@ -408,7 +415,7 @@ public class AlignmentController {
                     }                  
                     ge.setEnsembl(en);
                     outlist.add(ge);
-                }
+                }*/
             }
             
             return outlist ;

@@ -1,15 +1,17 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-public class GenomeResidue extends Residue{
-    
-    private Ensembl ensembl;
+import java.util.List;
 
-    public Ensembl getEnsembl() {
-        return ensembl;
+public class GenomeResidue extends Ensembl{
+    
+    private List<Residue> alignments;
+
+    public List<Residue> getAlignments() {
+        return alignments;
     }
 
-    public void setEnsembl(Ensembl ensembl) {
-        this.ensembl = ensembl;
+    public void setAlignments(List<Residue> alignments) {
+        this.alignments = alignments;
     }
 
 }
