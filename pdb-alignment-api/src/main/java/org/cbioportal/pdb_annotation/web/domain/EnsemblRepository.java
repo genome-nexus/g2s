@@ -15,4 +15,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Transactional
 public interface EnsemblRepository extends JpaRepository<Ensembl, Long>{
     public List<Ensembl> findByEnsemblId(String ensemblId);
+    public List<Ensembl> findByEnsemblIdStartingWith(String ensemblId);
+    
 }

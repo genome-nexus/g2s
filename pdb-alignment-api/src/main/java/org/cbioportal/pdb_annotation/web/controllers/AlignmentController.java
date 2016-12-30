@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiResponses;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.EnsemblRepository;
 import org.cbioportal.pdb_annotation.web.domain.GeneSequenceRepository;
@@ -14,8 +15,13 @@ import org.cbioportal.pdb_annotation.web.domain.PdbRepository;
 import org.cbioportal.pdb_annotation.web.domain.UniprotRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Ensembl;
+import org.cbioportal.pdb_annotation.web.models.GenomeResidue;
+import org.cbioportal.pdb_annotation.web.models.GenomeResidueInput;
 import org.cbioportal.pdb_annotation.web.models.Residue;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
+import org.cbioportal.pdb_annotation.web.models.api.Quote;
+import org.cbioportal.pdb_annotation.web.models.api.Transcript_consequences;
+import org.cbioportal.pdb_annotation.web.models.api.UtilAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +31,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+
+
 
 /**
  *
@@ -35,7 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@RequestMapping(value = "/pdb_annotation/")
+@RequestMapping(value = "/g2s/")
 public class AlignmentController {
     @Autowired
     private AlignmentRepository alignmentRepository;
@@ -293,6 +302,119 @@ public class AlignmentController {
             outList.addAll(getPdbResidueBySeqId(entry.getSeqId(),aaNumber));
         }       
         return outList;
+    }
+    
+    //Genome to Structure:
+    @ApiOperation(value = "get whether ensemblId exists by Genome", nickname = "getExistedEnsemblIdinGenome")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = GenomeResidue.class, responseContainer = "boolean"),
+            @ApiResponse(code = 400, message = "Bad Request") })
+    @RequestMapping(value = "/GenomeEnsemblRecognitionQuery", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public String getExistedEnsemblIdinGenome(
+            @RequestParam(required = true) 
+            @ApiParam(value = "Input Chromomsome Number. For example X", required = true, allowMultiple = true) String chromosomeNum,
+            @RequestParam(required = true)
+            @ApiParam(value = "Input Position. Example: 66937331", required = true, allowMultiple = true) long positionNum,
+            @RequestParam(required = true)
+            @ApiParam(value = "Input Nucleotide of the Position. E.g. T Note: Please input correct nucleotide", required = true, allowMultiple = true) String nucleotideName) {
+        
+        //Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try{
+            grlist = uapi.callAPI(chromosomeNum, positionNum, nucleotideName);
+        }catch(HttpClientErrorException ex){
+            ex.printStackTrace();
+            //org.springframework.web.client.HttpClientErrorException: 400 Bad Request
+            return "Input error, Please check";
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        List<Ensembl> ensembllist = new ArrayList<Ensembl>();
+        for(GenomeResidueInput gr: grlist){
+            ensembllist.addAll(ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid()));
+        }
+        if(ensembllist.size()>=1){
+            for(Ensembl ensembl:ensembllist){
+                if(geneSequenceRepository.findBySeqId(ensembl.getSeqId()).size() != 0){
+                    return "true";
+                }
+            }
+            return "false";
+        }else{
+            return "false";
+        }
+    }
+        
+    @ApiOperation(value = "get residue mapping from Genome", nickname = "getPdbResidueByGenome")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = GenomeResidue.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Bad Request") })
+    @RequestMapping(value = "/GenomeEnsemblResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public List<GenomeResidue> getPdbResidueByEnsemblIdGenome (
+            @RequestParam(required = true) 
+            @ApiParam(value = "Input Chromomsome Number. For example X", required = true, allowMultiple = true) String chromosomeNum,
+            @RequestParam(required = true)
+            @ApiParam(value = "Input Position. Example: 66937331", required = true, allowMultiple = true) long positionNum,
+            @RequestParam(required = true)
+            @ApiParam(value = "Input Nucleotide of the Position. E.g. T Note: Please input correct nucleotide", required = true, allowMultiple = true) String nucleotideName) {
+        
+        //Calling GenomeNexus
+        UtilAPI uapi = new UtilAPI();
+        
+        List<GenomeResidueInput> grlist = new ArrayList<GenomeResidueInput>();
+        try{
+            grlist = uapi.callAPI(chromosomeNum, positionNum, nucleotideName);
+        }catch(HttpClientErrorException ex){
+            ex.printStackTrace();
+            //org.springframework.web.client.HttpClientErrorException: 400 Bad Request
+            return null;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        List<GenomeResidueInput> grlistValid = new ArrayList<GenomeResidueInput>();
+        for(GenomeResidueInput gr: grlist){
+            List<Ensembl> ensembllist=ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
+            System.out.println(gr.getEnsembl().getEnsemblid());
+            
+            if(geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size()!=0){
+                Ensembl es = gr.getEnsembl();
+                es.setSeqId(ensembllist.get(0).getSeqId());
+                //System.out.println("API ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
+                gr.setEnsembl(es);
+                grlistValid.add(gr);
+            }
+        }
+        
+        System.out.println("grlistValid size is "+grlistValid.size());
+        
+        if(grlistValid.size()>=1){
+            List<GenomeResidue> outlist = new ArrayList<GenomeResidue>(); 
+            for(GenomeResidueInput gr:grlistValid){
+                //System.out.println("Out:\t"+gr.getEnsembl().getSeqId()+"\t:"+Integer.toString(gr.getResidue().getResidueNum()));
+                List<Residue> list= getPdbResidueBySeqId(gr.getEnsembl().getSeqId(),Integer.toString(gr.getResidue().getResidueNum()));
+                Ensembl en = gr.getEnsembl();
+                for(Residue re:list){
+                    GenomeResidue ge = new GenomeResidue();
+                    try{
+                        BeanUtils.copyProperties(ge, re);
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }                  
+                    ge.setEnsembl(en);
+                    outlist.add(ge);
+                }
+            }
+            
+            return outlist ;
+        }else{
+            return null;
+        }
     }
     
  
