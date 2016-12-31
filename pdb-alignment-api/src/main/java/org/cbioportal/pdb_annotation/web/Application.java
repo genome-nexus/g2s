@@ -46,8 +46,8 @@ public class Application {
 
     private ApiInfo annotationApiInfo() {
         return new ApiInfoBuilder()
-            .title("G2S API")
-            .description("Genome to Structure API")
+            .title("Genome Nexus G2S API")
+            .description("A Genome to Strucure (G2S) API Supports Automated Mapping and Annotating Genomic Variants in 3D Protein Structures. Supports Inputs from Human Genome Position, Uniprot and Human Ensembl Names")
             //.termsOfServiceUrl("http://terms-of-service-url")
             .contact("CMO, MSKCC")
             .license("GNU AFFERO GENERAL PUBLIC LICENSE Version 3")

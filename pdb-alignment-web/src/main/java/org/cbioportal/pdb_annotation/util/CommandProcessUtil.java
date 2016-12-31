@@ -157,7 +157,7 @@ public class CommandProcessUtil {
         list.add("-evalue");
         list.add(inputsequence.getEvalue());       
         list.add("-word_size");
-        list.add(Integer.toString(inputsequence.getWord_size()));        
+        list.add(inputsequence.getWord_size());        
         list.add("-gapopen");
         list.add(Integer.toString(inputsequence.getGapopen()));
         list.add("-gapextend");

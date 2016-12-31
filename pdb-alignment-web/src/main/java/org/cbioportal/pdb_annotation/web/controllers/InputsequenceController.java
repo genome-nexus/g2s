@@ -124,9 +124,9 @@ public class InputsequenceController {
         return new ModelAndView ("api");
     }
     
-    @GetMapping("/program")
-    public ModelAndView programInfo() {
-        return new ModelAndView ("program");
+    @GetMapping("/clients")
+    public ModelAndView clientsInfo() {
+        return new ModelAndView ("clients");
     }
     
     @GetMapping("/statistics")

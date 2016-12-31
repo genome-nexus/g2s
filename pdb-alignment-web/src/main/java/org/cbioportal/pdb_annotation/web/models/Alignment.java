@@ -66,7 +66,7 @@ public class Alignment {
     
     //2,3,6
     //default 3
-    private int word_size;
+    private String word_size;
     
     @Digits(fraction = 0, integer = 5)
     @Min(1)
@@ -191,11 +191,11 @@ public class Alignment {
         this.blast_lambda = blast_lambda;
     }
 
-    public int getWord_size() {
+    public String getWord_size() {
         return word_size;
     }
 
-    public void setWord_size(int word_size) {
+    public void setWord_size(String word_size) {
         this.word_size = word_size;
     }
 
