@@ -2,9 +2,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
-<head>
-<title>Results:</title>
-</head>
 <body>
 	<h1 layout:fragment="header">Blast Results :</h1>
 	<div layout:fragment="content" class="container">
@@ -23,8 +20,8 @@
 					<td>SeqTo</td>
 					<td>Evalue</td>
 					<td>Bitscore</td>
-					<td>Identity</td>
-					<td>identityP</td>
+					<td>Identities</td>
+					<td>Positives</td>
 					<td>Mapped Residue</td>
 				</tr>
 			</thead>
@@ -35,7 +32,7 @@
 				<tr th:each="residue : ${residues}">
 				<tr class="table-info">
 					<td th:text="${residue.alignmentId}">1</td>
-					<td th:text="${residue.pdbId}">1</td>
+					<td><a th:href="@{'http://www.rcsb.org/pdb/explore/explore.do?structureId='+${residue.pdbId}}"><p th:text="${residue.pdbId}"></p></a></td>
 					<td th:text="${residue.chain}">1</td>
 					<td th:text="${residue.pdbSeg}">1</td>
 					<td th:text="${residue.pdbFrom}">1</td>
@@ -46,8 +43,9 @@
 					<td th:text="${residue.bitscore}">1</td>
 					<td th:text="${residue.identity}">1</td>
 					<td th:text="${residue.identp}">1</td>
-					<td th:text="${residue.residueNum}">1</td>
+					<td><a th:href="@{'http://www.rcsb.org/pdb/pv/pv.do'(pdbid=${residue.pdbId}, highlight=${residue.chain}+':'+${residue.residueNum})}"><p th:text="${residue.residueNum}"></p></a></td>
 					<td th:text="${residue.residueName}">1</td>
+					
 				</tr>
 				<!--  
 					<tr>
@@ -60,9 +58,6 @@
 					<td class="alignment" colspan="14" th:text="${residue.pdbAlign}">1</td>
 					</tr>
 					-->
-
-
-
 				</tr>
 			</tbody>
 		</table>

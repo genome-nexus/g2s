@@ -2,15 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
-<head> 
-    <title>API</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
 <body>
 	<h1 layout:fragment="header">API contents:</h1>
 	<div layout:fragment="content" class="container">
 	<p>API contents will be add here ...</p>
-	<iframe src="http://localhost:8081/swagger-ui.html#/alignment-controller" height="1000px" width="100%" style="border:none;">
+	<iframe src="http://localhost:8081/swagger-ui.html#/alignment-controller" height="1000px" width="100%"  style="border:none;">
   	<p>Your browser does not support iframes. Chrome is recommend to get better view</p>
 	</iframe>
     </div>

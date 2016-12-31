@@ -19,8 +19,6 @@ import org.cbioportal.pdb_annotation.web.models.GenomeResidue;
 import org.cbioportal.pdb_annotation.web.models.GenomeResidueInput;
 import org.cbioportal.pdb_annotation.web.models.Residue;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
-import org.cbioportal.pdb_annotation.web.models.api.Quote;
-import org.cbioportal.pdb_annotation.web.models.api.Transcript_consequences;
 import org.cbioportal.pdb_annotation.web.models.api.UtilAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -309,7 +307,7 @@ public class AlignmentController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = GenomeResidue.class, responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/GenomeEnsemblRecognitionQuery", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/GenomeStructureRecognitionQuery", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public String getExistedEnsemblIdinGenome(
@@ -352,7 +350,7 @@ public class AlignmentController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = GenomeResidue.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/GenomeEnsemblResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "/GenomeStructureResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public List<GenomeResidue> getPdbResidueByEnsemblIdGenome (

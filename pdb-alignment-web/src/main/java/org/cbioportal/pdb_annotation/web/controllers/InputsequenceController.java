@@ -124,6 +124,16 @@ public class InputsequenceController {
         return new ModelAndView ("api");
     }
     
+    @GetMapping("/program")
+    public ModelAndView programInfo() {
+        return new ModelAndView ("program");
+    }
+    
+    @GetMapping("/statistics")
+    public ModelAndView statisticsInfo() {
+        return new ModelAndView ("statistics");
+    }
+    
     @GetMapping("/about")
     public ModelAndView aboutInfo() {
         return new ModelAndView ("about");
@@ -133,5 +143,12 @@ public class InputsequenceController {
     public ModelAndView contactInfo() {
         return new ModelAndView ("contact");
     }
+    
+    @GetMapping("/")
+    public ModelAndView homeInfo() {
+        return new ModelAndView ("api");
+    }
+    
+    
     
 }

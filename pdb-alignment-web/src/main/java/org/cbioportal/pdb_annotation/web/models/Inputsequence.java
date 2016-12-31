@@ -23,20 +23,21 @@ public class Inputsequence {
     
     //Parameters are list here:
     //default 1e-10
+    //@Pattern(regexp="(^((\\d+.?\\d*)[Ee]{1}(-?\\d+))$)|(^(\\d|[1-9]\\d+)(\\.\\d+)?$)",message="Non-negative Scientific Notation or Non-negative digits")
     private String evalue;
     
     //2,3,6
     //default 3
-    @Min(1)
+    //@Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Should be >=1 Integer")
     private int word_size;
     
     //@Digits(fraction = 0, integer = 5)
-    @Min(1)
+    //@Pattern(regexp="^\\d+$",message="Should be Non-negative Integer")
     //default 11
     private int gapopen;
     
     //@Digits(fraction = 0, integer = 5)
-    @Min(1)
+    //@Pattern(regexp="^\\d+$",message="Should be Non-negative Integer")
     //default 1
     private int gapextend;
     
@@ -44,18 +45,17 @@ public class Inputsequence {
     private String matrix;
     
     //0,1,2,3 default 2
+    //@Pattern(regexp="^(3)|(2)|(1)|(0)$",message="Should be >=1 Integer")
     private int comp_based_stats;
     
     //default 11
     //Neighboring words threshold
-    @Min(1)
-    @Digits(fraction = 0, integer = 5)
+    //@Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Should be >=1 Integer")
     private int threshold;
     
     //default 40
     //Window for multiple hits
-    @Min(1)
-    @Digits(fraction = 0, integer = 5)
+    //@Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Should be >=1 Integer")
     private int window_size;
     
     //Time

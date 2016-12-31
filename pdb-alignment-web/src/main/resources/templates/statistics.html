@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<body>
+	<h1 layout:fragment="header">Statistics of G2S:</h1>
+	<div layout:fragment="content" class="container">
+	
+	<table class="table table-bordered table-striped table-sm table-condensed" style="width:75%">
+			<thead>
+				<tr>
+					<td>Name</td>
+					<td>Numbers of Entries included</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Last Update Date:</td>
+					<td th:text="#{updateDate}">1</td>
+				</tr>
+				<tr>
+					<td>Ensembl version</td>
+					<td>Human Release-87</td>
+				</tr>
+				<tr>
+					<td>Number of Nonredundant Ensembl Entries:</td>
+					<td>102915</td>
+				</tr>
+				<tr>
+					<td>Uniprot(Swissprot) version</td>
+					<td>UniProt Release 2016_11</td>
+				</tr>
+				<tr>
+					<td>Number of Nonredundant Uniprot Entries:</td>
+					<td>592289</td>
+				</tr>
+				<tr>
+					<td>Number of Combined Nonredundant Ensembl/Uniprot Entires:</td>
+					<td>556359</td>
+				</tr>
+				<tr>
+					<td>Number of PDB Entries of Chains and Segments:</td>
+					<td th:text="#{pdbEntries}">284458</td>
+				</tr>
+				<tr>
+					<td>Number of PDB Biological Macromolecular Structures:</td>
+					<td th:text="#{pdbUniqueEntries}">108237</td>
+				</tr>
+				<tr>
+					<td>Number of Protein-PDB alignments:</td>
+					<td th:text="#{alignmentEntries}">108237</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
