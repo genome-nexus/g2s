@@ -3,14 +3,14 @@
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
 <body>
-	<h1 layout:fragment="header">Statistics of G2S:</h1>
+	<h1 layout:fragment="header">Statistics of G2S databases:</h1>
 	<div layout:fragment="content" class="container">
 	
 	<table class="table table-bordered table-striped table-sm table-condensed" style="width:75%">
 			<thead>
 				<tr>
 					<td>Name</td>
-					<td>Numbers of Entries included</td>
+					<td>Numbers of Entries</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -52,6 +52,9 @@
 				</tr>
 			</tbody>
 		</table>
+		<p>Genome Nexus G2S database stored alignments from protein sequences against PDB sequences.</p>
+		<p>The sources of protein sequences are from <a href="ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/">Uniprot</a> (Only includes Swissprot) and <a href="http://ftp.ensembl.org/pub/release-87/fasta/homo_sapiens/pep/">HUMAN ENSEMBL</a>. All the protein sequences are combined together to remove redundancy. </p>
+		<p>Genome Nexus G2S makes automatic frequent (<b>WEEKLY</b>) updates to the set of pre-caculated alignments as new/obsolete/modified protein structures are added to <a href="http://www.rcsb.org/">RCSB Protein Data Bank</a>, while keeping the set of protein sequences from public protein sequence databases fixed. Less frequently (<b>MONTHS</b>), the system is re-initialized using an updated set of protein sequences in new release of Uniprot/Ensembl, and during re-initialization an all-against-all alignment process is executed. </p>
 	</div>
 </body>
 </html>
