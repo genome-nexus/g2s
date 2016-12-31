@@ -26,7 +26,7 @@ public class UtilAPI {
         this.gnApiUrl = gnApiUrl;
     }
     
-    public List<GenomeResidueInput> callAPI(String chromosomeNum, long positionNum, String nucleotideName) throws Exception{
+    public List<GenomeResidueInput> callAPI(String chromosomeNum, long positionNum, String nucleotideType) throws Exception{
         ReadConfig rc = ReadConfig.getInstance();
         //System.out.println("ReadURL:\t"+rc.getGnApiUrl());
         List<GenomeResidueInput> outlist = new ArrayList<GenomeResidueInput>();
@@ -34,11 +34,11 @@ public class UtilAPI {
         String url = rc.getGnApiUrl();
         url=url.replace("CHROMSOME", chromosomeNum);
         url=url.replace("POSITION", Long.toString(positionNum));
-        url=url.replace("ORIGINAL", nucleotideName);
+        url=url.replace("ORIGINAL", nucleotideType);
         
         //Artificial mutation for API
         String mutation = "A";
-        if(nucleotideName.equals("A")){
+        if(nucleotideType.equals("A")){
             mutation = "T";
         }
         url=url.replace("MUTATION", mutation);

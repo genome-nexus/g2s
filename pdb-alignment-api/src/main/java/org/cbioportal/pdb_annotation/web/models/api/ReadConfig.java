@@ -1,7 +1,7 @@
 package org.cbioportal.pdb_annotation.web.models.api;
 
 import java.util.*;
-import org.cbioportal.pdb_annotation.web.controllers.AlignmentController;
+import org.cbioportal.pdb_annotation.web.controllers.GenomeAlignmentController;
 
 
 /**
@@ -41,7 +41,7 @@ public class ReadConfig {
 
         try {
             Properties prop = new Properties();
-            prop.load(AlignmentController.class.getClassLoader().getResourceAsStream("application.properties"));
+            prop.load(GenomeAlignmentController.class.getClassLoader().getResourceAsStream("application.properties"));
 
             // Set all constants
             ReadConfig.gnApiUrl = prop.getProperty("gn.api.url").trim();

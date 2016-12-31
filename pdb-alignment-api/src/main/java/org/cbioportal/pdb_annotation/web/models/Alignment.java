@@ -58,7 +58,7 @@ public class Alignment {
     private float identity;
 
     @Column(name = "IDENTP")
-    private float identp;
+    private float identityPositive;
 
     @Column(name = "SEQ_ALIGN")
     private String seqAlign;
@@ -191,12 +191,12 @@ public class Alignment {
         this.identity = identity;
     }
 
-    public float getIdentp() {
-        return identp;
+    public float getIdentityPositive() {
+        return identityPositive;
     }
 
-    public void setIdentp(float identp) {
-        this.identp = identp;
+    public void setIdentityPositive(float identityPositive) {
+        this.identityPositive = identityPositive;
     }
 
     public String getSeqAlign() {
