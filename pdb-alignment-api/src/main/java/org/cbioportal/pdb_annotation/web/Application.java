@@ -1,7 +1,10 @@
 package org.cbioportal.pdb_annotation.web;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.cbioportal.pdb_annotation.web.controllers.EnsemblIdAlignmentController;
 import org.cbioportal.pdb_annotation.web.models.api.Quote;
 import org.cbioportal.pdb_annotation.web.models.api.Transcript_consequences;
 import org.springframework.boot.CommandLineRunner;
@@ -10,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import io.swagger.jaxrs.config.BeanConfig;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -55,5 +59,7 @@ public class Application {
             .version("2.0")
             .build();
     }
+    
+
     
 }

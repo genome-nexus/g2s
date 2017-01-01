@@ -43,7 +43,7 @@ public class SeqIdAlignmentController {
     
     
     //Query from seqId
-    @ApiOperation(value = "Get PDB Alignments by Protein SeqId", nickname = "getPdbAlignmentByGeneSequenceId")
+    @ApiOperation(value = "Get PDB Alignments by Protein SeqId", nickname = "GeneSeqStructureMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -55,7 +55,7 @@ public class SeqIdAlignmentController {
         return alignmentRepository.findBySeqId(seqId);
     }
 
-    @ApiOperation(value = "Whether Protein SeqId Exists", nickname = "getExistedSeqIdinAlignment")
+    @ApiOperation(value = "Whether Protein SeqId Exists", nickname = "GeneSeqRecognitionQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -68,7 +68,7 @@ public class SeqIdAlignmentController {
     }
     
     
-    @ApiOperation(value = "Get Residue Mapping by Protein SeqId and Residue Position", nickname = "getPdbResidueBySeqId")
+    @ApiOperation(value = "Get Residue Mapping by Protein SeqId and Residue Position", nickname = "GeneSeqResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })

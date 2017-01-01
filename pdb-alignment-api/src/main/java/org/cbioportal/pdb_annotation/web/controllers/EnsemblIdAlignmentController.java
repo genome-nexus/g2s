@@ -47,7 +47,7 @@ public class EnsemblIdAlignmentController {
     private SeqIdAlignmentController seqController;
     
     //Query from EnsemblId
-    @ApiOperation(value = "Get PDB Alignments by EnsemblId", nickname = "getPdbAlignmentByEnsemblId")
+    @ApiOperation(value = "Get PDB Alignments by EnsemblId", nickname = "EnsemblStructureMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -64,7 +64,7 @@ public class EnsemblIdAlignmentController {
         }
     }
 
-    @ApiOperation(value = "Whether EnsemblId exists", nickname = "getExistedEnsemblIdinAlignment")
+    @ApiOperation(value = "Whether EnsemblId exists", nickname = "EnsemblRecognitionQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -81,7 +81,7 @@ public class EnsemblIdAlignmentController {
         }
     }
         
-    @ApiOperation(value = "Get Residue Mapping by EnsemblId and Residue Number", nickname = "getPdbResidueByEnsemblId")
+    @ApiOperation(value = "Get Residue Mapping by EnsemblId and Residue Number", nickname = "EnsemblResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })

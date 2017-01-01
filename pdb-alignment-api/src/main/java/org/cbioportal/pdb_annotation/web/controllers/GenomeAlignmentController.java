@@ -56,7 +56,7 @@ public class GenomeAlignmentController {
     
     //Genome to Structure:
     //whether ensembl exists by API
-    @ApiOperation(value = "Whether Position Valid in Genome", nickname = "getExistedEnsemblIdinGenome")
+    @ApiOperation(value = "Whether Position Valid in Genome", nickname = "GenomeStructureRecognitionQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -99,7 +99,7 @@ public class GenomeAlignmentController {
         }
     }
         
-    @ApiOperation(value = "Get Residue Mapping from Genome Position", nickname = "getPdbResidueByGenome")
+    @ApiOperation(value = "Get Residue Mapping from Genome Position", nickname = "GenomeStructureResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = GenomeResidue.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })

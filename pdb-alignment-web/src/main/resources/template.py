@@ -1,12 +1,3 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout">
-<body>
-	<h1 layout:fragment="header">Python Client:</h1>
-	<div layout:fragment="content" class="container">
-		<p>The simple python template program  provides a basic set of functions for querying the Genome Nexus G2S API via the Python platform for scientific computing.</p>
-		<pre>
 #Python 2.7
 #A Simple Python template program reading Genome Nexus G2S APIs
 
@@ -24,10 +15,10 @@ nuclPosition="66937331"
 nuclType="T"
 
 # Set up API URL
-apiUrl = hostName+apiName+chromsomeNum+"&amp;positionNum="+nuclPosition+"&amp;nucleotideType="+nuclType
+url = hostName+apiName+chromsomeNum+"&positionNum="+nuclPosition+"&nucleotideType="+nuclType
 
 # Request API
-myResponse = requests.get(apiUrl)
+myResponse = requests.get(url)
 #print (myResponse.status_code)
 
 # For successful API call, response code will be 200 (OK)
@@ -42,8 +33,5 @@ if(myResponse.ok):
 	print "\n"
 else:
   # If response code is not ok (200), print the resulting http error code with description
-    myResponse.raise_for_status()	
-	</pre>
-	</div>
-</body>
-</html>
+    myResponse.raise_for_status()
+

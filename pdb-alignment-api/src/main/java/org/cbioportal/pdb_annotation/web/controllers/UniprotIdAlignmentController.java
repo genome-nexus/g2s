@@ -47,7 +47,7 @@ public class UniprotIdAlignmentController {
     private SeqIdAlignmentController seqController;
     
     //Query from UniprotIdIso
-    @ApiOperation(value = "Get PDB Alignments by UniprotId and Isofrom", nickname = "getPdbAlignmentByUniprotIdIso")
+    @ApiOperation(value = "Get PDB Alignments by UniprotId and Isofrom", nickname = "UniprotIsoformStructureMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -66,7 +66,7 @@ public class UniprotIdAlignmentController {
         }
     }
 
-    @ApiOperation(value = "Whether Isoform of UniprotId Exists", nickname = "getExistedUniprotIdIsoinAlignment")
+    @ApiOperation(value = "Whether Isoform of UniprotId Exists", nickname = "UniprotIsoformRecognitionQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -85,7 +85,7 @@ public class UniprotIdAlignmentController {
         }
     }
         
-    @ApiOperation(value = "Get Residue Mapping by UniprotId, Isofrom and Residue Position", nickname = "getPdbResidueByUniprotIdIso")
+    @ApiOperation(value = "Get Residue Mapping by UniprotId, Isofrom and Residue Position", nickname = "UniprotIsoformResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -109,7 +109,7 @@ public class UniprotIdAlignmentController {
     }
     
     //Query from UniprotId
-    @ApiOperation(value = "Get PDB Alignments by UniprotId", nickname = "getPdbAlignmentByUniprotId")
+    @ApiOperation(value = "Get PDB Alignments by UniprotId", nickname = "UniprotStructureMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -126,7 +126,7 @@ public class UniprotIdAlignmentController {
         return outList;       
     }
 
-    @ApiOperation(value = "Whether UniprotId Exists", nickname = "getExistedUniprotIdinAlignment")
+    @ApiOperation(value = "Whether UniprotId Exists", nickname = "UniprotRecognitionQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -144,7 +144,7 @@ public class UniprotIdAlignmentController {
         return outList.size()!=0;
     }
         
-    @ApiOperation(value = "Get Residue Mapping by UniprotId and Residue Number", nickname = "getPdbResidueByUniprotId")
+    @ApiOperation(value = "Get Residue Mapping by UniprotId and Residue Number", nickname = "UniprotResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
             @ApiResponse(code = 400, message = "Bad Request") })
@@ -155,7 +155,7 @@ public class UniprotIdAlignmentController {
             @RequestParam(required = true)
             @ApiParam(value = "Input Uniprot Id e.g. Q26540", required = true, allowMultiple = true) String uniprotId, 
             @RequestParam(required = true)
-            @ApiParam(value = "Input Residue Number e.g. 12", required = true, allowMultiple = true) String aaPosition) {
+            @ApiParam(value = "Input Residue Position e.g. 12", required = true, allowMultiple = true) String aaPosition) {
         
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId); 
         ArrayList<Residue> outList = new ArrayList<Residue>();       

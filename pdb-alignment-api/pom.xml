@@ -53,6 +53,11 @@
       <version>2.4.0</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+		<groupId>io.swagger</groupId>
+		<artifactId>swagger-jaxrs</artifactId>
+		<version>1.5.8</version>
+	</dependency>
   </dependencies>
 
   <properties>
@@ -67,6 +72,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+      
     </plugins>
   </build>
 </project>
