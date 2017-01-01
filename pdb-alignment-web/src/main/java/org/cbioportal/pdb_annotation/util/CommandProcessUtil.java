@@ -29,13 +29,13 @@ public class CommandProcessUtil {
                 boolean done = false;
                 while (!done) {
                     int buf = error.read();
-                    if (buf == -1) break;
-                    errorInfo = errorInfo + (char)buf;
+                    if (buf == -1)
+                        break;
+                    errorInfo = errorInfo + (char) buf;
                 }
                 log.error("[Process] Error: " + errorInfo);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -48,7 +48,7 @@ public class CommandProcessUtil {
      */
     private void checkCommandParam(String commandName, ArrayList<String> paralist) {
         boolean checkFlag = true;
-        switch(commandName) {
+        switch (commandName) {
         case "wget":
             if (paralist.size() != 2) {
                 checkFlag = false;
@@ -94,7 +94,8 @@ public class CommandProcessUtil {
             break;
         }
         if (!checkFlag) {
-            log.error("[SHELL] Fatal Error: Parameters for " + commandName + " does not make sense, please check. Now the program is exit");
+            log.error("[SHELL] Fatal Error: Parameters for " + commandName
+                    + " does not make sense, please check. Now the program is exit");
             System.exit(0);
         }
     }
@@ -104,19 +105,20 @@ public class CommandProcessUtil {
      *
      * @param commandName
      * @param paralist
-     * @param inputsequence 
+     * @param inputsequence
      * @return
      */
     public int runCommand(String commandName, ArrayList<String> paralist, Inputsequence inputsequence) {
-        int shellReturnCode=0;
+        int shellReturnCode = 0;
         try {
             checkCommandParam(commandName, paralist);
             ProcessBuilder pb = null;
             switch (commandName) {
             case "blastp":
                 log.info("[BLAST] Running blastp command query " + paralist.get(0) + "...");
-                pb = new ProcessBuilder(makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2), inputsequence));
-                break; 
+                pb = new ProcessBuilder(
+                        makeBlastPCommand(paralist.get(0), paralist.get(1), paralist.get(2), inputsequence));
+                break;
             case "rm":
                 log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
                 pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
@@ -138,14 +140,16 @@ public class CommandProcessUtil {
         }
         return shellReturnCode;
     }
-    
+
     /**
-     * Helper Function for building the following command :
-     * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue  1e-60 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
+     * Helper Function for building the following command : blastp -db
+     * pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue
+     * 1e-60 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
      *
      * @return A List of command arguments for the processbuilder
      */
-    private List<String> makeBlastPCommand(String queryFilename, String outFilename, String dbFilename, Inputsequence inputsequence) {
+    private List<String> makeBlastPCommand(String queryFilename, String outFilename, String dbFilename,
+            Inputsequence inputsequence) {
         List<String> list = new ArrayList<String>();
         list.add(ReadConfig.blastp);
         list.add("-db");
@@ -153,11 +157,11 @@ public class CommandProcessUtil {
         list.add("-query");
         list.add(queryFilename);
 
-        //parameters from the form
+        // parameters from the form
         list.add("-evalue");
-        list.add(inputsequence.getEvalue());       
+        list.add(inputsequence.getEvalue());
         list.add("-word_size");
-        list.add(inputsequence.getWord_size());        
+        list.add(inputsequence.getWord_size());
         list.add("-gapopen");
         list.add(Integer.toString(inputsequence.getGapopen()));
         list.add("-gapextend");
@@ -169,8 +173,8 @@ public class CommandProcessUtil {
         list.add("-threshold");
         list.add(Integer.toString(inputsequence.getThreshold()));
         list.add("-window_size");
-        list.add(Integer.toString(inputsequence.getWindow_size())); 
-        
+        list.add(Integer.toString(inputsequence.getWindow_size()));
+
         list.add("-num_threads");
         list.add(ReadConfig.blastParaThreads);
         list.add("-outfmt");
@@ -179,8 +183,7 @@ public class CommandProcessUtil {
         list.add(outFilename);
         return list;
     }
-    
-    
+
     /**
      * generate rm command
      * 
@@ -194,6 +197,5 @@ public class CommandProcessUtil {
         list.add(inFilename);
         return list;
     }
-
 
 }

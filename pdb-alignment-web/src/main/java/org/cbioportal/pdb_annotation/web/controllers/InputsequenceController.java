@@ -1,6 +1,5 @@
 package org.cbioportal.pdb_annotation.web.controllers;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,41 +33,43 @@ public class InputsequenceController {
     public ModelAndView inputForm(Model model) {
         model.addAttribute("inputsequence", new Inputsequence());
         return new ModelAndView("input");
-    }   
-    
+    }
+
     @PostMapping("/input")
-    public ModelAndView resultBack(@ModelAttribute @Valid Inputsequence inputsequence, BindingResult bindingResult, HttpServletRequest request) {
+    public ModelAndView resultBack(@ModelAttribute @Valid Inputsequence inputsequence, BindingResult bindingResult,
+            HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            return new ModelAndView ("input");
-        } 
-        
-        //is client behind something?
+            return new ModelAndView("input");
+        }
+
+        // is client behind something?
         String ipAddress = request.getHeader("X-FORWARDED-FOR");
         if (ipAddress == null) {
-               ipAddress = request.getRemoteAddr();
+            ipAddress = request.getRemoteAddr();
         }
-        
+
         inputsequence.setId(ipAddress);
-        //inputsequence.setSequence(inputsequence.getSequence());
-        
-        PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand= new PdbScriptsPipelineRunCommand();        
+        // inputsequence.setSequence(inputsequence.getSequence());
+
+        PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand = new PdbScriptsPipelineRunCommand();
         List<Alignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
-        
-        //Instant instant = Instant.now ();
-        //inputsequence.setTimenow(instant.toString());
-        inputsequence.setTimenow(LocalDateTime.now ( ).toString ().replace ( "T", " " ));
-        
-        List<Residue> residues = new ArrayList<Residue> ();
-        int inputAA=0;
-        if(!inputsequence.getResidueNum().equals("")){
+
+        // Instant instant = Instant.now ();
+        // inputsequence.setTimenow(instant.toString());
+        inputsequence.setTimenow(LocalDateTime.now().toString().replace("T", " "));
+
+        List<Residue> residues = new ArrayList<Residue>();
+        int inputAA = 0;
+        if (!inputsequence.getResidueNum().equals("")) {
             inputAA = Integer.parseInt(inputsequence.getResidueNum());
         }
-         
-        for(Alignment ali:alignments){
-            //if getResidueNum is empty, then return alignments
-            //else, return residues
-            if(inputsequence.getResidueNum().equals("") || (inputAA>=ali.getSeqFrom() && inputAA<=ali.getSeqTo())){
-                Residue re = new Residue(); 
+
+        for (Alignment ali : alignments) {
+            // if getResidueNum is empty, then return alignments
+            // else, return residues
+            if (inputsequence.getResidueNum().equals("")
+                    || (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo())) {
+                Residue re = new Residue();
                 re.setAlignmentId(ali.getAlignmentId());
                 re.setBitscore(ali.getBitscore());
                 re.setChain(ali.getChain());
@@ -86,12 +87,13 @@ public class InputsequenceController {
                 re.setPdbNo(ali.getPdbNo());
                 re.setPdbSeg(ali.getPdbSeg());
                 re.setPdbTo(ali.getPdbTo());
-                if(! (inputsequence.getResidueNum().equals(""))){
-                    re.setResidueName(ali.getPdbAlign().substring(inputAA-ali.getSeqFrom(), inputAA-ali.getSeqFrom()+1));
-                    re.setResidueNum(new Integer(ali.getPdbFrom()+(inputAA-ali.getSeqFrom())).toString());                   
+                if (!(inputsequence.getResidueNum().equals(""))) {
+                    re.setResidueName(
+                            ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                    re.setResidueNum(new Integer(ali.getPdbFrom() + (inputAA - ali.getSeqFrom())).toString());
                 }
-                
-                //Parameters for output TODO: not optimize
+
+                // Parameters for output TODO: not optimize
                 re.setParaEvalue(inputsequence.getEvalue());
                 re.setWord_size(inputsequence.getWord_size());
                 re.setGapopen(inputsequence.getGapopen());
@@ -100,7 +102,7 @@ public class InputsequenceController {
                 re.setComp_based_stats(inputsequence.getComp_based_stats());
                 re.setThreshold(inputsequence.getThreshold());
                 re.setWindow_size(inputsequence.getWindow_size());
-                
+
                 re.setBlast_dblen(ali.getBlast_dblen());
                 re.setBlast_dbnum(ali.getBlast_dbnum());
                 re.setBlast_effspace(ali.getBlast_effspace());
@@ -110,45 +112,43 @@ public class InputsequenceController {
                 re.setBlast_lambda(ali.getBlast_lambda());
                 re.setBlast_reference(ali.getBlast_reference());
                 re.setBlast_version(ali.getBlast_version());
-                
+
                 re.setTimenow(inputsequence.getTimenow());
-                
+
                 residues.add(re);
             }
-        }       
-        return new ModelAndView ("/result","residues", residues);
+        }
+        return new ModelAndView("/result", "residues", residues);
     }
-    
+
     @GetMapping("/api")
     public ModelAndView apiInfo() {
-        return new ModelAndView ("api");
+        return new ModelAndView("api");
     }
-    
+
     @GetMapping("/clients")
     public ModelAndView clientsInfo() {
-        return new ModelAndView ("clients");
+        return new ModelAndView("clients");
     }
-    
+
     @GetMapping("/statistics")
     public ModelAndView statisticsInfo() {
-        return new ModelAndView ("statistics");
+        return new ModelAndView("statistics");
     }
-    
+
     @GetMapping("/about")
     public ModelAndView aboutInfo() {
-        return new ModelAndView ("about");
+        return new ModelAndView("about");
     }
-    
+
     @GetMapping("/contact")
     public ModelAndView contactInfo() {
-        return new ModelAndView ("contact");
+        return new ModelAndView("contact");
     }
-    
+
     @GetMapping("/")
     public ModelAndView homeInfo() {
-        return new ModelAndView ("api");
+        return new ModelAndView("api");
     }
-    
-    
-    
+
 }

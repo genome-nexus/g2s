@@ -3,7 +3,6 @@ package org.cbioportal.pdb_annotation.web.models.api;
 import java.util.*;
 import org.cbioportal.pdb_annotation.web.controllers.GenomeAlignmentController;
 
-
 /**
  *
  * Read application.properties by singleton design pattern
@@ -54,8 +53,7 @@ public class ReadConfig {
     /**
      * Get and set Methods
      */
-    
-    
+
     public static ReadConfig getInstance() {
         if (rcObj == null) {
             rcObj = new ReadConfig();

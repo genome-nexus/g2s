@@ -14,10 +14,11 @@
 			utility provides a flexible functionality to retrieve aligned protein
 			structure chains (positions) for any protein sequence under optional
 			parameters. BLASTP is deployed in this utility to align user input
-			protein sequence against the PDB sequences in the <a th:href="@{/statistics}"
-				href="statistics.html">up-to-date database</a>.
+			protein sequence against the PDB sequences in the <a
+				th:href="@{/statistics}" href="statistics.html">up-to-date
+				database</a>.
 		</p>
-		
+
 		<form action="#" th:action="@{/input}" th:object="${inputsequence}"
 			method="post">
 			<p>
@@ -25,8 +26,8 @@
 			</p>
 			<p>
 				Please Input
-				<mark>only one sequence</mark>, 
-				Only top ONE sequence will be blast, others will be ignored
+				<mark>only one sequence</mark>
+				, Only top ONE sequence will be blast, others will be ignored
 			</p>
 			<textarea rows="10" cols="100" th:field="*{sequence}"></textarea>
 			<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence
@@ -52,21 +53,32 @@
 					</div>
 					<div id="collapse1" class="panel-collapse collapse">
 						<div class="panel-body">
-							<p><abbr title="Expectation value (E) threshold for saving hits">Evalue</abbr>:</p>
+							<p>
+								<abbr title="Expectation value (E) threshold for saving hits">Evalue</abbr>:
+							</p>
 							<p th:if="${#fields.hasErrors('evalue')}" th:errors="*{evalue}">Evalue
 								Error</p>
 							<input type="text" th:value="1e-10" th:name="evalue"
 								th:id="evalue"></input>
-							<p><abbr title="Decrease word size to improve sensitivity">Word Size</abbr>:</p>
+							<p>
+								<abbr title="Decrease word size to improve sensitivity">Word
+									Size</abbr>:
+							</p>
 							<input type="text" th:value="3" th:name="word_size"
 								th:id="word_size" th:errorclass="fieldError" />
-							<p><abbr title="Cost to open a gap">Gapopen</abbr>:</p>
+							<p>
+								<abbr title="Cost to open a gap">Gapopen</abbr>:
+							</p>
 							<input type="text" th:value="11" th:name="gapopen"
 								th:id="gapopen" th:errorclass="fieldError" />
-							<p><abbr title="Cost to extend a gap">Gapextend</abbr>:</p>
+							<p>
+								<abbr title="Cost to extend a gap">Gapextend</abbr>:
+							</p>
 							<input type="text" th:value="1" th:name="gapextend"
 								th:id="gapextend" th:errorclass="fieldError" />
-							<p><abbr title="Scoring matrix name, usually BLOSUM62">Matrix</abbr>:</p>
+							<p>
+								<abbr title="Scoring matrix name, usually BLOSUM62">Matrix</abbr>:
+							</p>
 							<select th:field="*{matrix}">
 								<option selected="selected" value="BLOSUM62">BLOSUM62</option>
 								<option value="PAM30">PAM30</option>
@@ -77,13 +89,21 @@
 								<option value="BLOSUM50">BLOSUM50</option>
 								<option value="BLOSUM90">BLOSUM90</option>
 							</select>
-							<p><abbr title="Use composition-based statistics, usually 2">Comp_based_stats</abbr>:</p>
+							<p>
+								<abbr title="Use composition-based statistics, usually 2">Comp_based_stats</abbr>:
+							</p>
 							<input type="text" th:value="2" th:name="comp_based_stats"
 								th:id="comp_based_stats" th:errorclass="fieldError" />
-							<p><abbr title="Minimum word score such that the word is added to the BLAST lookup table">Threshold</abbr>:</p>
+							<p>
+								<abbr
+									title="Minimum word score such that the word is added to the BLAST lookup table">Threshold</abbr>:
+							</p>
 							<input type="text" th:value="11" th:name="threshold"
 								th:id="threshold" th:errorclass="fieldError" />
-							<p><abbr title="Multiple hits window size, use 0 to specify 1-hit algorithm">Window_size</abbr>:</p>
+							<p>
+								<abbr
+									title="Multiple hits window size, use 0 to specify 1-hit algorithm">Window_size</abbr>:
+							</p>
 							<input type="text" th:value="40" th:name="window_size"
 								th:id="window_size" th:errorclass="fieldError" />
 						</div>

@@ -4,7 +4,7 @@ import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
 public class Alignment {
-    
+
     private int alignmentId;
 
     private String pdbNo;
@@ -12,7 +12,7 @@ public class Alignment {
     private String pdbId;
 
     private String chain;
-    
+
     private String pdbSeg;
 
     private String seqId;
@@ -38,62 +38,62 @@ public class Alignment {
     private String pdbAlign;
 
     private String midlineAlign;
-    
-    //Blast Version and Results;
+
+    // Blast Version and Results;
     private String blast_version;
-    
+
     private String blast_reference;
-    
-    //Results related statistics;
+
+    // Results related statistics;
     private String blast_dblen;
-    
+
     private String blast_dbnum;
-    
+
     private String blast_effspace;
-    
+
     private String blast_entropy;
-    
+
     private String blast_hsplen;
-    
+
     private String blast_kappa;
-    
+
     private String blast_lambda;
-    
-    //Other parameters and output statistics
-    //default 1e-10
-    //different with evalue got
+
+    // Other parameters and output statistics
+    // default 1e-10
+    // different with evalue got
     private String paraEvalue;
-    
-    //2,3,6
-    //default 3
+
+    // 2,3,6
+    // default 3
     private String word_size;
-    
+
     @Digits(fraction = 0, integer = 5)
     @Min(1)
-    //default 11
+    // default 11
     private int gapopen;
-    
+
     @Digits(fraction = 0, integer = 5)
     @Min(1)
-    //default 1
+    // default 1
     private int gapextend;
-    
-    //default BLOSUM62
+
+    // default BLOSUM62
     private String matrix;
-    
-    //0,1,2,3 default 2
+
+    // 0,1,2,3 default 2
     private int comp_based_stats;
-    
-    //default 11
-    //Neighboring words threshold
+
+    // default 11
+    // Neighboring words threshold
     @Min(0)
     private int threshold;
-    
-    //default 40
-    //Window for multiple hits
+
+    // default 40
+    // Window for multiple hits
     @Min(0)
     private int window_size;
-    
+
     private String timenow;
 
     // ------------------------
@@ -250,8 +250,8 @@ public class Alignment {
     public Alignment(int alignmentid) {
         this.alignmentId = alignmentid;
     }
-    
-    //Set and get
+
+    // Set and get
 
     public int getAlignmentId() {
         return alignmentId;
@@ -387,6 +387,6 @@ public class Alignment {
 
     public void setMidlineAlign(String midlineAlign) {
         this.midlineAlign = midlineAlign;
-    }        
+    }
 
 }

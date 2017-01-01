@@ -28,10 +28,10 @@ public class ReadConfig {
     public static String pdbSegGapThreshold;
     public static String pdbSeqresDownloadFile;
     public static String pdbSeqresFastaFile;
-    public static String ensemblDownloadFile;        
+    public static String ensemblDownloadFile;
     public static String swissprotDownloadFile;
     public static String tremblDownloadFile;
-    public static String isoformDownloadFile; 
+    public static String isoformDownloadFile;
     public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
@@ -47,10 +47,10 @@ public class ReadConfig {
     public static String dbName;
     public static String dbNameScript;
     public static String pdbWholeSource;
-    public static String ensemblWholeSource;    
+    public static String ensemblWholeSource;
     public static String swissprotWholeSource;
     public static String tremblWholeSource;
-    public static String isoformWholeSource;    
+    public static String isoformWholeSource;
     public static String updateTxt;
     public static String updateFasta;
     public static String delPDB;
@@ -107,11 +107,11 @@ public class ReadConfig {
             ReadConfig.pdbSegGapThreshold = prop.getProperty("pdb.seg.gapThreshold").trim();
             ReadConfig.pdbSeqresDownloadFile = prop.getProperty("pdb_seqres_download_file").trim();
             ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file").trim();
-            ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file").trim();                       
+            ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file").trim();
             ReadConfig.swissprotDownloadFile = prop.getProperty("swissprot_download_file").trim();
             ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file").trim();
             ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file").trim();
-            ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim(); 
+            ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
             ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
             ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
             ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
@@ -126,7 +126,7 @@ public class ReadConfig {
             ReadConfig.dbName = prop.getProperty("db_name").trim();
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
-            ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();            
+            ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
             ReadConfig.tremblWholeSource = prop.getProperty("trembl.wholeSource").trim();
             ReadConfig.isoformWholeSource = prop.getProperty("isoform.wholeSource").trim();
@@ -156,8 +156,7 @@ public class ReadConfig {
     /**
      * Get Methods
      */
-    
-    
+
     public static ReadConfig getInstance() {
         if (rcObj == null) {
             rcObj = new ReadConfig();
@@ -399,7 +398,6 @@ public class ReadConfig {
     public static void setRcObj(ReadConfig rcObj) {
         ReadConfig.rcObj = rcObj;
     }
-    
 
     public static void setSwissprotDownloadFile(String swissprotDownloadFile) {
         ReadConfig.swissprotDownloadFile = swissprotDownloadFile;

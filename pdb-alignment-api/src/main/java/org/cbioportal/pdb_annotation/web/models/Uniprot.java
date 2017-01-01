@@ -16,17 +16,16 @@ public class Uniprot {
     @Id
     @Column(name = "UNIPROT_ID_ISO")
     private String uniprotIdIso;
-    
+
     @Column(name = "UNIPROT_ID")
     private String uniprotId;
-    
+
     @Column(name = "ISOFORM")
     private String isoform;
-    
+
     @Column(name = "SEQ_ID")
     private String seqId;
-    
-    
+
     // ------------------------
     // Constructors
     // ------------------------
@@ -38,7 +37,6 @@ public class Uniprot {
         this.uniprotIdIso = uniprotIdIso;
     }
 
-    
     // ------------------------
     // Methods
     // ------------------------
@@ -72,6 +70,6 @@ public class Uniprot {
 
     public void setSeqId(String seqId) {
         this.seqId = seqId;
-    }    
+    }
 
 }

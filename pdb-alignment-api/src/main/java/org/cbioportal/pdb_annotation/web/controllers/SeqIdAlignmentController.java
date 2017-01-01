@@ -24,25 +24,24 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 /**
-*
-* Controller of the API: Input Protein SeqId
-*
-* @author Juexin Wang
-*
-*/
+ *
+ * Controller of the API: Input Protein SeqId
+ *
+ * @author Juexin Wang
+ *
+ */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
 @Api(tags = "Protein SeqId", description = "Inner ID")
 @RequestMapping(value = "/g2s/")
 public class SeqIdAlignmentController {
-    
+
     @Autowired
     private AlignmentRepository alignmentRepository;
     @Autowired
     private GeneSequenceRepository geneSequenceRepository;
-    
-    
-    //Query from seqId
+
+    // Query from seqId
     @ApiOperation(value = "Get PDB Alignments by Protein SeqId", nickname = "GeneSeqStructureMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
@@ -50,14 +49,13 @@ public class SeqIdAlignmentController {
     @RequestMapping(value = "/GeneSeqStructureMappingQuery", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public List<Alignment> getPdbAlignmentByGeneSequenceId (
+    public List<Alignment> getPdbAlignmentByGeneSequenceId(
             @RequestParam @ApiParam(value = "Input SeqId e.g. 1233", required = true, allowMultiple = true) String seqId) {
         return alignmentRepository.findBySeqId(seqId);
     }
 
     @ApiOperation(value = "Whether Protein SeqId Exists", nickname = "GeneSeqRecognitionQuery")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
+    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
             @ApiResponse(code = 400, message = "Bad Request") })
     @RequestMapping(value = "/GeneSeqRecognitionQuery", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -66,8 +64,7 @@ public class SeqIdAlignmentController {
             @RequestParam @ApiParam(value = "Input SeqId e.g. 1233", required = true, allowMultiple = true) String seqId) {
         return geneSequenceRepository.findBySeqId(seqId).size() != 0;
     }
-    
-    
+
     @ApiOperation(value = "Get Residue Mapping by Protein SeqId and Residue Position", nickname = "GeneSeqResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
@@ -75,17 +72,15 @@ public class SeqIdAlignmentController {
     @RequestMapping(value = "/GeneSeqResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public List<Residue> getPdbResidueBySeqId (
-            @RequestParam(required = true)
-            @ApiParam(value = "Input SeqId e.g. 1233", required = true, allowMultiple = true) String seqId, 
-            @RequestParam(required = true)
-            @ApiParam(value = "Input Residue Position e.g. 42", required = true, allowMultiple = true) String aaPosition) {
+    public List<Residue> getPdbResidueBySeqId(
+            @RequestParam(required = true) @ApiParam(value = "Input SeqId e.g. 1233", required = true, allowMultiple = true) String seqId,
+            @RequestParam(required = true) @ApiParam(value = "Input Residue Position e.g. 42", required = true, allowMultiple = true) String aaPosition) {
         List<Alignment> it = alignmentRepository.findBySeqId(seqId);
-        List<Residue> outit = new ArrayList<Residue> ();
+        List<Residue> outit = new ArrayList<Residue>();
         int inputAA = Integer.parseInt(aaPosition);
-        for(Alignment ali:it){
-            if(inputAA>=ali.getSeqFrom() && inputAA<=ali.getSeqTo()){
-                Residue re = new Residue(); 
+        for (Alignment ali : it) {
+            if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
+                Residue re = new Residue();
                 re.setAlignmentId(ali.getAlignmentId());
                 re.setBitscore(ali.getBitscore());
                 re.setChain(ali.getChain());
@@ -103,9 +98,10 @@ public class SeqIdAlignmentController {
                 re.setPdbNo(ali.getPdbNo());
                 re.setPdbSeg(ali.getPdbSeg());
                 re.setPdbTo(ali.getPdbTo());
-                re.setUpdateDate(ali.getUpdateDate());                              
-                re.setResidueName(ali.getPdbAlign().substring(inputAA-ali.getSeqFrom(), inputAA-ali.getSeqFrom()+1));
-                re.setResidueNum(ali.getPdbFrom()+(inputAA-ali.getSeqFrom())); 
+                re.setUpdateDate(ali.getUpdateDate());
+                re.setResidueName(
+                        ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                re.setResidueNum(ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 outit.add(re);
             }
         }

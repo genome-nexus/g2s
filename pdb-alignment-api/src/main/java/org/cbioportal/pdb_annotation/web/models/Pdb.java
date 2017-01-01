@@ -6,14 +6,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
-* 
-* @author Juexin Wang
-*
-*/
+ * 
+ * @author Juexin Wang
+ *
+ */
 @Entity
 @Table(name = "pdb_entry")
 public class Pdb {
-    @Id 
+    @Id
     @Column(name = "PDB_NO")
     private String pdbNo;
 
@@ -25,7 +25,7 @@ public class Pdb {
 
     @Column(name = "PDB_SEG")
     private String pdbSeg;
-    
+
     @Column(name = "DBREF")
     private String dbref;
 
@@ -36,9 +36,9 @@ public class Pdb {
     public Pdb() {
     }
 
-    public Pdb(String pdbno) { 
+    public Pdb(String pdbno) {
         this.pdbNo = pdbno;
-    }  
+    }
 
     // ------------------------
     // Methods
@@ -82,6 +82,6 @@ public class Pdb {
 
     public void setDbref(String dbref) {
         this.dbref = dbref;
-    }   
-    
+    }
+
 }

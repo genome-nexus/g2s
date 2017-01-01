@@ -13,20 +13,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ensembl_entry")
 public class Ensembl {
-    
+
     @Id
     @Column(name = "ENSEMBL_ID")
     private String ensemblId;
-    //ENSP
+    // ENSP
 
     @Column(name = "ENSEMBL_GENE")
     private String ensemblGene;
-    //ENSG
+    // ENSG
 
     @Column(name = "ENSEMBL_TRANSCRIPT")
     private String ensemblTranscript;
-    //ENST
-    
+    // ENST
+
     @Column(name = "SEQ_ID")
     private String seqId;
 

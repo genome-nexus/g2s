@@ -29,13 +29,13 @@ public class CommandProcessUtil {
                 boolean done = false;
                 while (!done) {
                     int buf = error.read();
-                    if (buf == -1) break;
-                    errorInfo = errorInfo + (char)buf;
+                    if (buf == -1)
+                        break;
+                    errorInfo = errorInfo + (char) buf;
                 }
                 log.error("[Process] Error: " + errorInfo);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
@@ -48,7 +48,7 @@ public class CommandProcessUtil {
      */
     private void checkCommandParam(String commandName, ArrayList<String> paralist) {
         boolean checkFlag = true;
-        switch(commandName) {
+        switch (commandName) {
         case "wget":
             if (paralist.size() != 2) {
                 checkFlag = false;
@@ -94,7 +94,8 @@ public class CommandProcessUtil {
             break;
         }
         if (!checkFlag) {
-            log.error("[SHELL] Fatal Error: Parameters for " + commandName + " does not make sense, please check. Now the program is exit");
+            log.error("[SHELL] Fatal Error: Parameters for " + commandName
+                    + " does not make sense, please check. Now the program is exit");
             System.exit(0);
         }
     }
@@ -107,7 +108,7 @@ public class CommandProcessUtil {
      * @return
      */
     public int runCommand(String commandName, ArrayList<String> paralist) {
-        int shellReturnCode=0;
+        int shellReturnCode = 0;
         try {
             checkCommandParam(commandName, paralist);
             ProcessBuilder pb = null;
@@ -231,8 +232,9 @@ public class CommandProcessUtil {
     }
 
     /**
-     * Helper Function for building the following command :
-     * blastp -db pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue  1e-60 -max_target_seqs 500 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
+     * Helper Function for building the following command : blastp -db
+     * pdb_seqres.db -query Homo_sapiens.GRCh38.pep.all.fa -word_size 11 -evalue
+     * 1e-60 -max_target_seqs 500 -num_threads 6 -outfmt 5 -out pdb_seqres.xml
      *
      * @return A List of command arguments for the processbuilder
      */
@@ -266,7 +268,7 @@ public class CommandProcessUtil {
     private List<String> makeDBCommand() {
         List<String> list = new ArrayList<String>();
         list.add(ReadConfig.mysql);
-        list.add("--max_allowed_packet="+ReadConfig.mysqlMaxAllowedPacket);
+        list.add("--max_allowed_packet=" + ReadConfig.mysqlMaxAllowedPacket);
         list.add("-u");
         list.add(ReadConfig.username);
         list.add("--password=" + ReadConfig.password);
@@ -287,7 +289,7 @@ public class CommandProcessUtil {
         list.add(inFilename);
         return list;
     }
-    
+
     /**
      * generate rsync command to synchronize the PDB
      * 

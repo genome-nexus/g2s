@@ -16,7 +16,7 @@ public class GeneSequence {
     @Id
     @Column(name = "SEQ_ID")
     private String seqId;
-    
+
     // ------------------------
     // Constructors
     // ------------------------
@@ -27,7 +27,7 @@ public class GeneSequence {
     public GeneSequence(String seqId) {
         this.seqId = seqId;
     }
-    
+
     // ------------------------
     // Methods
     // ------------------------
@@ -39,5 +39,5 @@ public class GeneSequence {
     public void setSeqId(String seqId) {
         this.seqId = seqId;
     }
-    
+
 }

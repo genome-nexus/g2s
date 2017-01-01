@@ -1,9 +1,9 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-public class Residue extends Alignment{
-    
+public class Residue extends Alignment {
+
     private String residueNum;
-    
+
     private String residueName;
 
     public String getResidueNum() {

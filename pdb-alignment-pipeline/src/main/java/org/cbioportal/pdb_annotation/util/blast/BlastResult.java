@@ -1,12 +1,12 @@
 package org.cbioportal.pdb_annotation.util.blast;
 
-public class BlastResult{
+public class BlastResult {
     public Integer oligoID;
     public String qseqid;
     public String sseqid;
     public Double ident;
     public Double identp;
-    public Double  evalue;
+    public Double evalue;
     public Double bitscore;
     public Integer qStart;
     public Integer qEnd;
@@ -25,12 +25,12 @@ public class BlastResult{
         this.bitscore = -1.0;
         this.evalue = -1.0;
         this.qStart = -1;
-        this.qEnd= -1;
+        this.qEnd = -1;
         this.sStart = -1;
         this.sEnd = -1;
-        this.seq_align="";
-        this.pdb_align="";
-        this.midline_align="";
+        this.seq_align = "";
+        this.pdb_align = "";
+        this.midline_align = "";
     }
 
     public Integer getOligoID() {
@@ -147,8 +147,9 @@ public class BlastResult{
 
     @Override
     public String toString() {
-        return oligoID.toString() + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString() + "\t" +
-                bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t" + sStart.toString() + "\t" +
-                sEnd.toString() + "\t" + seq_align.toString() + "\t" + pdb_align.toString() + "\t" + midline_align.toString();
+        return oligoID.toString() + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString()
+                + "\t" + bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t"
+                + sStart.toString() + "\t" + sEnd.toString() + "\t" + seq_align.toString() + "\t" + pdb_align.toString()
+                + "\t" + midline_align.toString();
     }
 }

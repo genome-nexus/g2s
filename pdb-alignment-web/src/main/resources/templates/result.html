@@ -32,7 +32,9 @@
 				<tr th:each="residue : ${residues}">
 				<tr class="table-info">
 					<td th:text="${residue.alignmentId}">1</td>
-					<td><a th:href="@{'http://www.rcsb.org/pdb/explore/explore.do?structureId='+${residue.pdbId}}"><p th:text="${residue.pdbId}"></p></a></td>
+					<td><a
+						th:href="@{'http://www.rcsb.org/pdb/explore/explore.do?structureId='+${residue.pdbId}}"><p
+								th:text="${residue.pdbId}"></p></a></td>
 					<td th:text="${residue.chain}">1</td>
 					<td th:text="${residue.pdbSeg}">1</td>
 					<td th:text="${residue.pdbFrom}">1</td>
@@ -43,9 +45,11 @@
 					<td th:text="${residue.bitscore}">1</td>
 					<td th:text="${residue.identity}">1</td>
 					<td th:text="${residue.identp}">1</td>
-					<td><a th:href="@{'http://www.rcsb.org/pdb/pv/pv.do'(pdbid=${residue.pdbId}, highlight=${residue.chain}+':'+${residue.residueNum})}"><p th:text="${residue.residueNum}"></p></a></td>
+					<td><a
+						th:href="@{'http://www.rcsb.org/pdb/pv/pv.do'(pdbid=${residue.pdbId}, highlight=${residue.chain}+':'+${residue.residueNum})}"><p
+								th:text="${residue.residueNum}"></p></a></td>
 					<td th:text="${residue.residueName}">1</td>
-					
+
 				</tr>
 				<!--  
 					<tr>

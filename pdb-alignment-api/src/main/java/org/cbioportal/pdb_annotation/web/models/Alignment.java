@@ -29,7 +29,7 @@ public class Alignment {
 
     @Column(name = "CHAIN")
     private String chain;
-    
+
     @Column(name = "PDB_SEG")
     private String pdbSeg;
 
@@ -68,7 +68,7 @@ public class Alignment {
 
     @Column(name = "MIDLINE_ALIGN")
     private String midlineAlign;
-    
+
     @Column(name = "UPDATE_DATE")
     private String updateDate;
 

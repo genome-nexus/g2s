@@ -3,7 +3,6 @@ package org.cbioportal.pdb_annotation.util;
 import java.util.*;
 import org.apache.log4j.Logger;
 
-
 /**
  *
  * Read application.properties by singleton design pattern
@@ -64,8 +63,7 @@ public class ReadConfig {
     /**
      * Get and set Methods
      */
-    
-    
+
     public static ReadConfig getInstance() {
         if (rcObj == null) {
             rcObj = new ReadConfig();
