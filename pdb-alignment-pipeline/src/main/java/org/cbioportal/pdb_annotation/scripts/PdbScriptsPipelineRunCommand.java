@@ -259,6 +259,7 @@ public class PdbScriptsPipelineRunCommand {
         String dateVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
         String currentDir = ReadConfig.workspace + dateVersion + "/";
 
+        /*
         // Step 2: Download and prepare new, obsolete and modified PDB in weekly
         // update from PDB
         List<String> listOld = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
@@ -291,6 +292,7 @@ public class PdbScriptsPipelineRunCommand {
         }
 
         // Step 4: Obsolete: blastp ensembl genes against pdb
+        // The problem is too huge results for one blast results file
         // paralist = new ArrayList<String>();
         // paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile);
         // paralist.add(currentDir + this.db.resultfileName);
@@ -319,6 +321,7 @@ public class PdbScriptsPipelineRunCommand {
 
         // Step 6: Obsolete: Create and insert SQL statements of new and
         // modified alignments
+        // The problem is too huge results for one blast results file
         // parseprocess.parse2sql(true, currentDir);
         // paralist = new ArrayList<String>();
         // paralist.add(currentDir + ReadConfig.sqlInsertFile);
@@ -333,8 +336,20 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
+        
+        */
+        // Step 8: Create release tags
+        // Change messages.properties in web module
+        ArrayList<String> paralist = new ArrayList<String>();
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
+        paralist.add(currentDir + ReadConfig.releaseTagResult);
+        cu.runCommand("releaseTag", paralist);
+        
+        preprocess.releasTagUpdate(currentDir + ReadConfig.releaseTagResult, ReadConfig.updateWebProperties);
 
-        // Step 8: Clean up
+        /*
+        // Step 9: Clean up
 
         if (ReadConfig.saveSpaceTag.equals("true")) {
             log.info("[PIPELINE] Start cleaning up in filesystem");
@@ -392,6 +407,7 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + ReadConfig.pdbSeqresFastaFile);
             cu.runCommand("gzip", paralist);
         }
+        */
 
     }
 }

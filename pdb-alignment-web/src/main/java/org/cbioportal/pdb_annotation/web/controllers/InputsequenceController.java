@@ -91,7 +91,9 @@ public class InputsequenceController {
                 if (!(inputsequence.getResidueNum().equals(""))) {
                     re.setResidueName(
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                    re.setResidueNum(new Integer(Integer.parseInt(ali.getSegStart())-1+ali.getPdbFrom() + (inputAA - ali.getSeqFrom())).toString());
+                    re.setResidueNum(new Integer(
+                            Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()))
+                                    .toString());
                 }
 
                 // Parameters for output TODO: not optimize
@@ -115,8 +117,8 @@ public class InputsequenceController {
                 re.setBlast_version(ali.getBlast_version());
 
                 re.setTimenow(inputsequence.getTimenow());
-                
-                //input
+
+                // input
                 re.setSequence(inputsequence.getSequence());
                 re.setInputResidueNum(inputsequence.getResidueNum());
 

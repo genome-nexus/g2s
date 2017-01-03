@@ -388,4 +388,33 @@ public class PdbScriptsPipelinePreprocessing {
             ex.printStackTrace();
         }
     }
+    
+    
+    public void releasTagUpdate(String releaseResultFilename, String propertyFilename){
+        try{
+            log.info("[Update] Generate releaseTag and statistics for update ...");
+            boolean tag = true;
+            List<String> contents= FileUtils.readLines(new File(releaseResultFilename));
+            if(contents.size()!=8){
+                tag = false;
+            }
+            
+            String outstr = "";
+            outstr = outstr + "updateDate=" + contents.get(1) + "\r\n";
+            outstr = outstr + "pdbEntries=" + contents.get(3) + "\r\n";
+            outstr = outstr + "pdbUniqueEntries=" + contents.get(5) + "\r\n";
+            outstr = outstr + "alignmentEntries=" + contents.get(7) + "\r\n";
+            
+            FileUtils.writeStringToFile(new File(propertyFilename), outstr);
+            
+            if(!tag){
+                log.error("[Update] Update Error: Could not Successfully generate releaseTag from "+ releaseResultFilename +" to "+ propertyFilename +", Please Check");
+            }
+            
+        }catch(Exception ex){
+            log.error("[Update] Update Error: Could not Successfully generate releaseTag from "+ releaseResultFilename +" to "+ propertyFilename +", Please Check");
+            log.error(ex.getMessage());
+            ex.printStackTrace();           
+        }
+    }
 }

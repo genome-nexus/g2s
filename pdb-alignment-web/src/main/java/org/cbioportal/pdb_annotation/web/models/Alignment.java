@@ -14,7 +14,7 @@ public class Alignment {
     private String chain;
 
     private String pdbSeg;
-    
+
     private String segStart;
 
     private String seqId;
@@ -91,7 +91,7 @@ public class Alignment {
     private String window_size;
 
     private String timenow;
-    
+
     // For input
     private String sequence;
     private String inputResidueNum;
@@ -102,14 +102,13 @@ public class Alignment {
 
     public Alignment() {
     }
-    
+
     public Alignment(int alignmentid) {
         this.alignmentId = alignmentid;
     }
-    
 
     // Set and get
-    
+
     public String getParaEvalue() {
         return paraEvalue;
     }
@@ -148,7 +147,7 @@ public class Alignment {
 
     public void setParaEvalue(String paraEvalue) {
         this.paraEvalue = paraEvalue;
-    }    
+    }
 
     public String getBlast_version() {
         return blast_version;
