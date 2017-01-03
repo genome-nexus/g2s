@@ -14,7 +14,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name = "pdb_ensembl_alignment")
+@Table(name = "pdb_seq_alignment")
 public class Alignment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,8 +30,11 @@ public class Alignment {
     @Column(name = "CHAIN")
     private String chain;
 
-    @Column(name = "ENSEMBL_ID")
-    private String ensemblId;
+    @Column(name = "PDB_SEG")
+    private String pdbSeg;
+
+    @Column(name = "SEQ_ID")
+    private String seqId;
 
     @Column(name = "PDB_FROM")
     private int pdbFrom;
@@ -39,11 +42,11 @@ public class Alignment {
     @Column(name = "PDB_TO")
     private int pdbTo;
 
-    @Column(name = "ENSEMBL_FROM")
-    private int ensemblFrom;
+    @Column(name = "SEQ_FROM")
+    private int seqFrom;
 
-    @Column(name = "ENSEMBL_TO")
-    private int ensemblTo;
+    @Column(name = "SEQ_TO")
+    private int seqTo;
 
     @Column(name = "EVALUE")
     private String evalue;
@@ -55,17 +58,17 @@ public class Alignment {
     private float identity;
 
     @Column(name = "IDENTP")
-    private float identp;
+    private float identityPositive;
 
-    @Column(name = "ENSEMBL_ALIGN")
-    private String ensemblAlign;
+    @Column(name = "SEQ_ALIGN")
+    private String seqAlign;
 
     @Column(name = "PDB_ALIGN")
     private String pdbAlign;
 
     @Column(name = "MIDLINE_ALIGN")
     private String midlineAlign;
-    
+
     @Column(name = "UPDATE_DATE")
     private String updateDate;
 
@@ -84,28 +87,28 @@ public class Alignment {
     // Methods
     // ------------------------
 
-    public int getAlignmentid() {
+    public int getAlignmentId() {
         return alignmentId;
     }
 
-    public void setAlignmentid(int alignmentid) {
-        this.alignmentId = alignmentid;
+    public void setAlignmentId(int alignmentId) {
+        this.alignmentId = alignmentId;
     }
 
-    public String getPdbno() {
+    public String getPdbNo() {
         return pdbNo;
     }
 
-    public void setPdbno(String pdbno) {
-        this.pdbNo = pdbno;
+    public void setPdbNo(String pdbNo) {
+        this.pdbNo = pdbNo;
     }
 
-    public String getPdbid() {
+    public String getPdbId() {
         return pdbId;
     }
 
-    public void setPdbid(String pdbid) {
-        this.pdbId = pdbid;
+    public void setPdbId(String pdbId) {
+        this.pdbId = pdbId;
     }
 
     public String getChain() {
@@ -116,44 +119,52 @@ public class Alignment {
         this.chain = chain;
     }
 
-    public String getEnsemblid() {
-        return ensemblId;
+    public String getPdbSeg() {
+        return pdbSeg;
     }
 
-    public void setEnsemblid(String ensemblid) {
-        this.ensemblId = ensemblid;
+    public void setPdbSeg(String pdbSeg) {
+        this.pdbSeg = pdbSeg;
     }
 
-    public int getPdbfrom() {
+    public String getSeqId() {
+        return seqId;
+    }
+
+    public void setSeqId(String seqId) {
+        this.seqId = seqId;
+    }
+
+    public int getPdbFrom() {
         return pdbFrom;
     }
 
-    public void setPdbfrom(int pdbfrom) {
-        this.pdbFrom = pdbfrom;
+    public void setPdbFrom(int pdbFrom) {
+        this.pdbFrom = pdbFrom;
     }
 
-    public int getPdbto() {
+    public int getPdbTo() {
         return pdbTo;
     }
 
-    public void setPdbto(int pdbto) {
-        this.pdbTo = pdbto;
+    public void setPdbTo(int pdbTo) {
+        this.pdbTo = pdbTo;
     }
 
-    public int getEnsemblfrom() {
-        return ensemblFrom;
+    public int getSeqFrom() {
+        return seqFrom;
     }
 
-    public void setEnsemblfrom(int ensemblfrom) {
-        this.ensemblFrom = ensemblfrom;
+    public void setSeqFrom(int seqFrom) {
+        this.seqFrom = seqFrom;
     }
 
-    public int getEnsemblto() {
-        return ensemblTo;
+    public int getSeqTo() {
+        return seqTo;
     }
 
-    public void setEnsemblto(int ensemblto) {
-        this.ensemblTo = ensemblto;
+    public void setSeqTo(int seqTo) {
+        this.seqTo = seqTo;
     }
 
     public String getEvalue() {
@@ -180,20 +191,20 @@ public class Alignment {
         this.identity = identity;
     }
 
-    public float getIdentp() {
-        return identp;
+    public float getIdentityPositive() {
+        return identityPositive;
     }
 
-    public void setIdentp(float identp) {
-        this.identp = identp;
+    public void setIdentityPositive(float identityPositive) {
+        this.identityPositive = identityPositive;
     }
 
-    public String getEnsemblAlign() {
-        return ensemblAlign;
+    public String getSeqAlign() {
+        return seqAlign;
     }
 
-    public void setEnsemblAlign(String ensemblAlign) {
-        this.ensemblAlign = ensemblAlign;
+    public void setSeqAlign(String seqAlign) {
+        this.seqAlign = seqAlign;
     }
 
     public String getPdbAlign() {
@@ -211,7 +222,7 @@ public class Alignment {
     public void setMidlineAlign(String midlineAlign) {
         this.midlineAlign = midlineAlign;
     }
-    
+
     public String getUpdateDate() {
         return updateDate;
     }
@@ -219,4 +230,5 @@ public class Alignment {
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
+
 }

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout">
+<body>
+	<h1 layout:fragment="header">Mapping Results :</h1>
+	<div layout:fragment="content" class="container">
+		<div class="alert alert-success" th:if="${globalMessage}"
+			th:text="${globalMessage}">Some Success message</div>
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<td>ID</td>
+					<td>PDB</td>
+					<td>Chain</td>
+					<td>Segment</td>
+					<td>PDBFrom</td>
+					<td>PDBTo</td>
+					<td>SeqFrom</td>
+					<td>SeqTo</td>
+					<td>Evalue</td>
+					<td>Bitscore</td>
+					<td>Identities</td>
+					<td>Positives</td>
+					<td>Mapped Residue</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${residues.empty}">
+					<td colspan="13">No results</td>
+				</tr>
+				<tr th:each="residue : ${residues}">
+				<tr class="table-info">
+					<td th:text="${residue.alignmentId}">1</td>
+					<td><a
+						th:href="@{'http://www.rcsb.org/pdb/explore/explore.do?structureId='+${residue.pdbId}}"><p
+								th:text="${residue.pdbId}"></p></a></td>
+					<td th:text="${residue.chain}">1</td>
+					<td th:text="${residue.pdbSeg}">1</td>
+					<td th:text="${residue.pdbFrom}">1</td>
+					<td th:text="${residue.pdbTo}">1</td>
+					<td th:text="${residue.seqFrom}">1</td>
+					<td th:text="${residue.seqTo}">1</td>
+					<td th:text="${residue.evalue}">1</td>
+					<td th:text="${residue.bitscore}">1</td>
+					<td th:text="${residue.identity}">1</td>
+					<td th:text="${residue.identp}">1</td>
+					<td><a
+						th:href="@{'http://www.rcsb.org/pdb/pv/pv.do'(pdbid=${residue.pdbId}, highlight=${residue.chain}+':'+${residue.residueNum})}"><p
+								th:text="${residue.residueNum}"></p></a></td>
+					<td th:text="${residue.residueName}">1</td>
+
+				</tr>
+				<!--  
+					<tr>
+					<td class="alignment" colspan="14" th:text="${residue.seqAlign}">1</td>
+					</tr>
+					<tr>
+					<td class="alignment" colspan="14" th:text="${residue.midlineAlign}">1</td>
+					</tr>
+					<tr>
+					<td class="alignment" colspan="14" th:text="${residue.pdbAlign}">1</td>
+					</tr>
+					-->
+				</tr>
+			</tbody>
+		</table>
+
+
+
+
+		<div th:if="${not #lists.isEmpty(residues)}" class="panel-group">
+
+			<h2>Input Details:</h2>
+
+			<dl>
+				<dt>Input Sequence:</dt>
+				<pre><dd th:text="${residues[0].sequence}"></dd></pre>
+				<dt>Input Residue Number:</dt>
+				<pre><dd th:if="${residues[0].inputResidueNum.empty}">NA</dd> <dd th:text="${residues[0].inputResidueNum}"></dd></pre>								
+			</dl>
+
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a data-toggle="collapse" href="#collapse1">Blast Parameter
+							Details</a>
+					</h4>
+				</div>
+				<div id="collapse1" class="panel-collapse collapse">
+					<div class="panel-body">
+
+						<table
+							class="table table-bordered table-inverse table-sm table-condensed"
+							style="width: 50%">
+							<thead>
+								<tr>
+									<td colspan="2">Search parameters</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Expected value</td>
+									<td th:text="${residues[0].paraEvalue}">paraEvalue</td>
+								</tr>
+								<tr>
+									<td>Word Size</td>
+									<td th:text="${residues[0].word_size}">Word Size</td>
+								</tr>
+								<tr>
+									<td>Gap Open</td>
+									<td th:text="${residues[0].gapopen}">Gap Open</td>
+								</tr>
+								<tr>
+									<td>Gap Extend</td>
+									<td th:text="${residues[0].gapextend}">Gap Extend</td>
+								</tr>
+								<tr>
+									<td>Matrix</td>
+									<td th:text="${residues[0].matrix}">Matrix</td>
+								</tr>
+								<tr>
+									<td>Composition-based stats</td>
+									<td th:text="${residues[0].comp_based_stats}">Composition-based
+										stats</td>
+								</tr>
+								<tr>
+									<td>Threshold</td>
+									<td th:text="${residues[0].threshold}">Threshold</td>
+								</tr>
+								<tr>
+									<td>Window Size</td>
+									<td th:text="${residues[0].window_size}">Window Size</td>
+								</tr>
+							</tbody>
+						</table>
+
+
+
+						<table
+							class="table table-bordered table-inverse table-sm table-condensed"
+							style="width: 50%">
+							<thead>
+								<tr>
+									<td colspan="2">Statistics</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Posted Time</td>
+									<td th:text="${residues[0].timenow}">Time Now</td>
+								</tr>
+								<tr>
+									<td>Number of Sequences</td>
+									<td th:text="${residues[0].blast_dblen}">Number of
+										Sequences</td>
+								</tr>
+								<tr>
+									<td>Number of Letters</td>
+									<td th:text="${residues[0].blast_dbnum}">Number of Letters</td>
+								</tr>
+								<tr>
+									<td>Lambda</td>
+									<td th:text="${residues[0].blast_lambda}">paraEvalue</td>
+								</tr>
+								<tr>
+									<td>Kappa</td>
+									<td th:text="${residues[0].blast_kappa}">paraEvalue</td>
+								</tr>
+								<tr>
+									<td>Entropy</td>
+									<td th:text="${residues[0].blast_entropy}">Entropy</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<p th:text="${residues[0].blast_version}">1</p>
+						<p th:text="${residues[0].blast_reference}">1</p>
+
+
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<p></p>
+		<div class="btn-group">
+			<a th:href="@{/input}" href="input.html"><button
+					class="btn btn-primary dropdown-toggle">Submit another
+					sequence</button></a>
+		</div>
+
+	</div>
+</body>
+</html>

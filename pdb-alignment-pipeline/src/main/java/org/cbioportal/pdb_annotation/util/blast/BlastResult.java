@@ -1,18 +1,18 @@
 package org.cbioportal.pdb_annotation.util.blast;
 
-public class BlastResult{
+public class BlastResult {
     public Integer oligoID;
     public String qseqid;
     public String sseqid;
     public Double ident;
     public Double identp;
-    public Double  evalue;
+    public Double evalue;
     public Double bitscore;
     public Integer qStart;
     public Integer qEnd;
     public Integer sStart;
     public Integer sEnd;
-    public String ensembl_align;
+    public String seq_align;
     public String pdb_align;
     public String midline_align;
 
@@ -25,12 +25,12 @@ public class BlastResult{
         this.bitscore = -1.0;
         this.evalue = -1.0;
         this.qStart = -1;
-        this.qEnd= -1;
+        this.qEnd = -1;
         this.sStart = -1;
         this.sEnd = -1;
-        this.ensembl_align="";
-        this.pdb_align="";
-        this.midline_align="";
+        this.seq_align = "";
+        this.pdb_align = "";
+        this.midline_align = "";
     }
 
     public Integer getOligoID() {
@@ -121,12 +121,12 @@ public class BlastResult{
         this.bitscore = bitscore;
     }
 
-    public String getEnsembl_align() {
-        return ensembl_align;
+    public String getSeq_align() {
+        return seq_align;
     }
 
-    public void setEnsembl_align(String ensembl_align) {
-        this.ensembl_align = ensembl_align;
+    public void setSeq_align(String seq_align) {
+        this.seq_align = seq_align;
     }
 
     public String getPdb_align() {
@@ -147,8 +147,9 @@ public class BlastResult{
 
     @Override
     public String toString() {
-        return oligoID.toString() + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString() + "\t" +
-                bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t" + sStart.toString() + "\t" +
-                sEnd.toString() + "\t" + ensembl_align.toString() + "\t" + pdb_align.toString() + "\t" + midline_align.toString();
+        return oligoID.toString() + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString()
+                + "\t" + bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t"
+                + sStart.toString() + "\t" + sEnd.toString() + "\t" + seq_align.toString() + "\t" + pdb_align.toString()
+                + "\t" + midline_align.toString();
     }
 }

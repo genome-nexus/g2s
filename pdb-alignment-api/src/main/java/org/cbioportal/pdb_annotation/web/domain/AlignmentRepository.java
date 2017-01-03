@@ -12,5 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 @Transactional
 public interface AlignmentRepository extends JpaRepository<Alignment, Long> {
-    public List<Alignment> findByEnsemblId(String ensemblId);
+    public List<Alignment> findBySeqId(String seqId);
 }

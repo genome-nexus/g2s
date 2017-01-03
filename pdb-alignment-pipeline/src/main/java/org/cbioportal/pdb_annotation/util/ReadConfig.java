@@ -23,13 +23,20 @@ public class ReadConfig {
     public static String resourceDir;
     public static String tmpdir;
     public static String pdbRepo;
+    public static String pdbSegMinLengthMulti;
+    public static String pdbSegMinLengthSingle;
+    public static String pdbSegGapThreshold;
     public static String pdbSeqresDownloadFile;
     public static String pdbSeqresFastaFile;
     public static String ensemblDownloadFile;
-    public static String ensemblFastaFile;
+    public static String swissprotDownloadFile;
+    public static String tremblDownloadFile;
+    public static String isoformDownloadFile;
+    public static String seqFastaFile;
     public static String sqlInsertFile;
     public static String sqlDeleteFile;
     public static String blastParaEvalue;
+    public static String blastParaMaxTargetSeqs;
     public static String blastParaWordSize;
     public static String blastParaThreads;
     public static String ensemblInputInterval;
@@ -41,6 +48,9 @@ public class ReadConfig {
     public static String dbNameScript;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
+    public static String swissprotWholeSource;
+    public static String tremblWholeSource;
+    public static String isoformWholeSource;
     public static String updateTxt;
     public static String updateFasta;
     public static String delPDB;
@@ -50,13 +60,13 @@ public class ReadConfig {
     public static String updateSECOND;
     public static String updateMILLISECOND;
     public static String updateDELAY;
-    public static String sqlEnsemblSQL;
+    public static String updateSeqFastaFileNum;
+    public static String insertSequenceSQL;
     public static String updateAdded;
     public static String updateModified;
     public static String updateObsolete;
     public static String pdbFastaService;
     public static String mysqlMaxAllowedPacket;
-    public static String usePdbSeqLocalTag;
     public static String saveSpaceTag;
 
     public static boolean isPositiveInteger(String str) {
@@ -86,48 +96,57 @@ public class ReadConfig {
             prop.load(PdbScriptsPipelineStarter.class.getClassLoader().getResourceAsStream("application.properties"));
 
             // Set all constants
-            ReadConfig.makeblastdb = prop.getProperty("makeblastdb");
-            ReadConfig.blastp = prop.getProperty("blastp");
-            ReadConfig.workspace = prop.getProperty("workspace");
-            ReadConfig.resourceDir = prop.getProperty("resource_dir");
-            ReadConfig.tmpdir = prop.getProperty("tmpdir");
-            ReadConfig.pdbRepo = prop.getProperty("pdbRepo");
-            ReadConfig.pdbSeqresDownloadFile = prop.getProperty("pdb_seqres_download_file");
-            ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file");
-            ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file");
-            ReadConfig.ensemblFastaFile = prop.getProperty("ensembl_fasta_file");
-            ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file");
-            ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file");
-            ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue");
-            ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size");
-            ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads");
-            ReadConfig.ensemblInputInterval = prop.getProperty("ensembl_input_interval");
-            ReadConfig.sqlInsertOutputInterval = prop.getProperty("sql_insert_output_interval");
-            ReadConfig.mysql = prop.getProperty("mysql");
-            ReadConfig.username = prop.getProperty("username");
-            ReadConfig.password = prop.getProperty("password");
-            ReadConfig.dbName = prop.getProperty("db_name");
-            ReadConfig.dbNameScript = prop.getProperty("db_name_script");
-            ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource");
-            ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource");
-            ReadConfig.updateTxt = prop.getProperty("update.updateTxt");
-            ReadConfig.updateFasta = prop.getProperty("update.updateFasta");
-            ReadConfig.delPDB = prop.getProperty("update.delPDB");
-            ReadConfig.updateDAY = prop.getProperty("update.DAY_OF_WEEK");
-            ReadConfig.updateHOUR = prop.getProperty("update.HOUR_OF_DAY");
-            ReadConfig.updateMINUTE = prop.getProperty("update.MINUTE");
-            ReadConfig.updateSECOND = prop.getProperty("update.SECOND");
-            ReadConfig.updateMILLISECOND = prop.getProperty("update.MILLISECOND");
-            ReadConfig.updateDELAY = prop.getProperty("update.DELAY");
-            ReadConfig.sqlEnsemblSQL = prop.getProperty("sql_ensemblSQL");
-            ReadConfig.updateAdded = prop.getProperty("update.added");
-            ReadConfig.updateModified = prop.getProperty("update.modified");
-            ReadConfig.updateObsolete = prop.getProperty("update.obsolete");
-            ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService");
-            ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet");
-            ReadConfig.usePdbSeqLocalTag = prop.getProperty("usePdbSeqLocalTag");
-            ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag");
-
+            ReadConfig.makeblastdb = prop.getProperty("makeblastdb").trim();
+            ReadConfig.blastp = prop.getProperty("blastp").trim();
+            ReadConfig.workspace = prop.getProperty("workspace").trim();
+            ReadConfig.resourceDir = prop.getProperty("resource_dir").trim();
+            ReadConfig.tmpdir = prop.getProperty("tmpdir").trim();
+            ReadConfig.pdbRepo = prop.getProperty("pdbRepo").trim();
+            ReadConfig.pdbSegMinLengthMulti = prop.getProperty("pdb.seg.minLength.multi").trim();
+            ReadConfig.pdbSegMinLengthSingle = prop.getProperty("pdb.seg.minLength.single").trim();
+            ReadConfig.pdbSegGapThreshold = prop.getProperty("pdb.seg.gapThreshold").trim();
+            ReadConfig.pdbSeqresDownloadFile = prop.getProperty("pdb_seqres_download_file").trim();
+            ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file").trim();
+            ReadConfig.ensemblDownloadFile = prop.getProperty("ensembl_download_file").trim();
+            ReadConfig.swissprotDownloadFile = prop.getProperty("swissprot_download_file").trim();
+            ReadConfig.tremblDownloadFile = prop.getProperty("trembl_download_file").trim();
+            ReadConfig.isoformDownloadFile = prop.getProperty("isoform_download_file").trim();
+            ReadConfig.seqFastaFile = prop.getProperty("seq_fasta_file").trim();
+            ReadConfig.sqlInsertFile = prop.getProperty("sql_insert_file").trim();
+            ReadConfig.sqlDeleteFile = prop.getProperty("sql_delete_file").trim();
+            ReadConfig.blastParaEvalue = prop.getProperty("blast_para_evalue").trim();
+            ReadConfig.blastParaMaxTargetSeqs = prop.getProperty("blast_para_max_target_seqs").trim();
+            ReadConfig.blastParaWordSize = prop.getProperty("blast_para_word_size").trim();
+            ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads").trim();
+            ReadConfig.ensemblInputInterval = prop.getProperty("ensembl_input_interval").trim();
+            ReadConfig.sqlInsertOutputInterval = prop.getProperty("sql_insert_output_interval").trim();
+            ReadConfig.mysql = prop.getProperty("mysql").trim();
+            ReadConfig.username = prop.getProperty("username").trim();
+            ReadConfig.password = prop.getProperty("password").trim();
+            ReadConfig.dbName = prop.getProperty("db_name").trim();
+            ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
+            ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
+            ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
+            ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
+            ReadConfig.tremblWholeSource = prop.getProperty("trembl.wholeSource").trim();
+            ReadConfig.isoformWholeSource = prop.getProperty("isoform.wholeSource").trim();
+            ReadConfig.updateTxt = prop.getProperty("update.updateTxt").trim();
+            ReadConfig.updateFasta = prop.getProperty("update.updateFasta").trim();
+            ReadConfig.delPDB = prop.getProperty("update.delPDB").trim();
+            ReadConfig.updateDAY = prop.getProperty("update.DAY_OF_WEEK").trim();
+            ReadConfig.updateHOUR = prop.getProperty("update.HOUR_OF_DAY").trim();
+            ReadConfig.updateMINUTE = prop.getProperty("update.MINUTE").trim();
+            ReadConfig.updateSECOND = prop.getProperty("update.SECOND").trim();
+            ReadConfig.updateMILLISECOND = prop.getProperty("update.MILLISECOND").trim();
+            ReadConfig.updateDELAY = prop.getProperty("update.DELAY").trim();
+            ReadConfig.updateSeqFastaFileNum = prop.getProperty("update.seq_fasta_file_num").trim();
+            ReadConfig.insertSequenceSQL = prop.getProperty("insert_sequence_SQL").trim();
+            ReadConfig.updateAdded = prop.getProperty("update.added").trim();
+            ReadConfig.updateModified = prop.getProperty("update.modified").trim();
+            ReadConfig.updateObsolete = prop.getProperty("update.obsolete").trim();
+            ReadConfig.pdbFastaService = prop.getProperty("pdb.fastaService").trim();
+            ReadConfig.mysqlMaxAllowedPacket = prop.getProperty("mysql_max_allowed_packet").trim();
+            ReadConfig.saveSpaceTag = prop.getProperty("saveSpaceTag").trim();
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
             ex.printStackTrace();
@@ -137,6 +156,7 @@ public class ReadConfig {
     /**
      * Get Methods
      */
+
     public static ReadConfig getInstance() {
         if (rcObj == null) {
             rcObj = new ReadConfig();
@@ -144,8 +164,52 @@ public class ReadConfig {
         return rcObj;
     }
 
+    public static String getUpdateSeqFastaFileNum() {
+        return updateSeqFastaFileNum;
+    }
+
+    public static void setUpdateSeqFastaFileNum(String updateSeqFastaFileNum) {
+        ReadConfig.updateSeqFastaFileNum = updateSeqFastaFileNum;
+    }
+
+    public static String getBlastParaMaxTargetSeqs() {
+        return blastParaMaxTargetSeqs;
+    }
+
+    public static void setBlastParaMaxTargetSeqs(String blastParaMaxTargetSeqs) {
+        ReadConfig.blastParaMaxTargetSeqs = blastParaMaxTargetSeqs;
+    }
+
     public static ReadConfig getRcObj() {
         return rcObj;
+    }
+
+    public static String getSwissprotDownloadFile() {
+        return swissprotDownloadFile;
+    }
+
+    public static String getTremblDownloadFile() {
+        return tremblDownloadFile;
+    }
+
+    public static String getIsoformDownloadFile() {
+        return isoformDownloadFile;
+    }
+
+    public static String getSeqFastaFile() {
+        return seqFastaFile;
+    }
+
+    public static String getSwissprotWholeSource() {
+        return swissprotWholeSource;
+    }
+
+    public static String getTremblWholeSource() {
+        return tremblWholeSource;
+    }
+
+    public static String getIsoformWholeSource() {
+        return isoformWholeSource;
     }
 
     public static String getMakeblastdb() {
@@ -172,6 +236,30 @@ public class ReadConfig {
         return pdbRepo;
     }
 
+    public static String getPdbSegMinLengthMulti() {
+        return pdbSegMinLengthMulti;
+    }
+
+    public static void setPdbSegMinLengthMulti(String pdbSegMinLengthMulti) {
+        ReadConfig.pdbSegMinLengthMulti = pdbSegMinLengthMulti;
+    }
+
+    public static String getPdbSegMinLengthSingle() {
+        return pdbSegMinLengthSingle;
+    }
+
+    public static void setPdbSegMinLengthSingle(String pdbSegMinLengthSingle) {
+        ReadConfig.pdbSegMinLengthSingle = pdbSegMinLengthSingle;
+    }
+
+    public static String getPdbSegGapThreshold() {
+        return pdbSegGapThreshold;
+    }
+
+    public static void setPdbSegGapThreshold(String pdbSegGapThreshold) {
+        ReadConfig.pdbSegGapThreshold = pdbSegGapThreshold;
+    }
+
     public static String getPdbSeqresDownloadFile() {
         return pdbSeqresDownloadFile;
     }
@@ -182,10 +270,6 @@ public class ReadConfig {
 
     public static String getEnsemblDownloadFile() {
         return ensemblDownloadFile;
-    }
-
-    public static String getEnsemblFastaFile() {
-        return ensemblFastaFile;
     }
 
     public static String getSqlInsertFile() {
@@ -280,8 +364,8 @@ public class ReadConfig {
         return updateDELAY;
     }
 
-    public static String getSqlEnsemblSQL() {
-        return sqlEnsemblSQL;
+    public static String getInsertSequenceSQL() {
+        return insertSequenceSQL;
     }
 
     public static String getUpdateAdded() {
@@ -304,10 +388,6 @@ public class ReadConfig {
         return mysqlMaxAllowedPacket;
     }
 
-    public static String getUsePdbSeqLocalTag() {
-        return usePdbSeqLocalTag;
-    }
-
     public static String getSaveSpaceTag() {
         return saveSpaceTag;
     }
@@ -317,6 +397,34 @@ public class ReadConfig {
      */
     public static void setRcObj(ReadConfig rcObj) {
         ReadConfig.rcObj = rcObj;
+    }
+
+    public static void setSwissprotDownloadFile(String swissprotDownloadFile) {
+        ReadConfig.swissprotDownloadFile = swissprotDownloadFile;
+    }
+
+    public static void setTremblDownloadFile(String tremblDownloadFile) {
+        ReadConfig.tremblDownloadFile = tremblDownloadFile;
+    }
+
+    public static void setIsoformDownloadFile(String isoformDownloadFile) {
+        ReadConfig.isoformDownloadFile = isoformDownloadFile;
+    }
+
+    public static void setSeqFastaFile(String seqFastaFile) {
+        ReadConfig.seqFastaFile = seqFastaFile;
+    }
+
+    public static void setSwissprotWholeSource(String swissprotWholeSource) {
+        ReadConfig.swissprotWholeSource = swissprotWholeSource;
+    }
+
+    public static void setTremblWholeSource(String tremblWholeSource) {
+        ReadConfig.tremblWholeSource = tremblWholeSource;
+    }
+
+    public static void setIsoformWholeSource(String isoformWholeSource) {
+        ReadConfig.isoformWholeSource = isoformWholeSource;
     }
 
     public static void setMakeblastdb(String makeblastdb) {
@@ -353,10 +461,6 @@ public class ReadConfig {
 
     public static void setEnsemblDownloadFile(String ensemblDownloadFile) {
         ReadConfig.ensemblDownloadFile = ensemblDownloadFile;
-    }
-
-    public static void setEnsemblFastaFile(String ensemblFastaFile) {
-        ReadConfig.ensemblFastaFile = ensemblFastaFile;
     }
 
     public static void setSqlInsertFile(String sqlInsertFile) {
@@ -451,8 +555,8 @@ public class ReadConfig {
         ReadConfig.updateDELAY = updateDELAY;
     }
 
-    public static void setSqlEnsemblSQL(String sqlEnsemblSQL) {
-        ReadConfig.sqlEnsemblSQL = sqlEnsemblSQL;
+    public static void setInsertSequenceSQL(String insertSequenceSQL) {
+        ReadConfig.insertSequenceSQL = insertSequenceSQL;
     }
 
     public static void setUpdateAdded(String updateAdded) {
@@ -473,10 +577,6 @@ public class ReadConfig {
 
     public static void setMysqlMaxAllowedPacket(String mysqlMaxAllowedPacket) {
         ReadConfig.mysqlMaxAllowedPacket = mysqlMaxAllowedPacket;
-    }
-
-    public static void setUsePdbSeqLocalTag(String usePdbSeqLocalTag) {
-        ReadConfig.usePdbSeqLocalTag = usePdbSeqLocalTag;
     }
 
     public static void setSaveSpaceTag(String saveSpaceTag) {

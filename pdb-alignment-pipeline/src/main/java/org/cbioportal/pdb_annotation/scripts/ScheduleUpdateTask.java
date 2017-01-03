@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Cron work on Weekly Update
+ * 
  * @author Juexin Wang
  *
  */
