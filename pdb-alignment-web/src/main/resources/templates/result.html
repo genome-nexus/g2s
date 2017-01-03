@@ -3,7 +3,7 @@
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
 <body>
-	<h1 layout:fragment="header">Blast Results :</h1>
+	<h1 layout:fragment="header">Mapping Results :</h1>
 	<div layout:fragment="content" class="container">
 		<div class="alert alert-success" th:if="${globalMessage}"
 			th:text="${globalMessage}">Some Success message</div>
@@ -66,11 +66,26 @@
 			</tbody>
 		</table>
 
+
+
+
 		<div th:if="${not #lists.isEmpty(residues)}" class="panel-group">
+
+			<h2>Input Details:</h2>
+
+			<dl>
+				<dt>Input Sequence:</dt>
+				<pre><dd th:text="${residues[0].sequence}"></dd></pre>
+				<dt>Input Residue Number:</dt>
+				<pre><dd th:if="${residues[0].inputResidueNum.empty}">NA</dd> <dd th:text="${residues[0].inputResidueNum}"></dd></pre>								
+			</dl>
+
+
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h4 class="panel-title">
-						<a data-toggle="collapse" href="#collapse1">Blast Details</a>
+						<a data-toggle="collapse" href="#collapse1">Blast Parameter
+							Details</a>
 					</h4>
 				</div>
 				<div id="collapse1" class="panel-collapse collapse">

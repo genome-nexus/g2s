@@ -17,7 +17,6 @@ public class Inputsequence {
     @Pattern(regexp = "(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\s\\n\\r\\t]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\s\\n\\t\\r]+$)", message = "Fasta Format Error, please Check and Resubmit!")
     private String sequence;
 
-    // @Digits(fraction = 0, integer = 5)
     private String residueNum;
 
     private String residueName;
@@ -33,35 +32,29 @@ public class Inputsequence {
     private String word_size;
 
     // default 11
-    // @Pattern(regexp="^\\d+$",message="Parameter Error in Gapopen: Should be
-    // Non-negative Integer")
-    @Min(0)
-    private int gapopen;
+    @Pattern(regexp="^\\d+$",message="Parameter Error in Gapopen: Should be Non-negative Integer")
+    private String gapopen;
 
     // default 1
-    // @Pattern(regexp="^\\d+$",message="Parameter Error in Gapextend: Should be
-    // Non-negative Integer")
-    private int gapextend;
+    @Pattern(regexp="^\\d+$",message="Parameter Error in Gapextend: Should be Non-negative Integer")
+    private String gapextend;
 
     // default BLOSUM62
     private String matrix;
 
     // 0,1,2,3 default 2
-    // @Pattern(regexp="^(3)|(2)|(1)|(0)$",message="Parameter Error in
-    // Comp_based_stats: Should be >=1 Integer")
-    private int comp_based_stats;
+    @Pattern(regexp="^(3)|(2)|(1)|(0)$",message="Parameter Error in Comp_based_stats: Should be >=1 Integer")
+    private String comp_based_stats;
 
     // default 11
     // Neighboring words threshold
-    // @Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Parameter Error in
-    // Threshold: Should be >=1 Integer")
-    private int threshold;
+    @Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Parameter Error in Threshold: Should be >=1 Integer")
+    private String threshold;
 
     // default 40
     // Window for multiple hits
-    // @Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Parameter Error in
-    // Window_size: Should be >=1 Integer")
-    private int window_size;
+    @Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Parameter Error in Window_size: Should be >=1 Integer")
+    private String window_size;
 
     // Time
     private String timenow;
@@ -80,19 +73,19 @@ public class Inputsequence {
         this.timenow = timenow;
     }
 
-    public int getThreshold() {
+    public String getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(int threshold) {
+    public void setThreshold(String threshold) {
         this.threshold = threshold;
     }
 
-    public int getWindow_size() {
+    public String getWindow_size() {
         return window_size;
     }
 
-    public void setWindow_size(int window_size) {
+    public void setWindow_size(String window_size) {
         this.window_size = window_size;
     }
 
@@ -116,19 +109,19 @@ public class Inputsequence {
         this.word_size = word_size;
     }
 
-    public int getGapopen() {
+    public String getGapopen() {
         return gapopen;
     }
 
-    public void setGapopen(int gapopen) {
+    public void setGapopen(String gapopen) {
         this.gapopen = gapopen;
     }
 
-    public int getGapextend() {
+    public String getGapextend() {
         return gapextend;
     }
 
-    public void setGapextend(int gapextend) {
+    public void setGapextend(String gapextend) {
         this.gapextend = gapextend;
     }
 
@@ -140,11 +133,11 @@ public class Inputsequence {
         this.matrix = matrix;
     }
 
-    public int getComp_based_stats() {
+    public String getComp_based_stats() {
         return comp_based_stats;
     }
 
-    public void setComp_based_stats(int comp_based_stats) {
+    public void setComp_based_stats(String comp_based_stats) {
         this.comp_based_stats = comp_based_stats;
     }
 

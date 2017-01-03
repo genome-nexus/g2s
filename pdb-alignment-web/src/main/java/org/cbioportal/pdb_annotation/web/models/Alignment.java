@@ -14,6 +14,8 @@ public class Alignment {
     private String chain;
 
     private String pdbSeg;
+    
+    private String segStart;
 
     private String seqId;
 
@@ -68,40 +70,72 @@ public class Alignment {
     // default 3
     private String word_size;
 
-    @Digits(fraction = 0, integer = 5)
-    @Min(1)
     // default 11
-    private int gapopen;
+    private String gapopen;
 
-    @Digits(fraction = 0, integer = 5)
-    @Min(1)
     // default 1
-    private int gapextend;
+    private String gapextend;
 
     // default BLOSUM62
     private String matrix;
 
     // 0,1,2,3 default 2
-    private int comp_based_stats;
+    private String comp_based_stats;
 
     // default 11
     // Neighboring words threshold
-    @Min(0)
-    private int threshold;
+    private String threshold;
 
     // default 40
     // Window for multiple hits
-    @Min(0)
-    private int window_size;
+    private String window_size;
 
     private String timenow;
+    
+    // For input
+    private String sequence;
+    private String inputResidueNum;
 
     // ------------------------
     // Constructors
     // ------------------------
 
+    public Alignment() {
+    }
+    
+    public Alignment(int alignmentid) {
+        this.alignmentId = alignmentid;
+    }
+    
+
+    // Set and get
+    
     public String getParaEvalue() {
         return paraEvalue;
+    }
+
+    public String getInputResidueNum() {
+        return inputResidueNum;
+    }
+
+    public void setInputResidueNum(String inputResidueNum) {
+        this.inputResidueNum = inputResidueNum;
+    }
+
+    public String getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(String sequence) {
+        this.sequence = sequence;
+    }
+
+    public String getSegStart() {
+        return segStart;
+    }
+
+    public void setSegStart(String segStart) {
+        this.segStart = segStart;
     }
 
     public String getTimenow() {
@@ -114,10 +148,7 @@ public class Alignment {
 
     public void setParaEvalue(String paraEvalue) {
         this.paraEvalue = paraEvalue;
-    }
-
-    public Alignment() {
-    }
+    }    
 
     public String getBlast_version() {
         return blast_version;
@@ -199,19 +230,19 @@ public class Alignment {
         this.word_size = word_size;
     }
 
-    public int getGapopen() {
+    public String getGapopen() {
         return gapopen;
     }
 
-    public void setGapopen(int gapopen) {
+    public void setGapopen(String gapopen) {
         this.gapopen = gapopen;
     }
 
-    public int getGapextend() {
+    public String getGapextend() {
         return gapextend;
     }
 
-    public void setGapextend(int gapextend) {
+    public void setGapextend(String gapextend) {
         this.gapextend = gapextend;
     }
 
@@ -223,35 +254,29 @@ public class Alignment {
         this.matrix = matrix;
     }
 
-    public int getComp_based_stats() {
+    public String getComp_based_stats() {
         return comp_based_stats;
     }
 
-    public void setComp_based_stats(int comp_based_stats) {
+    public void setComp_based_stats(String comp_based_stats) {
         this.comp_based_stats = comp_based_stats;
     }
 
-    public int getThreshold() {
+    public String getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(int threshold) {
+    public void setThreshold(String threshold) {
         this.threshold = threshold;
     }
 
-    public int getWindow_size() {
+    public String getWindow_size() {
         return window_size;
     }
 
-    public void setWindow_size(int window_size) {
+    public void setWindow_size(String window_size) {
         this.window_size = window_size;
     }
-
-    public Alignment(int alignmentid) {
-        this.alignmentId = alignmentid;
-    }
-
-    // Set and get
 
     public int getAlignmentId() {
         return alignmentId;

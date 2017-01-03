@@ -163,18 +163,17 @@ public class CommandProcessUtil {
         list.add("-word_size");
         list.add(inputsequence.getWord_size());
         list.add("-gapopen");
-        list.add(Integer.toString(inputsequence.getGapopen()));
+        list.add(inputsequence.getGapopen());
         list.add("-gapextend");
-        list.add(Integer.toString(inputsequence.getGapextend()));
+        list.add(inputsequence.getGapextend());
         list.add("-matrix");
         list.add(inputsequence.getMatrix());
         list.add("-comp_based_stats");
-        list.add(Integer.toString(inputsequence.getComp_based_stats()));
+        list.add(inputsequence.getComp_based_stats());
         list.add("-threshold");
-        list.add(Integer.toString(inputsequence.getThreshold()));
+        list.add(inputsequence.getThreshold());
         list.add("-window_size");
-        list.add(Integer.toString(inputsequence.getWindow_size()));
-
+        list.add(inputsequence.getWindow_size());
         list.add("-num_threads");
         list.add(ReadConfig.blastParaThreads);
         list.add("-outfmt");

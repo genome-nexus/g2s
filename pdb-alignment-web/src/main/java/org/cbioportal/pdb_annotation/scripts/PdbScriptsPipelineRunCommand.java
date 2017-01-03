@@ -76,7 +76,6 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName);
         cu.runCommand("rm", paralist, inputsequence);
-
         return outresults;
     }
 
@@ -116,16 +115,18 @@ public class PdbScriptsPipelineRunCommand {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
+            int count =1;
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
             BlastOutputIterations iterations = blast.getBlastOutputIterations();
-            int count = 1;
             for (Iteration iteration : iterations.getIteration()) {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
                 Statistics stat = iteration.getIterationStat().getStatistics();
                 for (Hit hit : hits.getHit()) {
-
-                    Alignment alignment = parseSingleAlignment(querytext, hit, count);
+                    
+                    //Old: only select Best for one PDB
+                    /*
+                    Alignment alignment = parseSingleAlignmentBest(querytext, hit);
                     alignment.setBlast_dblen(stat.getStatisticsDbLen());
                     alignment.setBlast_dbnum(stat.getStatisticsDbNum());
                     alignment.setBlast_effspace(stat.getStatisticsEffSpace());
@@ -136,11 +137,15 @@ public class PdbScriptsPipelineRunCommand {
                     alignment.setBlast_reference(blast.getBlastOutputReference());
                     alignment.setBlast_version(blast.getBlastOutputVersion());
                     results.add(alignment);
-                    count++;
+                    */
+                    
+                    //Select all for one PDB
+                    results.addAll(parseSingleAlignment(querytext, hit, stat, blast, count));                   
+                    count=results.size()+1;                                       
                 }
 
             }
-            log.info("[BLAST] Total Insert " + (count - 1) + " alignments");
+            log.info("[BLAST] Total Insert " + (count-1) + " alignments");
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
             log.error(ex.getMessage());
@@ -150,38 +155,23 @@ public class PdbScriptsPipelineRunCommand {
     }
 
     /**
-     * Parse XML structure into Object Alignment
+     * Parse XML structure into Object Alignment, only get best alignment for one PDB
      * 
      * @param querytext
      * @param hit
      * @param count
      * @return
      */
-    public Alignment parseSingleAlignment(String querytext, Hit hit, int count) {
-        Alignment alignment = new Alignment(count);
+    public Alignment parseSingleAlignmentBest(String querytext, Hit hit) {
+        Alignment alignment = new Alignment();
 
         alignment.setSeqId(querytext.split("\\s+")[0]);
         alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
         alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
         alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
         alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
-        // TODO: careful, choose first or last alignments?
-        // Original implementation, only choose last alignments
-        /*
-         * for (Hsp tmp : hit.getHitHsps().getHsp()) {
-         * alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
-         * alignment.setIdentp(Integer.parseInt(tmp.getHspPositive()));
-         * alignment.setEvalue(Double.parseDouble(tmp.getHspEvalue()));
-         * alignment.setBitscore(Double.parseDouble(tmp.getHspBitScore()));
-         * alignment.setSeqFrom(Integer.parseInt(tmp.getHspQueryFrom()));
-         * alignment.setSeqTo(Integer.parseInt(tmp.getHspQueryTo()));
-         * alignment.setPdbFrom(Integer.parseInt(tmp.getHspHitFrom()));
-         * alignment.setPdbTo(Integer.parseInt(tmp.getHspHitTo()));
-         * alignment.setSeqAlign(tmp.getHspQseq());
-         * alignment.setPdbAlign(tmp.getHspHseq());
-         * alignment.setMidlineAlign(tmp.getHspMidline()); }
-         */
-
+        alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
+        
         List<Hsp> tlist = hit.getHitHsps().getHsp();
         Hsp tmp = tlist.get(0);
         alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
@@ -194,9 +184,64 @@ public class PdbScriptsPipelineRunCommand {
         alignment.setPdbTo(Integer.parseInt(tmp.getHspHitTo()));
         alignment.setSeqAlign(tmp.getHspQseq());
         alignment.setPdbAlign(tmp.getHspHseq());
-        alignment.setMidlineAlign(tmp.getHspMidline());
+        alignment.setMidlineAlign(tmp.getHspMidline());        
 
         return alignment;
+    }
+    
+    
+    
+    /**
+     * 
+     * Choose all alignments
+     * Parse XML structure into Object Alignment, 
+     * 
+     * @param querytext
+     * @param hit
+     * @return
+     */
+    public List<Alignment> parseSingleAlignment(String querytext, Hit hit, Statistics stat, BlastOutput blast, int count) {
+        List<Alignment> alignments = new ArrayList<Alignment>();
+        
+        List<Hsp> tlist = hit.getHitHsps().getHsp();
+        for(Hsp tmp: tlist){
+            Alignment alignment = new Alignment(count);
+            
+            alignment.setSeqId(querytext.split("\\s+")[0]);
+            alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
+            alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
+            alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
+            alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
+            alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
+            
+            //results;
+            alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
+            alignment.setIdentp(Integer.parseInt(tmp.getHspPositive()));
+            alignment.setEvalue(Double.parseDouble(tmp.getHspEvalue()));
+            alignment.setBitscore(Double.parseDouble(tmp.getHspBitScore()));
+            alignment.setSeqFrom(Integer.parseInt(tmp.getHspQueryFrom()));
+            alignment.setSeqTo(Integer.parseInt(tmp.getHspQueryTo()));
+            alignment.setPdbFrom(Integer.parseInt(tmp.getHspHitFrom()));
+            alignment.setPdbTo(Integer.parseInt(tmp.getHspHitTo()));
+            alignment.setSeqAlign(tmp.getHspQseq());
+            alignment.setPdbAlign(tmp.getHspHseq());
+            alignment.setMidlineAlign(tmp.getHspMidline());
+            
+            alignment.setBlast_dblen(stat.getStatisticsDbLen());
+            alignment.setBlast_dbnum(stat.getStatisticsDbNum());
+            alignment.setBlast_effspace(stat.getStatisticsEffSpace());
+            alignment.setBlast_entropy(stat.getStatisticsEntropy());
+            alignment.setBlast_hsplen(stat.getStatisticsHspLen());
+            alignment.setBlast_kappa(stat.getStatisticsKappa());
+            alignment.setBlast_lambda(stat.getStatisticsLambda());
+            alignment.setBlast_reference(blast.getBlastOutputReference());
+            alignment.setBlast_version(blast.getBlastOutputVersion());
+            
+            alignments.add(alignment);
+            count++;
+        }
+
+        return alignments;
     }
 
 }
