@@ -149,7 +149,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return count
      */
     public int parsexml(File blastresults, File outputfile, HashMap<String, String> pdbHm) {
-        int count = 0;
+        int count = 1;
         try {
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
@@ -163,18 +163,25 @@ public class PdbScriptsPipelineMakeSQL {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
-                    results.add(parseSingleAlignment(querytext, hit, count));
+                    results.addAll(parseSingleAlignment(querytext, hit, count));
+                    count=results.size()+1;
+                   
+                    //No need anymore
+                    //TODO: need number
+                    /*
                     if (count % sql_insert_output_interval == 0) {
                         // Once get the criteria, output contents to the SQL
                         // file
                         genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
-                        results.clear();
+                        count+=results.size();
+                        results.clear();                        
                     }
-                    count++;
+                    */
                 }
             }
             // output remaining contents to the SQL file
             genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
+            
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
             log.error(ex.getMessage());
@@ -190,9 +197,12 @@ public class PdbScriptsPipelineMakeSQL {
      * @return
      */
     public String makeTable_pdb_entry_insert(BlastResult br) {
-        String[] strarrayS = br.getSseqid().split("_");
-        String str = "INSERT IGNORE INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`) VALUES ('" + br.getSseqid()
-                + "', '" + strarrayS[0] + "', '" + strarrayS[1] + "', '" + strarrayS[2] + "');\n";
+        String pdbNo = br.getSseqid().split("\\s+")[0];
+        String[] strarrayS = pdbNo.split("_");
+        String segStart = br.getSseqid().split("\\s+")[3];
+        
+        String str = "INSERT IGNORE INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`) VALUES ('" + pdbNo
+                + "', '" + strarrayS[0] + "', '" + strarrayS[1] + "', '" + strarrayS[2] + "', '" + segStart + "');\n";
         return str;
     }
 
@@ -204,9 +214,11 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public String makeTable_pdb_ensembl_insert(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split(";");
-        String[] strarrayS = br.getSseqid().split("_");
-        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
-                + br.getSseqid() + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','"
+        String pdbNo =  br.getSseqid().split("\\s+")[0];
+        String[] strarrayS = pdbNo.split("_");
+        String segStart = br.getSseqid().split("\\s+")[3];
+        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+                + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
                 + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
                 + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
                 + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
@@ -248,11 +260,11 @@ public class PdbScriptsPipelineMakeSQL {
      * @param count
      * @param outputfile
      */
-    public void genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm, int count,
+    public void genereateSQLstatementsSmallMem(List<BlastResult> results, HashMap<String, String> pdbHm, long count,
             File outputfile) {
         try {
             log.info("[SHELL] Start Write insert.sql File from Alignment " + count + "...");
-            if (count == 0) {
+            if (count == 1) {
                 // check, if starts, make sure it is empty
                 if (outputfile.exists()) {
                     outputfile.delete();
@@ -299,7 +311,7 @@ public class PdbScriptsPipelineMakeSQL {
      * @return List<BlastResult>
      */
     public List<BlastResult> parseblastresultsSingle(String currentDir) {
-        List<BlastResult> results = new ArrayList<BlastResult>(this.matches);
+        List<BlastResult> results = new ArrayList<BlastResult>();
         try {
             log.info("[BLAST] Read blast results from xml file...");
             File blastresults = new File(currentDir + this.db.resultfileName);
@@ -313,9 +325,8 @@ public class PdbScriptsPipelineMakeSQL {
                 String querytext = iteration.getIterationQueryDef();
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
-                    BlastResult br = parseSingleAlignment(querytext, hit, count);
-                    results.add(br);
-                    count++;
+                    results.addAll(parseSingleAlignment(querytext, hit, count));
+                    count = results.size()+1;
                 }
             }
             this.matches = count - 1;
@@ -336,40 +347,31 @@ public class PdbScriptsPipelineMakeSQL {
      * @param count
      * @return
      */
-    public BlastResult parseSingleAlignment(String querytext, Hit hit, int count) {
-        BlastResult br = new BlastResult(count);
-        br.qseqid = querytext;
-        br.sseqid = hit.getHitDef().split("\\s+")[0];
-
-        // TODO: careful, choose first or last alignments?
-        // Original implementation, only choose last alignments
-        /*
-         * for (Hsp tmp : hit.getHitHsps().getHsp()) { br.ident =
-         * Double.parseDouble(tmp.getHspIdentity()); br.identp =
-         * Double.parseDouble(tmp.getHspPositive()); br.evalue =
-         * Double.parseDouble(tmp.getHspEvalue()); br.bitscore =
-         * Double.parseDouble(tmp.getHspBitScore()); br.qStart =
-         * Integer.parseInt(tmp.getHspQueryFrom()); br.qEnd =
-         * Integer.parseInt(tmp.getHspQueryTo()); br.sStart =
-         * Integer.parseInt(tmp.getHspHitFrom()); br.sEnd =
-         * Integer.parseInt(tmp.getHspHitTo()); br.seq_align = tmp.getHspQseq();
-         * br.pdb_align = tmp.getHspHseq(); br.midline_align =
-         * tmp.getHspMidline(); }
-         */
+    public List<BlastResult> parseSingleAlignment(String querytext, Hit hit, int count) {
+        
+        List<BlastResult> resultList = new ArrayList<BlastResult>();
+        
         List<Hsp> tmplist = hit.getHitHsps().getHsp();
-        Hsp tmp = tmplist.get(0);
-        br.ident = Double.parseDouble(tmp.getHspIdentity());
-        br.identp = Double.parseDouble(tmp.getHspPositive());
-        br.evalue = Double.parseDouble(tmp.getHspEvalue());
-        br.bitscore = Double.parseDouble(tmp.getHspBitScore());
-        br.qStart = Integer.parseInt(tmp.getHspQueryFrom());
-        br.qEnd = Integer.parseInt(tmp.getHspQueryTo());
-        br.sStart = Integer.parseInt(tmp.getHspHitFrom());
-        br.sEnd = Integer.parseInt(tmp.getHspHitTo());
-        br.seq_align = tmp.getHspQseq();
-        br.pdb_align = tmp.getHspHseq();
-        br.midline_align = tmp.getHspMidline();
-        return br;
+        for (Hsp tmp : tmplist) {
+            BlastResult br = new BlastResult(count);
+            br.qseqid = querytext;
+            br.sseqid = hit.getHitDef();
+            br.ident = Double.parseDouble(tmp.getHspIdentity()); 
+            br.identp = Double.parseDouble(tmp.getHspPositive()); 
+            br.evalue = Double.parseDouble(tmp.getHspEvalue()); 
+            br.bitscore = Double.parseDouble(tmp.getHspBitScore()); 
+            br.qStart = Integer.parseInt(tmp.getHspQueryFrom()); 
+            br.qEnd = Integer.parseInt(tmp.getHspQueryTo()); 
+            br.sStart = Integer.parseInt(tmp.getHspHitFrom()); 
+            br.sEnd = Integer.parseInt(tmp.getHspHitTo()); 
+            br.seq_align = tmp.getHspQseq(); 
+            br.pdb_align = tmp.getHspHseq(); 
+            br.midline_align = tmp.getHspMidline();
+            resultList.add(br);
+            count++;
+        }
+         
+        return resultList;
     }
 
     /**

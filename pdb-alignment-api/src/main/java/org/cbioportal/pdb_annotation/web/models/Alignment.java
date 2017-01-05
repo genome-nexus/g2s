@@ -32,6 +32,9 @@ public class Alignment {
 
     @Column(name = "PDB_SEG")
     private String pdbSeg;
+    
+    @Column(name = "SEG_START")
+    private String segStart;
 
     @Column(name = "SEQ_ID")
     private String seqId;
@@ -89,6 +92,14 @@ public class Alignment {
 
     public int getAlignmentId() {
         return alignmentId;
+    }
+
+    public String getSegStart() {
+        return segStart;
+    }
+
+    public void setSegStart(String segStart) {
+        this.segStart = segStart;
     }
 
     public void setAlignmentId(int alignmentId) {

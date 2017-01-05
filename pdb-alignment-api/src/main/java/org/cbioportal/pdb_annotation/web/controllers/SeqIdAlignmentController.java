@@ -84,6 +84,7 @@ public class SeqIdAlignmentController {
                 re.setAlignmentId(ali.getAlignmentId());
                 re.setBitscore(ali.getBitscore());
                 re.setChain(ali.getChain());
+                re.setSegStart(ali.getSegStart());
                 re.setSeqAlign(ali.getSeqAlign());
                 re.setSeqFrom(ali.getSeqFrom());
                 re.setSeqId(ali.getSeqId());
@@ -101,7 +102,7 @@ public class SeqIdAlignmentController {
                 re.setUpdateDate(ali.getUpdateDate());
                 re.setResidueName(
                         ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                re.setResidueNum(ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
+                re.setResidueNum(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 outit.add(re);
             }
         }

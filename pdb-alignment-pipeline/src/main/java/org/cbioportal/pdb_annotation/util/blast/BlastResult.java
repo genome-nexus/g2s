@@ -1,7 +1,7 @@
 package org.cbioportal.pdb_annotation.util.blast;
 
 public class BlastResult {
-    public Integer oligoID;
+    public int oligoID;
     public String qseqid;
     public String sseqid;
     public Double ident;
@@ -16,7 +16,7 @@ public class BlastResult {
     public String pdb_align;
     public String midline_align;
 
-    public BlastResult(Integer id) {
+    public BlastResult(int id) {
         this.oligoID = id;
         this.qseqid = "";
         this.sseqid = "";
@@ -33,7 +33,7 @@ public class BlastResult {
         this.midline_align = "";
     }
 
-    public Integer getOligoID() {
+    public long getOligoID() {
         return oligoID;
     }
 
@@ -147,7 +147,7 @@ public class BlastResult {
 
     @Override
     public String toString() {
-        return oligoID.toString() + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString()
+        return oligoID + "\t" + qseqid + "\t" + sseqid + "\t" + ident + "\t" + identp + evalue.toString()
                 + "\t" + bitscore.toString() + "\t" + qStart.toString() + "\t" + qEnd.toString() + "\t"
                 + sStart.toString() + "\t" + sEnd.toString() + "\t" + seq_align.toString() + "\t" + pdb_align.toString()
                 + "\t" + midline_align.toString();
