@@ -25,6 +25,7 @@ public class PdbScriptsPipelineRunCommand {
     private BlastDataBase db;
     private int matches;
     private int seqFileCount;
+    private boolean updateTag;
 
     /**
      * Constructor
@@ -32,6 +33,7 @@ public class PdbScriptsPipelineRunCommand {
     public PdbScriptsPipelineRunCommand() {
         this.matches = 0;
         this.seqFileCount = -1;
+        this.updateTag = false;
     }
 
     public BlastDataBase getDb() {
@@ -56,6 +58,14 @@ public class PdbScriptsPipelineRunCommand {
 
     public void setSeqFileCount(int seqFileCount) {
         this.seqFileCount = seqFileCount;
+    }
+
+    public boolean isUpdateTag() {
+        return updateTag;
+    }
+
+    public void setUpdateTag(boolean updateTag) {
+        this.updateTag = updateTag;
     }
 
     /**
@@ -262,20 +272,25 @@ public class PdbScriptsPipelineRunCommand {
     public void runUpdatePDB() {
         CommandProcessUtil cu = new CommandProcessUtil();
         this.db = new BlastDataBase(ReadConfig.pdbSeqresDownloadFile);
+        this.setUpdateTag(true);
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         this.seqFileCount = Integer.parseInt(ReadConfig.updateSeqFastaFileNum);
+        
+        
 
         // Step 1: Set dateVersion of updating and create a folder as YYYYMMDD
         // under the main folder
         String dateVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
         String currentDir = ReadConfig.workspace + dateVersion + "/";
 
+        
         // Step 2: Download and prepare new, obsolete and modified PDB in weekly
         // update from PDB
         List<String> listOld = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.delPDB);
 
+        /*
         preprocess.preprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresDownloadFile,
                 currentDir + ReadConfig.pdbSeqresFastaFile);
 
@@ -316,8 +331,12 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + ReadConfig.sqlDeleteFile);
         cu.runCommand("mysql", paralist);
 
+        
         // Step 6: Create and insert SQL statements of new and modified alignments; Use splited FASTA results
         parseprocess.parse2sql(false, currentDir, this.seqFileCount);
+        */
+        
+        ArrayList<String> paralist = new ArrayList<String>();
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
