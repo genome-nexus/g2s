@@ -95,7 +95,17 @@ public class Alignment {
     // For input
     private String sequence;
     private String inputResidueNum;
-
+    
+    // For Percentage
+    private String identityPercentage;
+    private String positivePercentage;
+    private String gapPercentage;
+    private int gap;
+    private int length;
+    private String identityPercentageStr;
+    private String positivePercentageStr;
+    private String gapPercentageStr;
+   
     // ------------------------
     // Constructors
     // ------------------------
@@ -412,5 +422,70 @@ public class Alignment {
     public void setMidlineAlign(String midlineAlign) {
         this.midlineAlign = midlineAlign;
     }
+
+    public String getIdentityPercentage() {
+        return identityPercentage;
+    }
+
+    public void setIdentityPercentage(String identityPercentage) {
+        this.identityPercentage = identityPercentage;
+    }
+
+    public String getPositivePercentage() {
+        return positivePercentage;
+    }
+
+    public void setPositivePercentage(String positivePercentage) {
+        this.positivePercentage = positivePercentage;
+    }
+
+    public String getGapPercentage() {
+        return gapPercentage;
+    }
+
+    public void setGapPercentage(String gapPercentage) {
+        this.gapPercentage = gapPercentage;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public int getGap() {
+        return gap;
+    }
+
+    public void setGap(int gap) {
+        this.gap = gap;
+    }
+
+    public String getIdentityPercentageStr() {
+        return identityPercentageStr;
+    }
+
+    public void setIdentityPercentageStr(String identityPercentageStr) {
+        this.identityPercentageStr = identityPercentageStr;
+    }
+
+    public String getPositivePercentageStr() {
+        return positivePercentageStr;
+    }
+
+    public void setPositivePercentageStr(String positivePercentageStr) {
+        this.positivePercentageStr = positivePercentageStr;
+    }
+
+    public String getGapPercentageStr() {
+        return gapPercentageStr;
+    }
+
+    public void setGapPercentageStr(String gapPercentageStr) {
+        this.gapPercentageStr = gapPercentageStr;
+    }
+    
 
 }

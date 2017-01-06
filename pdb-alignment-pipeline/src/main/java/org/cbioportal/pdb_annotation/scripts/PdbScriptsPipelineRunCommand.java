@@ -290,7 +290,6 @@ public class PdbScriptsPipelineRunCommand {
         List<String> listOld = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.delPDB);
 
-        /*
         preprocess.preprocessPDBsequencesUpdate(currentDir + ReadConfig.pdbSeqresDownloadFile,
                 currentDir + ReadConfig.pdbSeqresFastaFile);
 
@@ -334,9 +333,7 @@ public class PdbScriptsPipelineRunCommand {
         
         // Step 6: Create and insert SQL statements of new and modified alignments; Use splited FASTA results
         parseprocess.parse2sql(false, currentDir, this.seqFileCount);
-        */
         
-        ArrayList<String> paralist = new ArrayList<String>();
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
