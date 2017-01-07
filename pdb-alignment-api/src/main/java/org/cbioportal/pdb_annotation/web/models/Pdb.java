@@ -26,8 +26,8 @@ public class Pdb {
     @Column(name = "PDB_SEG")
     private String pdbSeg;
 
-    @Column(name = "DBREF")
-    private String dbref;
+    @Column(name = "SEG_START")
+    private String segStart;
 
     // ------------------------
     // Constructors
@@ -76,12 +76,12 @@ public class Pdb {
         this.pdbSeg = pdbSeg;
     }
 
-    public String getDbref() {
-        return dbref;
+    public String getSegStart() {
+        return segStart;
     }
 
-    public void setDbref(String dbref) {
-        this.dbref = dbref;
+    public void setSegStart(String segStart) {
+        this.segStart = segStart;
     }
 
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Inputsequence;
@@ -91,8 +92,30 @@ public class InputsequenceController {
                 if (!(inputsequence.getResidueNum().equals(""))) {
                     re.setResidueName(
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                    re.setResidueNum(new Integer(Integer.parseInt(ali.getSegStart())-1+ali.getPdbFrom() + (inputAA - ali.getSeqFrom())).toString());
+                    re.setResidueNum(new Integer(
+                            Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()))
+                                    .toString());
                 }
+                // For percentage
+                int queryLength = ali.getSeqAlign().length();
+                int targetLength = ali.getPdbAlign().length();
+                int queryGapLength = StringUtils.countMatches(ali.getSeqAlign(), "-");
+                int targetGapLength = StringUtils.countMatches(ali.getPdbAlign(), "-");
+                int gapLength = Math.abs(queryGapLength-targetGapLength);
+                
+                //Test:
+                if(queryLength!=targetLength){
+                    System.out.println("Error! in "+ali.getPdbNo());
+                }
+                
+                re.setIdentityPercentage(String.format("%.2f", ali.getIdentity()*1.0f/queryLength));
+                re.setPositivePercentage(String.format("%.2f", ali.getIdentp()*1.0f/queryLength));
+                re.setGapPercentage(String.format("%.2f", gapLength*1.0f/queryLength));
+                re.setGap(gapLength);
+                re.setLength(queryLength);
+                re.setIdentityPercentageStr("("+ali.getIdentity()+"/"+queryLength+")");
+                re.setPositivePercentageStr("("+ali.getIdentp()+"/"+queryLength+")");
+                re.setGapPercentageStr("("+gapLength+"/"+queryLength+")");
 
                 // Parameters for output TODO: not optimize
                 re.setParaEvalue(inputsequence.getEvalue());
@@ -115,8 +138,8 @@ public class InputsequenceController {
                 re.setBlast_version(ali.getBlast_version());
 
                 re.setTimenow(inputsequence.getTimenow());
-                
-                //input
+
+                // input
                 re.setSequence(inputsequence.getSequence());
                 re.setInputResidueNum(inputsequence.getResidueNum());
 

@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 public class Inputsequence {
 
     private String id;
-
+    
     @NotNull
     // @Size(min=1, max=10000)
     // @Pattern(regexp="(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)",message="Fasta
@@ -32,28 +32,28 @@ public class Inputsequence {
     private String word_size;
 
     // default 11
-    @Pattern(regexp="^\\d+$",message="Parameter Error in Gapopen: Should be Non-negative Integer")
+    @Pattern(regexp = "^\\d+$", message = "Parameter Error in Gapopen: Should be Non-negative Integer")
     private String gapopen;
 
     // default 1
-    @Pattern(regexp="^\\d+$",message="Parameter Error in Gapextend: Should be Non-negative Integer")
+    @Pattern(regexp = "^\\d+$", message = "Parameter Error in Gapextend: Should be Non-negative Integer")
     private String gapextend;
 
     // default BLOSUM62
     private String matrix;
 
     // 0,1,2,3 default 2
-    @Pattern(regexp="^(3)|(2)|(1)|(0)$",message="Parameter Error in Comp_based_stats: Should be >=1 Integer")
+    @Pattern(regexp = "^(3)|(2)|(1)|(0)$", message = "Parameter Error in Comp_based_stats: Should be >=1 Integer")
     private String comp_based_stats;
 
     // default 11
     // Neighboring words threshold
-    @Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Parameter Error in Threshold: Should be >=1 Integer")
+    @Pattern(regexp = "^[1-9]|([1-9]\\d+)", message = "Parameter Error in Threshold: Should be >=1 Integer")
     private String threshold;
 
     // default 40
     // Window for multiple hits
-    @Pattern(regexp="^[1-9]|([1-9]\\d+)",message="Parameter Error in Window_size: Should be >=1 Integer")
+    @Pattern(regexp = "^[1-9]|([1-9]\\d+)", message = "Parameter Error in Window_size: Should be >=1 Integer")
     private String window_size;
 
     // Time

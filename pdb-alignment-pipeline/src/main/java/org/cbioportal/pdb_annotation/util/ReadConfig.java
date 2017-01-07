@@ -46,6 +46,9 @@ public class ReadConfig {
     public static String password;
     public static String dbName;
     public static String dbNameScript;
+    public static String releaseTag;
+    public static String releaseTagResult;
+    public static String updateWebProperties;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -125,6 +128,9 @@ public class ReadConfig {
             ReadConfig.password = prop.getProperty("password").trim();
             ReadConfig.dbName = prop.getProperty("db_name").trim();
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
+            ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
+            ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
+            ReadConfig.updateWebProperties = prop.getProperty("update.web.properties").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
@@ -162,6 +168,31 @@ public class ReadConfig {
             rcObj = new ReadConfig();
         }
         return rcObj;
+    }
+
+    
+    public static String getUpdateWebProperties() {
+        return updateWebProperties;
+    }
+
+    public static void setUpdateWebProperties(String updateWebProperties) {
+        ReadConfig.updateWebProperties = updateWebProperties;
+    }
+
+    public static String getReleaseTagResult() {
+        return releaseTagResult;
+    }
+
+    public static void setReleaseTagResult(String releaseTagResult) {
+        ReadConfig.releaseTagResult = releaseTagResult;
+    }
+
+    public static String getReleaseTag() {
+        return releaseTag;
+    }
+
+    public static void setReleaseTag(String releaseTag) {
+        ReadConfig.releaseTag = releaseTag;
     }
 
     public static String getUpdateSeqFastaFileNum() {

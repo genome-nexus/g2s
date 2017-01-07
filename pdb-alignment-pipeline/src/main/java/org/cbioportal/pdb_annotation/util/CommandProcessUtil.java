@@ -89,6 +89,11 @@ public class CommandProcessUtil {
                 checkFlag = false;
             }
             break;
+        case "releaseTag":
+            if (paralist.size() != 2) {
+                checkFlag = false;
+            }
+            break;
         default:
             log.error("[SHELL] Command " + commandName + " does not support now");
             break;
@@ -149,6 +154,12 @@ public class CommandProcessUtil {
             case "rm":
                 log.info("[SHELL] Running rm command at" + paralist.get(0) + "...");
                 pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
+                break;
+            case "releaseTag":
+                log.info("[MYSQL] Running releaseTag command from " + paralist.get(0) + " to " + paralist.get(1) + " ...");
+                pb = new ProcessBuilder(makeDBCommand());
+                pb.redirectInput(ProcessBuilder.Redirect.from(new File(paralist.get(0))));
+                pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));
                 break;
             default:
                 log.error("[SHELL] Command " + commandName + " does not support now");
