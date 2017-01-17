@@ -338,6 +338,7 @@ public class PdbScriptsPipelinePreprocessing {
                 listNewCont = listNewCont + pu.readPDB2Results(pdbName);
             }
             FileUtils.writeStringToFile(addFastaFile, listNewCont);
+            log.info("Write PDB sequences to"+addFastaFile+"...Done");
         } catch (Exception ex) {
             log.error("[SHELL] Error in fetching weekly updates: " + ex.getMessage());
             ex.printStackTrace();
