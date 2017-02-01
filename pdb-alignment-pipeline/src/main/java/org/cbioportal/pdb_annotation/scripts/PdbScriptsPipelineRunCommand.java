@@ -77,8 +77,8 @@ public class PdbScriptsPipelineRunCommand {
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
-        
-        
+          
+
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -101,7 +101,6 @@ public class PdbScriptsPipelineRunCommand {
         // Select only PDB files of proteins, parse PDB files to sequences
         preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
-        
         
         log.info("********************[STEP 3]********************");
         log.info("[Download] Download and unzip Ensembl, Uniprot and Isoform");
@@ -168,8 +167,7 @@ public class PdbScriptsPipelineRunCommand {
 
         this.seqFileCount = preprocess.preprocessGENEsequences(uniqSeqHm,
                 ReadConfig.workspace + ReadConfig.seqFastaFile);
-
-        
+       
         // Step 5:
         log.info("********************[STEP 5]********************");
         log.info("[PrepareBlast] Build the database by makeblastdb");

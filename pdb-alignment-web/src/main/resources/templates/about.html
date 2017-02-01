@@ -3,10 +3,10 @@
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 	layout:decorator="layout">
 <body>
-	<h1 layout:fragment="header">Genome Nexus G2S</h1>
+	<h1 layout:fragment="header">G2S (Genome to Structure)</h1>
 	<div layout:fragment="content" class="container">
 		<h2>
-			<p>An auto-updating web-service to annotate genomic variants on
+			<p> An auto-updating web-service to annotate genomic variants on
 				protein structures</p>
 		</h2>
 		<p>
@@ -19,9 +19,21 @@
 				href="http://www.rcsb.org/pdb/chromosome.do">http://www.rcsb.org/pdb/chromosome.do</a>)
 			[2], and G23D (<a href="http://www.sheba-cancer.org.il/G23D">http://www.sheba-cancer.org.il/G23D</a>)[3].
 			However, none of them provides a web service that support automated
-			analysis programmatically. We have developed a comprehensive web
-			service that support automated mapping and annotating genomic
-			variants in 3D protein structures, supporting:
+			analysis programmatically. 
+		</p>
+		<p>
+		    We have developed a comprehensive web service that support automated mapping and annotating genomic
+			variants in 3D protein structures,
+		</p>
+		<p>
+			There are two components in Genome Nexus G2S webservices:
+		</p>
+		<ul>
+		     <li><b>G2S API</b> (<a th:href="@{/api}" href="api.html">link</a>):       Query by Uniprot/Human Ensembl/Genomic Position. </li>
+		     <li><b>Sequence Web Interface</b> (<a th:href="@{/input}" href="input.html">link</a>) : Query by any protein sequences. </li>
+		</ul>
+		<p>
+		     G2S web service supports:
 		</p>
 		<ul>
 			<li>Retrieving aligned protein structure chains for an

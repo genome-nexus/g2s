@@ -167,13 +167,12 @@ public class GenomeAlignmentController {
                     List<GenomeResidueInput> grlistValid = new ArrayList<GenomeResidueInput>();
                     for (GenomeResidueInput gr : grlist) {
                         List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(gr.getEnsembl().getEnsemblid());
-                        // System.out.println(gr.getEnsembl().getEnsemblid());
+                        //System.out.println(gr.getEnsembl().getEnsemblid());
 
                         if (geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size() != 0) {
                             Ensembl es = gr.getEnsembl();
                             es.setSeqId(ensembllist.get(0).getSeqId());
-                            // System.out.println("API
-                            // ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
+                            //System.out.println("API ensemblID:\t"+es.getEnsemblid()+"\t:"+es.getSeqId());
                             gr.setEnsembl(es);
                             grlistValid.add(gr);
                         }
@@ -182,8 +181,8 @@ public class GenomeAlignmentController {
                     if (grlistValid.size() >= 1) {
                         List<GenomeResidue> outlist = new ArrayList<GenomeResidue>();
                         for (GenomeResidueInput gr : grlistValid) {
-                            System.out.println("Out:\t" + gr.getEnsembl().getSeqId() + "\t:"
-                                    + Integer.toString(gr.getResidue().getResidueNum()));
+                            //System.out.println("Out:\t" + gr.getEnsembl().getSeqId() + "\t:"
+                            //        + Integer.toString(gr.getResidue().getResidueNum()));
                             List<Residue> list = seqController.getPdbResidueBySeqId(gr.getEnsembl().getSeqId(),
                                     Integer.toString(gr.getResidue().getResidueNum()));
                             Ensembl en = gr.getEnsembl();

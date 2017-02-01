@@ -176,7 +176,7 @@ public class InputsequenceController {
 
     @GetMapping("/")
     public ModelAndView homeInfo() {
-        return new ModelAndView("api");
+        return new ModelAndView("about");
     }
 
 }
