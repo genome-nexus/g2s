@@ -52,25 +52,25 @@
 						</h4>
 					</div>
 					<p th:if="${#fields.hasErrors('evalue')}" th:errors="*{evalue}">Evalue
-								Error</p>
-					<p th:if="${#fields.hasErrors('word_size')}" th:errors="*{word_size}">Word_size
-								Error</p>
+						Error</p>
+					<p th:if="${#fields.hasErrors('word_size')}"
+						th:errors="*{word_size}">Word_size Error</p>
 					<p th:if="${#fields.hasErrors('gapopen')}" th:errors="*{gapopen}">Word_size
-								Error</p>
-					<p th:if="${#fields.hasErrors('gapextend')}" th:errors="*{gapextend}">Word_size
-								Error</p>
-					<p th:if="${#fields.hasErrors('comp_based_stats')}" th:errors="*{comp_based_stats}">Word_size
-								Error</p>
-					<p th:if="${#fields.hasErrors('threshold')}" th:errors="*{threshold}">Word_size
-								Error</p>
-					<p th:if="${#fields.hasErrors('window_size')}" th:errors="*{window_size}">Word_size
-								Error</p>
+						Error</p>
+					<p th:if="${#fields.hasErrors('gapextend')}"
+						th:errors="*{gapextend}">Word_size Error</p>
+					<p th:if="${#fields.hasErrors('comp_based_stats')}"
+						th:errors="*{comp_based_stats}">Word_size Error</p>
+					<p th:if="${#fields.hasErrors('threshold')}"
+						th:errors="*{threshold}">Word_size Error</p>
+					<p th:if="${#fields.hasErrors('window_size')}"
+						th:errors="*{window_size}">Word_size Error</p>
 					<div id="collapse1" class="panel-collapse collapse">
 						<div class="panel-body">
 							<p>
 								<abbr title="Expectation value (E) threshold for saving hits">Evalue</abbr>:
 							</p>
-							
+
 							<input type="text" th:value="1e-10" th:name="evalue"
 								th:id="evalue"></input>
 							<p>
@@ -78,7 +78,7 @@
 									Size</abbr>:
 							</p>
 							<input type="text" th:value="3" th:name="word_size"
-								th:id="word_size"/>
+								th:id="word_size" />
 							<p>
 								<abbr title="Cost to open a gap">Gapopen</abbr>:
 							</p>
@@ -106,13 +106,13 @@
 								<abbr title="Use composition-based statistics, usually 2">Comp_based_stats</abbr>:
 							</p>
 							<input type="text" th:value="2" th:name="comp_based_stats"
-								th:id="comp_based_stats"/>
+								th:id="comp_based_stats" />
 							<p>
 								<abbr
 									title="Minimum word score such that the word is added to the BLAST lookup table">Threshold</abbr>:
 							</p>
 							<input type="text" th:value="11" th:name="threshold"
-								th:id="threshold"/>
+								th:id="threshold" />
 							<p>
 								<abbr
 									title="Multiple hits window size, use 0 to specify 1-hit algorithm">Window_size</abbr>:

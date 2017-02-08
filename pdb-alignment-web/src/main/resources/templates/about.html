@@ -14,22 +14,27 @@
 			workflow.
 		</p>
 		<img th:src="@{/images/workflow.png}" />
-		<p><h4><b>Figure 1</b>: Initiate/Update Workflow and Architecture of G2S Web Service </h4></p>
+		<p>
+		<h4>
+			<b>Figure 1</b>: Initiate/Update Workflow and Architecture of G2S Web
+			Service
+		</h4>
+		</p>
 		<p></p>
 		<p>
-			To initiate the Genome Nexus G2S web service, manually reviewed
-			Uniprot (Swiss-Prot) sequences are integrated with Isoform sequences
-			in recent release (2016_11) of UniProt (www.uniprot.org ), all
-			sequences without isoforms are assigned as isoform 1. Then recent
-			release of protein sequences from Human Release 87 in Ensembl
-			(www.ensembl.org ) are integrated into UniProt sequences identified
-			by the sequences. All identical sequences are combined together to
-			remove redundancy. A strict threshold as 100% Redundancy is defined
-			on the protein sequences, so only non-identical sequences will be
-			left as an individual entry. Then these sequences are reorganized in
-			internal SequenceId as the <b>Query Sequences</b>. The Target
-			Sequences are elaborately parsing from ATOM records in PDB files from
-			all solved protein tertiary structures in the whole PDB by BioJava
+			To initiate the G2S web service, manually reviewed Uniprot
+			(Swiss-Prot) sequences are integrated with Isoform sequences in
+			recent release (2016_11) of UniProt (www.uniprot.org ), all sequences
+			without isoforms are assigned as isoform 1. Then recent release of
+			protein sequences from Human Release 87 in Ensembl (www.ensembl.org )
+			are integrated into UniProt sequences identified by the sequences.
+			All identical sequences are combined together to remove redundancy. A
+			strict threshold as 100% Redundancy is defined on the protein
+			sequences, so only non-identical sequences will be left as an
+			individual entry. Then these sequences are reorganized in internal
+			SequenceId as the <b>Query Sequences</b>. The Target Sequences are
+			elaborately parsing from ATOM records in PDB files from all solved
+			protein tertiary structures in the whole PDB by BioJava
 			(www.biojava.org ). Because of the uneven quality of PDB and
 			technology limitations, chains of proteins often isolated by disorder
 			regions failed to get structure solved. The solved pieces are
