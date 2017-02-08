@@ -9,9 +9,9 @@ import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
-import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.models.Inputsequence;
-import org.cbioportal.pdb_annotation.web.models.Residue;
+import org.cbioportal.pdb_annotation.web.models.InputAlignment;
+import org.cbioportal.pdb_annotation.web.models.InputSequence;
+import org.cbioportal.pdb_annotation.web.models.InputResidue;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * 
  * Control the input sequence to blast
+ * Mainly use InputSequence in model
  * 
  * @author Juexin wang
  * 
@@ -30,17 +31,17 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class InputsequenceController {
 
-    @GetMapping("/input")
+    @GetMapping("/sequence")
     public ModelAndView inputForm(Model model) {
-        model.addAttribute("inputsequence", new Inputsequence());
-        return new ModelAndView("input");
+        model.addAttribute("inputsequence", new InputSequence());
+        return new ModelAndView("sequence");
     }
 
-    @PostMapping("/input")
-    public ModelAndView resultBack(@ModelAttribute @Valid Inputsequence inputsequence, BindingResult bindingResult,
+    @PostMapping("/sequence")
+    public ModelAndView resultBack(@ModelAttribute @Valid InputSequence inputsequence, BindingResult bindingResult,
             HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            return new ModelAndView("input");
+            return new ModelAndView("sequence");
         }
 
         // is client behind something?
@@ -53,24 +54,24 @@ public class InputsequenceController {
         // inputsequence.setSequence(inputsequence.getSequence());
 
         PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand = new PdbScriptsPipelineRunCommand();
-        List<Alignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
+        List<InputAlignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
 
         // Instant instant = Instant.now ();
         // inputsequence.setTimenow(instant.toString());
         inputsequence.setTimenow(LocalDateTime.now().toString().replace("T", " "));
 
-        List<Residue> residues = new ArrayList<Residue>();
+        List<InputResidue> residues = new ArrayList<InputResidue>();
         int inputAA = 0;
         if (!inputsequence.getResidueNum().equals("")) {
             inputAA = Integer.parseInt(inputsequence.getResidueNum());
         }
 
-        for (Alignment ali : alignments) {
+        for (InputAlignment ali : alignments) {
             // if getResidueNum is empty, then return alignments
             // else, return residues
             if (inputsequence.getResidueNum().equals("")
                     || (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo())) {
-                Residue re = new Residue();
+                InputResidue re = new InputResidue();
                 re.setAlignmentId(ali.getAlignmentId());
                 re.setBitscore(ali.getBitscore());
                 re.setChain(ali.getChain());
@@ -149,6 +150,7 @@ public class InputsequenceController {
         return new ModelAndView("/result", "residues", residues);
     }
 
+    //Original Mapping
     @GetMapping("/api")
     public ModelAndView apiInfo() {
         return new ModelAndView("api");
@@ -164,10 +166,12 @@ public class InputsequenceController {
         return new ModelAndView("statistics");
     }
 
+    
     @GetMapping("/about")
     public ModelAndView aboutInfo() {
         return new ModelAndView("about");
     }
+    
 
     @GetMapping("/contact")
     public ModelAndView contactInfo() {
@@ -176,7 +180,7 @@ public class InputsequenceController {
 
     @GetMapping("/")
     public ModelAndView homeInfo() {
-        return new ModelAndView("about");
+        return new ModelAndView("frontpage");
     }
 
 }

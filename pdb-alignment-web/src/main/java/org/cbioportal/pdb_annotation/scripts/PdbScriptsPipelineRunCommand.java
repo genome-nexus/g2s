@@ -19,8 +19,8 @@ import org.cbioportal.pdb_annotation.util.blast.Hsp;
 import org.cbioportal.pdb_annotation.util.blast.Iteration;
 import org.cbioportal.pdb_annotation.util.blast.IterationHits;
 import org.cbioportal.pdb_annotation.util.blast.Statistics;
-import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.models.Inputsequence;
+import org.cbioportal.pdb_annotation.web.models.InputAlignment;
+import org.cbioportal.pdb_annotation.web.models.InputSequence;
 
 /**
  * Shell-based command running
@@ -48,7 +48,7 @@ public class PdbScriptsPipelineRunCommand {
     /**
      * main steps of init pipeline
      */
-    public List<Alignment> runCommand(Inputsequence inputsequence) {
+    public List<InputAlignment> runCommand(InputSequence inputsequence) {
 
         CommandProcessUtil cu = new CommandProcessUtil();
         ReadConfig rc = ReadConfig.getInstance();
@@ -66,7 +66,7 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("blastp", paralist, inputsequence);
 
         // parse results and output results
-        List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
+        List<InputAlignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
 
         // Clean Up
         paralist = new ArrayList<String>();
@@ -84,7 +84,7 @@ public class PdbScriptsPipelineRunCommand {
      * @param inputsequence
      * @return
      */
-    public void webInput2File(Inputsequence inputsequence) {
+    public void webInput2File(InputSequence inputsequence) {
         try {
             FileUtils.writeStringToFile(new File(ReadConfig.uploaddir + inputsequence.getId() + ".fasta"),
                     inputsequence.getSequence());
@@ -99,7 +99,7 @@ public class PdbScriptsPipelineRunCommand {
      * 
      * @return List<BlastResult>
      */
-    public List<Alignment> parseblastresultsSingle(String currentDir) {
+    public List<InputAlignment> parseblastresultsSingle(String currentDir) {
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
                                                                      // is
@@ -108,7 +108,7 @@ public class PdbScriptsPipelineRunCommand {
                                                                      // dtd from
                                                                      // some
                                                                      // servers
-        List<Alignment> results = new ArrayList<Alignment>();
+        List<InputAlignment> results = new ArrayList<InputAlignment>();
         try {
             log.info("[BLAST] Read blast results from xml file...");
             File blastresults = new File(currentDir + this.db.resultfileName);
@@ -166,8 +166,8 @@ public class PdbScriptsPipelineRunCommand {
      * @param count
      * @return
      */
-    public Alignment parseSingleAlignmentBest(String querytext, Hit hit) {
-        Alignment alignment = new Alignment();
+    public InputAlignment parseSingleAlignmentBest(String querytext, Hit hit) {
+        InputAlignment alignment = new InputAlignment();
 
         alignment.setSeqId(querytext.split("\\s+")[0]);
         alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
@@ -201,13 +201,13 @@ public class PdbScriptsPipelineRunCommand {
      * @param hit
      * @return
      */
-    public List<Alignment> parseSingleAlignment(String querytext, Hit hit, Statistics stat, BlastOutput blast,
+    public List<InputAlignment> parseSingleAlignment(String querytext, Hit hit, Statistics stat, BlastOutput blast,
             int count) {
-        List<Alignment> alignments = new ArrayList<Alignment>();
+        List<InputAlignment> alignments = new ArrayList<InputAlignment>();
 
         List<Hsp> tlist = hit.getHitHsps().getHsp();
         for (Hsp tmp : tlist) {
-            Alignment alignment = new Alignment(count);
+            InputAlignment alignment = new InputAlignment(count);
 
             alignment.setSeqId(querytext.split("\\s+")[0]);
             alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);

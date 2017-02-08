@@ -1,21 +1,16 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-/**
- * 
- * @author Juexin Wang
- *
- */
-public class Residue extends Alignment {
+public class InputResidue extends InputAlignment {
 
-    private int residueNum;
+    private String residueNum;
 
     private String residueName;
 
-    public int getResidueNum() {
+    public String getResidueNum() {
         return residueNum;
     }
 
-    public void setResidueNum(int residueNum) {
+    public void setResidueNum(String residueNum) {
         this.residueNum = residueNum;
     }
 

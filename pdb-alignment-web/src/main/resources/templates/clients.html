@@ -7,20 +7,20 @@
 	<div layout:fragment="content" class="container">
                 <p><h3>Basic Python Program</h3></p>
                 <p>The simple python template program provides a basic set of
-                        functions for querying the Genome Nexus G2S API via the Python
+                        functions for querying the G2S API via the Python
                         platform for scientific computing.</p>
                 <pre>
 #Python 2.7
-#A Simple Python template program reading Genome Nexus G2S APIs
+#A Simple Python template program reading G2S APIs
 
 import requests
 from requests.auth import HTTPDigestAuth
 import json
 
-#Setup API, e.g. http://g2s.genomenexus.org:8081/swagger-ui.html#!/Genome/getPdbResidueByEnsemblIdGenomeUsingGET
-#Can change to any valid URL in Genome Nexus G2S API
+#Setup API, e.g. http://g2s.genomenexus.org/swagger-ui.html#!/Genome/getPdbResidueByEnsemblIdGenomeUsingGET
+#Can change to any valid URL in G2S API
 
-hostName="http://g2s.genomenexus.org:8081/g2s/"
+hostName="http://g2s.genomenexus.org/g2s/"
 apiName="GenomeStructureResidueMapping"
 chromsomeNum="X"
 nuclPosition="66937331"
@@ -70,11 +70,11 @@ git clone https://github.com/swagger-api/swagger-codegen
 cd swagger-codegen
 mvn clean package
 java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate \
--i http://g2s.genomenexus.org:8081/v2/api-docs?group=g2s \
+-i http://g2s.genomenexus.org/v2/api-docs?group=g2s \
 -l python \
 -o {YOURFOLDER/}py_api_client
 
-(if you're on Windows, replace the last command with java -jar modules\swagger-codegen-cli\target\swagger-codegen-cli.jar generate -i http://g2s.genomenexus.org:8081/v2/api-docs?group=g2s  -l python
+(if you're on Windows, replace the last command with java -jar modules\swagger-codegen-cli\target\swagger-codegen-cli.jar generate -i http://g2s.genomenexus.org/v2/api-docs?group=g2s  -l python
 -o {YOURFOLDER\}py_api_client)
 
 
@@ -83,7 +83,7 @@ java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate \
 
 Change the file called configuration.py which in the folder called swagger_client
 
-self.host = "https://g2s.genomenexus.org:8081/" -> self.host = "http://g2s.genomenexus.org:8081/"
+self.host = "https://g2s.genomenexus.org/" -> self.host = "http://g2s.genomenexus.org/"
 
 
 ### pip install (optional)
@@ -128,7 +128,7 @@ except ApiException as e:
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://g2s.genomenexus.org:8081/*
+All URIs are relative to *https://g2s.genomenexus.org/*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------

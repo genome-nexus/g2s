@@ -18,19 +18,22 @@
 		<div class="navbar">
 			<div class="navbar-inner">
 				<a class="brand"
-					th:href="@{/}" href="abount.html">
-					G2S </a>
-				<ul class="nav">
-					<li><a th:href="@{/input}" href="input.html"> SEQUENCE WEB INTERFACE </a></li>
-				</ul>
+					th:href="@{/}" href="frontpage.html">
+					G2S Web Service</a>
 				<ul class="nav">
 					<li><a th:href="@{/api}" href="api.html"> API </a></li>
 				</ul>
+				<ul class="nav">
+					<li><a th:href="@{/sequence}" href="sequence.html"> SEQUENCE WEB INTERFACE </a></li>
+				</ul>				
 				<ul class="nav">
 					<li><a th:href="@{/clients}" href="clients.html"> CLIENTS </a></li>
 				</ul>
 				<ul class="nav">
 					<li><a th:href="@{/statistics}" href="statistics.html"> STATISTICS </a></li>
+				</ul>
+				<ul class="nav">
+					<li><a th:href="@{/about}" href="about.html"> ABOUT </a></li>
 				</ul>
 				<ul class="nav">
 					<li><a th:href="@{/contact}" href="contact.html"> CONTACT </a></li>
@@ -43,7 +46,7 @@
 		</div>
 		<h1 layout:fragment="header">Layout</h1>
 		<div layout:fragment="content">Fake content</div>
-		<div layout:fragment="footer"><footer><p>© 2017 Genome Nexus G2S</p></footer></div>
+		<div layout:fragment="footer"><footer><p>© 2017 G2S Web Service</p></footer></div>
 	</div>
 
 

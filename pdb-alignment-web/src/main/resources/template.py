@@ -5,10 +5,10 @@ import requests
 from requests.auth import HTTPDigestAuth
 import json
 
-#Setup API, e.g. g2s.genomenexus.org:8081/swagger-ui.html#!/Genome/GenomeStructureResidueMappingQuery
+#Setup API, e.g. http://g2s.genomenexus.org/swagger-ui.html#!/Genome/getPdbResidueByEnsemblIdGenomeUsingGET
 #Can change to any valid URL in Genome Nexus G2S API
 
-hostName="http://g2s.genomenexus.org:8081/g2s/"
+hostName="http://g2s.genomenexus.org/g2s/"
 apiName="GenomeStructureResidueMappingQuery?chromosomeNum=" 
 chromsomeNum="X"  
 nuclPosition="66937331"
