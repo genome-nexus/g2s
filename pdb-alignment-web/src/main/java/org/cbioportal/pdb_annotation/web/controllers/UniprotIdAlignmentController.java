@@ -47,16 +47,13 @@ public class UniprotIdAlignmentController {
     private UniprotRepository uniprotRepository;
     @Autowired
     private SeqIdAlignmentController seqController;
-    
 
     // Query from UniprotIdIso
     @RequestMapping(value = "/UniprotIsoformStructureMapping/{uniprotId}/{isoform}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by UniprotId and Isofrom")
     public List<Alignment> getPdbAlignmentByUniprotIdIso(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
-            @PathVariable String uniprotId,
-            @ApiParam(required = true, value = "Input Isoform e.g. 1")
-            @PathVariable String isoform) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform) {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
             return alignmentRepository.findBySeqId(uniprotlist.get(0).getSeqId());
@@ -68,10 +65,8 @@ public class UniprotIdAlignmentController {
     @RequestMapping(value = "/UniprotIsoformRecognition/{uniprotId}/{isoform}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether Isoform of UniprotId Exists")
     public boolean getExistedUniprotIdIsoinAlignment(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
-            @PathVariable String uniprotId,
-            @ApiParam(required = true, value = "Input Isoform e.g. 1")
-            @PathVariable String isoform) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform) {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
             return geneSequenceRepository.findBySeqId(uniprotlist.get(0).getSeqId()).size() != 0;
@@ -80,16 +75,12 @@ public class UniprotIdAlignmentController {
         }
     }
 
-    
     @RequestMapping(value = "/UniprotIsoformResidueMapping/{uniprotId}/{isoform}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get Residue Mapping by UniprotId, Isofrom and Residue Position")
     public List<Residue> getPdbResidueByUniprotIdIso(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
-            @PathVariable String uniprotId,
-            @ApiParam(required = true, value = "Input Isoform e.g. 1")
-            @PathVariable String isoform,
-            @ApiParam(required = true, value = "Input Residue Position e.g. 12")
-            @PathVariable String position) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
@@ -99,12 +90,11 @@ public class UniprotIdAlignmentController {
         }
     }
 
-    // Query from UniprotId    
+    // Query from UniprotId
     @RequestMapping(value = "/UniprotStructureMapping/{uniprotId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by UniprotId")
     public List<Alignment> getPdbAlignmentByUniprotId(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
-            @PathVariable String uniprotId) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId) {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         for (Uniprot entry : uniprotList) {
@@ -113,12 +103,10 @@ public class UniprotIdAlignmentController {
         return outList;
     }
 
-    
     @RequestMapping(value = "/UniprotRecognition/{uniprotId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether UniprotId Exists")
     public boolean getExistedUniprotIdinAlignment(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
-            @PathVariable String uniprotId) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
@@ -128,14 +116,11 @@ public class UniprotIdAlignmentController {
         return outList.size() != 0;
     }
 
-    
     @RequestMapping(value = "/UniprotResidueMapping/{uniprotId}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get Residue Mapping by UniprotId and Residue Position")
     public List<Residue> getPdbResidueByUniprotId(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
-            @PathVariable String uniprotId,
-            @ApiParam(required = true, value = "Input Residue Position e.g. 12")
-            @PathVariable String position) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Residue> outList = new ArrayList<Residue>();

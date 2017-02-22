@@ -17,6 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Quote {
 
+    /*
+     * Ignore other parts, only left the essential one
+     * 
     private String allele_string;
     private String assembly_name;
     private List<Colocated_variants> colocated_variants;
@@ -27,11 +30,13 @@ public class Quote {
     private String seq_region_name;
     private long start;
     private int strand;
+    */
     private List<Transcript_consequences> transcript_consequences;
 
     public Quote() {
     }
-
+    
+    /*
     public String getAllele_string() {
         return allele_string;
     }
@@ -111,6 +116,7 @@ public class Quote {
     public void setStrand(int strand) {
         this.strand = strand;
     }
+    */
 
     public List<Transcript_consequences> getTranscript_consequences() {
         return transcript_consequences;
@@ -120,12 +126,20 @@ public class Quote {
         this.transcript_consequences = transcript_consequences;
     }
 
+    /*
     @Override
     public String toString() {
         return "Quote [allele_string=" + allele_string + ", assembly_name=" + assembly_name + ", colocated_variants="
                 + colocated_variants + ", end=" + end + ", id=" + id + ", input=" + input + ", most_severe_consequence="
                 + most_severe_consequence + ", seq_region_name=" + seq_region_name + ", start=" + start + ", strand="
                 + strand + ", transcript_consequences=" + transcript_consequences + "]";
+    }
+    */
+    
+    
+    @Override
+    public String toString() {
+        return "Quote [transcript_consequences=" + transcript_consequences + "]";
     }
 
 }

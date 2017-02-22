@@ -1,5 +1,6 @@
 package org.cbioportal.pdb_annotation.web.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
@@ -48,14 +49,14 @@ public class EnsemblIdAlignmentController {
     private EnsemblRepository ensemblRepository;
     @Autowired
     private SeqIdAlignmentController seqController;
-    
-    // Query from EnsemblId
-    @RequestMapping(value = "/EnsemblStructureMapping/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+
+    // Query from EnsemblId, As EnsemblId is a unique Id, it only contains one
+    // results from seq_id, which is also unique
+    @RequestMapping(value = "/EnsemblStructureMappingEnsemblId/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by EnsemblId")
     public List<Alignment> getPdbAlignmentByEnsemblId(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000489609.1")
-            @PathVariable String ensemblId) {
-        
+            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000484409.1") @PathVariable String ensemblId) {
+
         System.out.println(ensemblId);
         List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
         System.out.println(ensembllist.size());
@@ -64,15 +65,13 @@ public class EnsemblIdAlignmentController {
         } else {
             return null;
         }
-        
+
     }
-    
-    
-    @RequestMapping(value = "/EnsemblRecognition/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+
+    @RequestMapping(value = "/EnsemblRecognitionEnsemblId/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether EnsemblId exists")
     public boolean getExistedEnsemblIdinAlignment(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000489609.1")
-            @PathVariable String ensemblId) {
+            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000484409.1") @PathVariable String ensemblId) {
         List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
         if (ensembllist.size() == 1) {
             return geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size() != 0;
@@ -81,14 +80,11 @@ public class EnsemblIdAlignmentController {
         }
     }
 
-
-    @RequestMapping(value = "/EnsemblResidueMapping/{ensemblId:.+}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/EnsemblResidueMappingEnsemblId/{ensemblId:.+}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get Residue Mapping by EnsemblId and Residue Number")
     public List<Residue> getPdbResidueByEnsemblId(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000489609.1")
-            @PathVariable String ensemblId,
-            @ApiParam(required = true, value = "Input Residue Position e.g. 300")
-            @PathVariable String position) {
+            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000484409.1") @PathVariable String ensemblId,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
 
         List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
 
@@ -98,6 +94,103 @@ public class EnsemblIdAlignmentController {
             return null;
         }
     }
-    
+
+    // Query from EnsemblGene, these are not unique, so the return results are
+    // multiple, different with the former uniqueID
+    @RequestMapping(value = "/EnsemblStructureMappingEnsemblGene/{ensemblGene:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by EnsemblGene")
+    public List<Alignment> getPdbAlignmentByEnsemblGene(
+            @ApiParam(required = true, value = "Input Ensembl Gene e.g. ENSG00000141510.16") @PathVariable String ensemblGene) {
+        System.out.println(ensemblGene);
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(ensemblGene);
+        System.out.println(ensembllist.size());
+        if (ensembllist.size() >= 1) {
+            List<Alignment> outList = new ArrayList<Alignment>();
+            for (Ensembl en : ensembllist) {
+                outList.addAll(alignmentRepository.findBySeqId(en.getSeqId()));
+            }
+            return outList;
+        } else {
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/EnsemblRecognitionEnsemblGene/{ensemblGene:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Whether EnsemblGene exists")
+    public boolean getExistedEnsemblGeneinAlignment(
+            @ApiParam(required = true, value = "Input Ensembl Gene e.g. ENSG00000141510.16") @PathVariable String ensemblGene) {
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(ensemblGene);
+        if (ensembllist.size() >= 1) {
+            return geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size() != 0;
+        } else {
+            return false;
+        }
+    }
+
+    @RequestMapping(value = "/EnsemblResidueMappingEnsemblGene/{ensemblGene:.+}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get Residue Mapping by EnsemblGene and Residue Number")
+    public List<Residue> getPdbResidueByEnsemblGene(
+            @ApiParam(required = true, value = "Input Ensembl Gene e.g. ENSG00000141510.16") @PathVariable String ensemblGene,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(ensemblGene);
+        if (ensembllist.size() >= 1) {
+            List<Residue> outList = new ArrayList<Residue>();
+            for (Ensembl en : ensembllist) {
+                outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId(), position));
+            }
+            return outList;
+        } else {
+            return null;
+        }
+    }
+
+    // Query from EnsemblTranscript, these are not unique, so the return results
+    // are multiple, different with the former uniqueID
+    @RequestMapping(value = "/EnsemblStructureMappingEnsemblTranscript/{ensemblTranscript:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by EnsemblTranscript")
+    public List<Alignment> getPdbAlignmentByEnsemblTranscript(
+            @ApiParam(required = true, value = "Input Ensembl Transcript e.g. ENST00000504290.5") @PathVariable String ensemblTranscript) {
+        System.out.println(ensemblTranscript);
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(ensemblTranscript);
+        System.out.println(ensembllist.size());
+        if (ensembllist.size() >= 1) {
+            List<Alignment> outList = new ArrayList<Alignment>();
+            for (Ensembl en : ensembllist) {
+                outList.addAll(alignmentRepository.findBySeqId(en.getSeqId()));
+            }
+            return outList;
+        } else {
+            return null;
+        }
+    }
+
+    @RequestMapping(value = "/EnsemblRecognitionEnsemblTranscript/{ensemblTranscript:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Whether EnsemblTranscript exists")
+    public boolean getExistedEnsemblTranscriptinAlignment(
+            @ApiParam(required = true, value = "Input Ensembl Transcript e.g. ENST00000504290.5") @PathVariable String ensemblTranscript) {
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(ensemblTranscript);
+        if (ensembllist.size() >= 1) {
+            return geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size() != 0;
+        } else {
+            return false;
+        }
+    }
+
+    @RequestMapping(value = "/EnsemblResidueMappingEnsemblTranscript/{ensemblTranscript:.+}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get Residue Mapping by EnsemblTranscript and Residue Number")
+    public List<Residue> getPdbResidueByEnsemblTranscript(
+            @ApiParam(required = true, value = "Input Ensembl Transcript e.g. ENST00000504290.5") @PathVariable String ensemblTranscript,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(ensemblTranscript);
+        if (ensembllist.size() >= 1) {
+            List<Residue> outList = new ArrayList<Residue>();
+            for (Ensembl en : ensembllist) {
+                outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId(), position));
+            }
+            return outList;
+        } else {
+            return null;
+        }
+    }
 
 }
