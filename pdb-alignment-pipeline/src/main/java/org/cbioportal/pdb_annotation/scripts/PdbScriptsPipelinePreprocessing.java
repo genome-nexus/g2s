@@ -338,7 +338,7 @@ public class PdbScriptsPipelinePreprocessing {
                 listNewCont = listNewCont + pu.readPDB2Results(pdbName);
             }
             FileUtils.writeStringToFile(addFastaFile, listNewCont);
-            log.info("Write PDB sequences to"+addFastaFile+"...Done");
+            log.info("Write PDB sequences to" + addFastaFile + "...Done");
         } catch (Exception ex) {
             log.error("[SHELL] Error in fetching weekly updates: " + ex.getMessage());
             ex.printStackTrace();
@@ -389,33 +389,65 @@ public class PdbScriptsPipelinePreprocessing {
             ex.printStackTrace();
         }
     }
-    
-    
-    public void releasTagUpdate(String releaseResultFilename, String propertyFilename){
-        try{
+
+    /**
+     * Obsolete, use Thymeleaf, but does not start automatically
+     * 
+     * @param releaseResultFilename
+     * @param propertyFilename
+     */
+    /*
+     * public void releasTagUpdate(String releaseResultFilename, String
+     * propertyFilename){ try{ log.info(
+     * "[Update] Generate releaseTag and statistics for update ..."); boolean
+     * tag = true; List<String> contents= FileUtils.readLines(new
+     * File(releaseResultFilename)); if(contents.size()!=8){ tag = false; }
+     * 
+     * String outstr = ""; outstr = outstr + "updateDate=" + contents.get(1) +
+     * "\r\n"; outstr = outstr + "pdbEntries=" + contents.get(3) + "\r\n";
+     * outstr = outstr + "pdbUniqueEntries=" + contents.get(5) + "\r\n"; outstr
+     * = outstr + "alignmentEntries=" + contents.get(7) + "\r\n";
+     * 
+     * FileUtils.writeStringToFile(new File(propertyFilename), outstr);
+     * 
+     * if(!tag){ log.error(
+     * "[Update] Update Error: Could not Successfully generate releaseTag from "
+     * + releaseResultFilename +" to "+ propertyFilename +", Please Check"); }
+     * 
+     * }catch(Exception ex){ log.error(
+     * "[Update] Update Error: Could not Successfully generate releaseTag from "
+     * + releaseResultFilename +" to "+ propertyFilename +", Please Check");
+     * log.error(ex.getMessage()); ex.printStackTrace(); } }
+     */
+
+    public void releasTagUpdateSQL(String releaseResultFilename, String sqlFilename) {
+        try {
             log.info("[Update] Generate releaseTag and statistics for update ...");
             boolean tag = true;
-            List<String> contents= FileUtils.readLines(new File(releaseResultFilename));
-            if(contents.size()!=8){
+            List<String> contents = FileUtils.readLines(new File(releaseResultFilename));
+            if (contents.size() != 8) {
                 tag = false;
             }
-            
-            String outstr = "";
-            outstr = outstr + "updateDate=" + contents.get(1) + "\r\n";
-            outstr = outstr + "pdbEntries=" + contents.get(3) + "\r\n";
-            outstr = outstr + "pdbUniqueEntries=" + contents.get(5) + "\r\n";
-            outstr = outstr + "alignmentEntries=" + contents.get(7) + "\r\n";
-            
-            FileUtils.writeStringToFile(new File(propertyFilename), outstr);
-            
-            if(!tag){
-                log.error("[Update] Update Error: Could not Successfully generate releaseTag from "+ releaseResultFilename +" to "+ propertyFilename +", Please Check");
+
+            String outstr = "SET autocommit = 0;\nstart transaction;\n";
+            outstr = outstr
+                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`) VALUES('"
+                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7)
+                    + "');\n";
+            outstr = outstr + "commit;\n";
+
+            FileUtils.writeStringToFile(new File(sqlFilename), outstr);
+
+            if (!tag) {
+                log.error("[Update] Update Error: Could not Successfully generate releaseTag from "
+                        + releaseResultFilename + " to " + sqlFilename + ", Please Check");
             }
-            
-        }catch(Exception ex){
-            log.error("[Update] Update Error: Could not Successfully generate releaseTag from "+ releaseResultFilename +" to "+ propertyFilename +", Please Check");
+
+        } catch (Exception ex) {
+            log.error("[Update] Update Error: Could not Successfully generate releaseTag from " + releaseResultFilename
+                    + " to " + sqlFilename + ", Please Check");
             log.error(ex.getMessage());
-            ex.printStackTrace();           
+            ex.printStackTrace();
         }
     }
 }

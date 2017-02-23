@@ -72,12 +72,11 @@ public class PdbScriptsPipelineRunCommand {
      * main steps of init pipeline
      */
     public void runInit() {
-        
+
         this.db = new BlastDataBase(ReadConfig.pdbSeqresFastaFile);
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
-          
 
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
@@ -87,21 +86,20 @@ public class PdbScriptsPipelineRunCommand {
         log.info(
                 "[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();
-        pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace
-         + ReadConfig.pdbSeqresDownloadFile);
+        pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",
+                ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         // pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace
         // + ReadConfig.pdbSeqresDownloadFile);
-        //pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
-        
-        
+        // pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace +
+        // ReadConfig.pdbSeqresDownloadFile);
+
         // Step 2:
         log.info("********************[STEP 2]********************");
-        log.info(
-                "[Processing] Preprocess PDB sequence and sequence files");
+        log.info("[Processing] Preprocess PDB sequence and sequence files");
         // Select only PDB files of proteins, parse PDB files to sequences
         preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile,
                 ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
-        
+
         log.info("********************[STEP 3]********************");
         log.info("[Download] Download and unzip Ensembl, Uniprot and Isoform");
         paralist = new ArrayList<String>();
@@ -151,13 +149,12 @@ public class PdbScriptsPipelineRunCommand {
                 + ReadConfig.isoformWholeSource.substring(ReadConfig.isoformWholeSource.lastIndexOf("/") + 1));
         paralist.add(ReadConfig.workspace + ReadConfig.isoformDownloadFile);
         cu.runCommand("gunzip", paralist);
-        
-        
+
         // Step 4:
         log.info("********************[STEP 4]********************");
-        log.info(
-                "[Processing] Incorprate ensembl, swissprot, trembl and isoform togethe");        
-        // This step takes memory, then split into small files to save the running memory
+        log.info("[Processing] Incorprate ensembl, swissprot, trembl and isoform togethe");
+        // This step takes memory, then split into small files to save the
+        // running memory
         HashMap<String, String> uniqSeqHm = new HashMap<String, String>();
         uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.ensemblDownloadFile, uniqSeqHm);
         uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, uniqSeqHm);
@@ -167,7 +164,7 @@ public class PdbScriptsPipelineRunCommand {
 
         this.seqFileCount = preprocess.preprocessGENEsequences(uniqSeqHm,
                 ReadConfig.workspace + ReadConfig.seqFastaFile);
-       
+
         // Step 5:
         log.info("********************[STEP 5]********************");
         log.info("[PrepareBlast] Build the database by makeblastdb");
@@ -176,7 +173,6 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-        
         // Step 6:
         log.info("********************[STEP 6]********************");
         log.info("[Blast] blastp ensembl genes against pdb (Warning: This step takes time)");
@@ -195,23 +191,20 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(ReadConfig.workspace + this.db.dbName);
             cu.runCommand("blastp", paralist);
         }
-        
+
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
-        
-        
+
         // Step 7:
         log.info("********************[STEP 7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace, this.seqFileCount);
 
-        
         // Step 8:
         log.info("********************[STEP 8]********************");
         log.info("[SQL] Create data schema");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
-        
 
         // Step 9:
         log.info("********************[STEP 9]********************");
@@ -219,7 +212,6 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
         cu.runCommand("mysql", paralist);
-        
 
         // Step 10:
         log.info("********************[STEP 10]********************");
@@ -274,15 +266,12 @@ public class PdbScriptsPipelineRunCommand {
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         this.seqFileCount = Integer.parseInt(ReadConfig.updateSeqFastaFileNum);
-        
-        
 
         // Step 1: Set dateVersion of updating and create a folder as YYYYMMDD
         // under the main folder
         String dateVersion = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
         String currentDir = ReadConfig.workspace + dateVersion + "/";
 
-        
         // Step 2: Download and prepare new, obsolete and modified PDB in weekly
         // update from PDB
         List<String> listOld = preprocess.prepareUpdatePDBFile(currentDir, ReadConfig.pdbSeqresDownloadFile,
@@ -297,7 +286,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-        // Step 4: blastp ensembl genes against pdb; Use splited FASTA results 
+        // Step 4: blastp ensembl genes against pdb; Use splited FASTA results
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
@@ -314,7 +303,8 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("blastp", paralist);
         }
 
-        // Step 4: Obsolete: blastp ensembl genes against pdb; Use one input, drawback is too huge xml results
+        // Step 4: Obsolete: blastp ensembl genes against pdb; Use one input,
+        // drawback is too huge xml results
         // The problem is too huge results for one blast results file
         // paralist = new ArrayList<String>();
         // paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile);
@@ -328,10 +318,10 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + ReadConfig.sqlDeleteFile);
         cu.runCommand("mysql", paralist);
 
-        
-        // Step 6: Create and insert SQL statements of new and modified alignments; Use splited FASTA results
+        // Step 6: Create and insert SQL statements of new and modified
+        // alignments; Use splited FASTA results
         parseprocess.parse2sql(false, currentDir, this.seqFileCount);
-        
+
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
@@ -361,20 +351,22 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
-        
-        
+
         // Step 8: Create release tags
         // Change messages.properties in web module
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
         paralist.add(currentDir + ReadConfig.releaseTagResult);
         cu.runCommand("releaseTag", paralist);
-        
-        preprocess.releasTagUpdate(currentDir + ReadConfig.releaseTagResult, ReadConfig.updateWebProperties);
 
-        
+        // Use MYSQL to update
+        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
+                currentDir + ReadConfig.updateStatisticsSQL);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
+        cu.runCommand("mysql", paralist);
+
         // Step 9: Clean up
-
         if (ReadConfig.saveSpaceTag.equals("true")) {
             log.info("[PIPELINE] Start cleaning up in filesystem");
 
@@ -431,7 +423,6 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + ReadConfig.pdbSeqresFastaFile);
             cu.runCommand("gzip", paralist);
         }
-        
 
     }
 }

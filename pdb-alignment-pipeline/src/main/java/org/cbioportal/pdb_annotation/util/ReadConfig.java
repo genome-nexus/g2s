@@ -48,7 +48,7 @@ public class ReadConfig {
     public static String dbNameScript;
     public static String releaseTag;
     public static String releaseTagResult;
-    public static String updateWebProperties;
+    public static String updateStatisticsSQL;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -130,7 +130,7 @@ public class ReadConfig {
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
             ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
-            ReadConfig.updateWebProperties = prop.getProperty("update.web.properties").trim();
+            ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
@@ -172,11 +172,11 @@ public class ReadConfig {
 
     
     public static String getUpdateWebProperties() {
-        return updateWebProperties;
+        return updateStatisticsSQL;
     }
 
     public static void setUpdateWebProperties(String updateWebProperties) {
-        ReadConfig.updateWebProperties = updateWebProperties;
+        ReadConfig.updateStatisticsSQL = updateWebProperties;
     }
 
     public static String getReleaseTagResult() {

@@ -6,6 +6,7 @@ drop table IF EXISTS uniprot_entry;
 drop table IF EXISTS ensembl_entry;
 drop table IF EXISTS pdb_entry;
 drop table IF EXISTS seq_entry;
+drop table IF EXISTS update_record;
 
 CREATE TABLE `seq_entry`(
     `SEQ_ID` int(255) NOT NULL,
@@ -61,6 +62,15 @@ CREATE TABLE `pdb_seq_alignment` (
   KEY(`PDB_ID`, `CHAIN`, `PDB_SEG`),
   FOREIGN KEY(`PDB_NO`) REFERENCES `pdb_entry` (`PDB_NO`),
   FOREIGN KEY(`SEQ_ID`) REFERENCES `seq_entry` (`SEQ_ID`)
+);
+
+CREATE TABLE `update_record` (
+  `ID` int NOT NULL AUTO_INCREMENT,
+  `UPDATE_DATE` DATE,
+  `SEG_NUM` int(255),
+  `PDB_NUM` int(255),
+  `ALIGNMENT_NUM` int(255),
+  PRIMARY KEY(`ID`)
 );
 
 DROP PROCEDURE IF EXISTS `InsertUpdate`;
