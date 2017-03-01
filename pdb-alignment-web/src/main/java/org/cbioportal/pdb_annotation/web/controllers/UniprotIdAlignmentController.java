@@ -7,6 +7,7 @@ import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.GeneSequenceRepository;
 import org.cbioportal.pdb_annotation.web.domain.UniprotRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
+import org.cbioportal.pdb_annotation.web.models.Ensembl;
 import org.cbioportal.pdb_annotation.web.models.Residue;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class UniprotIdAlignmentController {
     @RequestMapping(value = "/UniprotIsoformStructureMapping/{uniprotId}/{isoform}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by UniprotId and Isofrom")
     public List<Alignment> getPdbAlignmentByUniprotIdIso(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId,
             @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform) {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
@@ -65,7 +66,7 @@ public class UniprotIdAlignmentController {
     @RequestMapping(value = "/UniprotIsoformRecognition/{uniprotId}/{isoform}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether Isoform of UniprotId Exists")
     public boolean getExistedUniprotIdIsoinAlignment(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId,
             @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform) {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
@@ -78,7 +79,7 @@ public class UniprotIdAlignmentController {
     @RequestMapping(value = "/UniprotIsoformResidueMapping/{uniprotId}/{isoform}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get Residue Mapping by UniprotId, Isofrom and Residue Position")
     public List<Residue> getPdbResidueByUniprotIdIso(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId,
             @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform,
             @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
 
@@ -89,12 +90,38 @@ public class UniprotIdAlignmentController {
             return new ArrayList<Residue>();
         }
     }
+    
+    @RequestMapping(value = "/UniprotIsoformPdbStructureMappingUniprotId/{uniprotId:.+}/{isoform}/{pdbId}/{chain}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by UniprotId, Isoform, PdbId and Chain")
+    public List<Alignment> getPdbAlignmentByUniprotIdIso(
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 9") @PathVariable String isoform,
+            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdbId,
+            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain) {
+
+        List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
+        if(uniprotlist.size() == 1){
+            List<Alignment> list =alignmentRepository.findBySeqId(uniprotlist.get(0).getSeqId());
+            List<Alignment> outlist = new ArrayList<Alignment>();
+            
+            for(Alignment ali:list){
+                String pd = ali.getPdbId().toLowerCase();
+                String ch = ali.getChain().toLowerCase();
+                if(pd.equals(pdbId.toLowerCase()) && ch.equals(chain.toLowerCase())){
+                    outlist.add(ali);
+                }
+            }
+            return outlist;           
+        }else{
+            return null;
+        }        
+    }
 
     // Query from UniprotId
     @RequestMapping(value = "/UniprotStructureMapping/{uniprotId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by UniprotId")
     public List<Alignment> getPdbAlignmentByUniprotId(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId) {
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId) {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         for (Uniprot entry : uniprotList) {
@@ -106,7 +133,7 @@ public class UniprotIdAlignmentController {
     @RequestMapping(value = "/UniprotRecognition/{uniprotId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether UniprotId Exists")
     public boolean getExistedUniprotIdinAlignment(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId) {
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
@@ -119,7 +146,7 @@ public class UniprotIdAlignmentController {
     @RequestMapping(value = "/UniprotResidueMapping/{uniprotId}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get Residue Mapping by UniprotId and Residue Position")
     public List<Residue> getPdbResidueByUniprotId(
-            @ApiParam(required = true, value = "Input uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId,
             @ApiParam(required = true, value = "Input Residue Position e.g. 100") @PathVariable String position) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
@@ -128,6 +155,31 @@ public class UniprotIdAlignmentController {
             outList.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId(), position));
         }
         return outList;
+    }
+    
+    @RequestMapping(value = "/UniprotPdbStructureMappingUniprotId/{uniprotId:.+}/{pdbId}/{chain}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by UniprotId, PdbId and Chain")
+    public List<Alignment> getPdbAlignmentByUniprotId(
+            @ApiParam(required = true, value = "Input Uniprot Id e.g. P04637") @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdbId,
+            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain) {
+
+        List<Uniprot> uniprotlist = uniprotRepository.findByUniprotId(uniprotId);
+        if(uniprotlist.size() > 0){
+            List<Alignment> list =alignmentRepository.findBySeqId(uniprotlist.get(0).getSeqId());
+            List<Alignment> outlist = new ArrayList<Alignment>();
+            
+            for(Alignment ali:list){
+                String pd = ali.getPdbId().toLowerCase();
+                String ch = ali.getChain().toLowerCase();
+                if(pd.equals(pdbId.toLowerCase()) && ch.equals(chain.toLowerCase())){
+                    outlist.add(ali);
+                }
+            }
+            return outlist;           
+        }else{
+            return null;
+        }        
     }
 
 }

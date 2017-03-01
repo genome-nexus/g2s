@@ -94,6 +94,32 @@ public class EnsemblIdAlignmentController {
             return null;
         }
     }
+    
+    @RequestMapping(value = "/EnsemblPdbStructureMappingEnsemblId/{ensemblId:.+}/{pdbId}/{chain}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by EnsemblId, PdbId and Chain")
+    public List<Alignment> getPdbAlignmentByEnsemblId(
+            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000484409.1") @PathVariable String ensemblId,
+            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdbId,
+            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain) {
+
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
+        if(ensembllist.size() == 1){
+            List<Alignment> list =alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());
+            List<Alignment> outlist = new ArrayList<Alignment>();
+            
+            for(Alignment ali:list){
+                String pd = ali.getPdbId().toLowerCase();
+                String ch = ali.getChain().toLowerCase();
+                if(pd.equals(pdbId.toLowerCase()) && ch.equals(chain.toLowerCase())){
+                    outlist.add(ali);
+                }
+            }
+            return outlist;           
+        }else{
+            return null;
+        }
+        
+    }
 
     // Query from EnsemblGene, these are not unique, so the return results are
     // multiple, different with the former uniqueID
@@ -143,6 +169,33 @@ public class EnsemblIdAlignmentController {
             return null;
         }
     }
+    
+    
+    @RequestMapping(value = "/EnsemblPdbStructureMappingEnsemblGene/{ensemblGene:.+}/{pdbId}/{chain}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by EnsemblGene, PdbId and Chain")
+    public List<Alignment> getPdbAlignmentByEnsemblGene(
+            @ApiParam(required = true, value = "Input Ensembl Gene e.g. ENSG00000141510.16") @PathVariable String ensemblGene,
+            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdbId,
+            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain) {
+
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(ensemblGene);
+        if(ensembllist.size()>0){
+            List<Alignment> list = alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());
+            List<Alignment> outlist = new ArrayList<Alignment>();
+            
+            for(Alignment ali:list){
+                String pd = ali.getPdbId().toLowerCase();
+                String ch = ali.getChain().toLowerCase();
+                if(pd.equals(pdbId.toLowerCase()) && ch.equals(chain.toLowerCase())){
+                    outlist.add(ali);
+                }
+            }
+            return outlist;
+        }
+        else{
+            return null;
+        }
+    }
 
     // Query from EnsemblTranscript, these are not unique, so the return results
     // are multiple, different with the former uniqueID
@@ -189,6 +242,32 @@ public class EnsemblIdAlignmentController {
             }
             return outList;
         } else {
+            return null;
+        }
+    }
+    
+    @RequestMapping(value = "/EnsemblPdbStructureMappingEnsemblTranscript/{ensemblTranscript:.+}/{pdbId}/{chain}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by EnsemblTranscript, PdbId and Chain")
+    public List<Alignment> getPdbAlignmentByEnsemblTranscript(
+            @ApiParam(required = true, value = "Input Ensembl Transcript e.g. ENST00000504290.5") @PathVariable String ensemblTranscript,
+            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdbId,
+            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain) {
+
+        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(ensemblTranscript);
+        if(ensembllist.size()>0){
+            List<Alignment> list = alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());
+            List<Alignment> outlist = new ArrayList<Alignment>();
+            
+            for(Alignment ali:list){
+                String pd = ali.getPdbId().toLowerCase();
+                String ch = ali.getChain().toLowerCase();
+                if(pd.equals(pdbId.toLowerCase()) && ch.equals(chain.toLowerCase())){
+                    outlist.add(ali);
+                }
+            }
+            return outlist;
+        }
+        else{
             return null;
         }
     }
