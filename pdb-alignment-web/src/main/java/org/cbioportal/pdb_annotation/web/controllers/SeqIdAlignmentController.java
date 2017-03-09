@@ -49,6 +49,14 @@ public class SeqIdAlignmentController {
             @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
         return alignmentRepository.findBySeqId(seqId);
     }
+    
+    
+    @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by Protein SeqId")
+    public List<Alignment> getPdbAlignmentByGeneSequenceIdPOST(
+            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
+        return alignmentRepository.findBySeqId(seqId);
+    }
 
     @RequestMapping(value = "/GeneSeqRecognition/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether Protein SeqId Exists")
