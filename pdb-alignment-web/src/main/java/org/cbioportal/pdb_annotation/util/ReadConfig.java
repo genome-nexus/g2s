@@ -20,7 +20,8 @@ public class ReadConfig {
     public static String uploaddir;
     public static String pdbSeqresFastaFile;
     public static String blastParaThreads;
-    public static String gnApiUrl;
+    public static String gnApiEnsemblUrl;
+    public static String gnApiGnUrl;
 
     public static boolean isPositiveInteger(String str) {
         return str.matches("\\d+"); // match a number with positive integer.
@@ -54,7 +55,8 @@ public class ReadConfig {
             ReadConfig.uploaddir = prop.getProperty("uploaddir").trim();
             ReadConfig.pdbSeqresFastaFile = prop.getProperty("pdb_seqres_fasta_file").trim();
             ReadConfig.blastParaThreads = prop.getProperty("blast_para_threads").trim();
-            ReadConfig.gnApiUrl = prop.getProperty("gn.api.url").trim();
+            ReadConfig.gnApiEnsemblUrl = prop.getProperty("gn.api.ensembl.url").trim();
+            ReadConfig.gnApiGnUrl = prop.getProperty("gn.api.genomenexus.url").trim();
 
         } catch (Exception ex) {
             log.error("[CONFIG] Error in Reading application.properties");
@@ -117,12 +119,21 @@ public class ReadConfig {
         ReadConfig.blastParaThreads = blastParaThreads;
     }
     
-    public static String getGnApiUrl() {
-        return gnApiUrl;
+    public static String getGnApiEnsemblUrl() {
+        return gnApiEnsemblUrl;
     }
 
-    public static void setGnApiUrl(String gnApiUrl) {
-        ReadConfig.gnApiUrl = gnApiUrl;
+    public static void setGnApiEnsemblUrl(String gnApiEnsemblUrl) {
+        ReadConfig.gnApiEnsemblUrl = gnApiEnsemblUrl;
     }
 
+    public static String getGnApiGnUrl() {
+        return gnApiGnUrl;
+    }
+
+    public static void setGnApiGnUrl(String gnApiGnUrl) {
+        ReadConfig.gnApiGnUrl = gnApiGnUrl;
+    }
+
+    
 }

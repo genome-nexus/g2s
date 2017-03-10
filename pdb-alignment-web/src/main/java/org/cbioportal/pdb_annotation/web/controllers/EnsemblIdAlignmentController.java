@@ -53,6 +53,8 @@ public class EnsemblIdAlignmentController {
     private SeqIdAlignmentController seqController;
 
     // Query from EnsemblId, As EnsemblId is a unique Id, it only contains one
+    // Now it can support multiple support, for there are too many results, only EnsemblId now could support
+    // ENSPXXXX and ENSPXXXX.1
     // results from seq_id, which is also unique
     @RequestMapping(value = "/EnsemblStructureMappingEnsemblId/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by EnsemblId")
@@ -69,26 +71,6 @@ public class EnsemblIdAlignmentController {
         }
         return outlist;
     }
-    
-    /*
-    //Old: Can be delete later: Only find exactly EnsemblID: ENSPXXX.1
-    // Query from EnsemblId, As EnsemblId is a unique Id, it only contains one
-    // results from seq_id, which is also unique
-    @RequestMapping(value = "/EnsemblStructureMappingEnsemblId/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by EnsemblId")
-    public List<Alignment> getPdbAlignmentByEnsemblId(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000484409.1") @PathVariable String ensemblId) {
-
-        System.out.println(ensemblId);
-        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
-        System.out.println(ensembllist.size());
-        if (ensembllist.size() == 1) {
-            return alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());
-        } else {
-            return null;
-        }
-    }
-    */
 
     @RequestMapping(value = "/EnsemblRecognitionEnsemblId/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Whether EnsemblId exists")

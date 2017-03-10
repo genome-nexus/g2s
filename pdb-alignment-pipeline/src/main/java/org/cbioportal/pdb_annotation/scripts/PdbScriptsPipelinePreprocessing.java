@@ -290,7 +290,7 @@ public class PdbScriptsPipelinePreprocessing {
                     } else {// uniprot
                         String[] strarrayQQ = strarrayQ[i].split("_");
                         outputlist
-                                .add("INSERT IGNORE INTO `uniprot_entry`(`UNIPROT_ID_ISO`,`UNIPROT_ID`,`ISOFORM`,`SEQ_ID`) VALUES('"
+                                .add("INSERT IGNORE INTO `uniprot_entry`(`UNIPROT_ID_ISO`,`UNIPROT_ID`,`NAME`,`ISOFORM`,`SEQ_ID`) VALUES('"
                                         + strarrayQ[i] + "', '" + strarrayQQ[0] + "', '" + strarrayQQ[1] + "', '"
                                         + strarrayQ[0] + "');");
                     }
