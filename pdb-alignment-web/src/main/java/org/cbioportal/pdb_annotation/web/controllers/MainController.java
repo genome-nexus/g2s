@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
  * 
  */
 @Controller
-public class InputsequenceController {
+public class MainController {
 
     @Autowired
     private StatisticsRepository statisticsRepository;

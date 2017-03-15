@@ -57,7 +57,7 @@ public class PdbScriptsPipelineRunCommand {
         ArrayList<String> paralist = new ArrayList<String>();
 
         webInput2File(inputsequence);
-
+        
         // blastp input genes against pdb
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + inputsequence.getId() + ".fasta");
@@ -69,6 +69,7 @@ public class PdbScriptsPipelineRunCommand {
         List<InputAlignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
 
         // Clean Up
+        
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + inputsequence.getId() + ".fasta");
         cu.runCommand("rm", paralist, inputsequence);
@@ -76,6 +77,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName);
         cu.runCommand("rm", paralist, inputsequence);
+        
         return outresults;
     }
 

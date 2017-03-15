@@ -3,6 +3,12 @@ package org.cbioportal.pdb_annotation.web.models;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 
+/**
+ * This is for Input Web Interfaces
+ * 
+ * @author wangjue
+ *
+ */
 public class InputAlignment {
 
     private int alignmentId;

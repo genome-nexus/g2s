@@ -1,13 +1,7 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-/**
- * This is for input web interfaces
- * 
- * @author wangjue
- *
- */
-public class InputResidue extends InputAlignment {
-
+public class ProteinSequenceParamResidue extends ProteinSequenceParam{
+    
     private String residueNum;
 
     private String residueName;
@@ -27,5 +21,7 @@ public class InputResidue extends InputAlignment {
     public void setResidueName(String residueName) {
         this.residueName = residueName;
     }
+    
+    
 
 }

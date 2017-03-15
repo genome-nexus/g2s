@@ -1,20 +1,18 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
+import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+
 
 /**
- * This is for web sequence interfaces
+ * Used for get parameters for API usage
  * 
  * @author wangjue
  *
  */
-public class InputSequence {
-
-    private String id;
+public class ProteinSequenceParam {
     
     @NotNull
     // @Size(min=1, max=10000)
@@ -22,10 +20,6 @@ public class InputSequence {
     // format error, please check and resubmit!")
     @Pattern(regexp = "(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\s\\n\\r\\t]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\s\\n\\t\\r]+$)", message = "Fasta Format Error, please Check and Resubmit!")
     private String sequence;
-
-    private String residueNum;
-
-    private String residueName;
 
     // Parameters are list here:
     // default 1e-10
@@ -61,42 +55,16 @@ public class InputSequence {
     // Window for multiple hits
     @Pattern(regexp = "^[1-9]|([1-9]\\d+)", message = "Parameter Error in Window_size: Should be >=1 Integer")
     private String window_size;
+    
+    
+    
 
-    // Time
-    private String timenow;
-
-    /**
-     * 
-     * Getter and setter
-     * 
-     */
-
-    public String getTimenow() {
-        return timenow;
+    public String getSequence() {
+        return sequence;
     }
 
-    public void setTimenow(String timenow) {
-        this.timenow = timenow;
-    }
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
-
-    public String getWindow_size() {
-        return window_size;
-    }
-
-    public void setWindow_size(String window_size) {
-        this.window_size = window_size;
-    }
-
-    public String getId() {
-        return id;
+    public void setSequence(String sequence) {
+        this.sequence = sequence;
     }
 
     public String getEvalue() {
@@ -147,31 +115,24 @@ public class InputSequence {
         this.comp_based_stats = comp_based_stats;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getThreshold() {
+        return threshold;
     }
 
-    public String getSequence() {
-        return sequence;
+    public void setThreshold(String threshold) {
+        this.threshold = threshold;
     }
 
-    public void setSequence(String sequence) {
-        this.sequence = sequence;
+    public String getWindow_size() {
+        return window_size;
     }
 
-    public String getResidueNum() {
-        return residueNum;
+    public void setWindow_size(String window_size) {
+        this.window_size = window_size;
     }
+    
+    
+    
+    
 
-    public void setResidueNum(String residueNum) {
-        this.residueNum = residueNum;
-    }
-
-    public String getResidueName() {
-        return residueName;
-    }
-
-    public void setResidueName(String residueName) {
-        this.residueName = residueName;
-    }
 }

@@ -51,6 +51,20 @@ public class SeqIdAlignmentController {
     }
     
     
+    // Query from EnsemblId
+    @ApiOperation(value = "Get PDB Alignments by EnsemblId", nickname = "EnsemblStructureMappingQuery")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Bad Request") })
+    @RequestMapping(value = "/EnsemblStructureMappingQueryT", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public String getPdbAlignmentByEnsemblId(
+            @RequestParam @ApiParam(value = "Input Ensembl Id e.g. ENSP00000489609.1", required = true, allowMultiple = true) String ensemblId) {      
+            return ensemblId+"SS";
+        }
+    
+    
     @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by Protein SeqId")
     public List<Alignment> getPdbAlignmentByGeneSequenceIdPOST(
