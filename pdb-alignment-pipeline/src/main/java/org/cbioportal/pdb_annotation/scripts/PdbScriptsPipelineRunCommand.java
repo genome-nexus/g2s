@@ -77,7 +77,8 @@ public class PdbScriptsPipelineRunCommand {
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         CommandProcessUtil cu = new CommandProcessUtil();
         ArrayList<String> paralist = new ArrayList<String>();
-
+        
+        
         // Step 1
         // Read Sequences from cloned whole PDB, need at least 24G free spaces
         // and at least 12 hours
@@ -92,6 +93,7 @@ public class PdbScriptsPipelineRunCommand {
         // + ReadConfig.pdbSeqresDownloadFile);
         // pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace +
         // ReadConfig.pdbSeqresDownloadFile);
+                 
 
         // Step 2:
         log.info("********************[STEP 2]********************");
@@ -155,16 +157,21 @@ public class PdbScriptsPipelineRunCommand {
         log.info("[Processing] Incorprate ensembl, swissprot, trembl and isoform togethe");
         // This step takes memory, then split into small files to save the
         // running memory
+        // Read Uniprot Files First, get HashMap<Uniprot, Accession>
+        HashMap<String, String> accHm = preprocess.getUniProtAccHm(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
+        
         HashMap<String, String> uniqSeqHm = new HashMap<String, String>();
-        uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.ensemblDownloadFile, uniqSeqHm);
-        uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, uniqSeqHm);
+        uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm, uniqSeqHm);
         // uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace +
         // ReadConfig.tremblDownloadFile,uniqSeqHm);
-        uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.isoformDownloadFile, uniqSeqHm);
+        uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.isoformDownloadFile, accHm, uniqSeqHm);
 
+        uniqSeqHm = preprocess.preprocessUniqSeqEnsembl(ReadConfig.workspace + ReadConfig.ensemblDownloadFile, uniqSeqHm);
+        
         this.seqFileCount = preprocess.preprocessGENEsequences(uniqSeqHm,
                 ReadConfig.workspace + ReadConfig.seqFastaFile);
 
+        
         // Step 5:
         log.info("********************[STEP 5]********************");
         log.info("[PrepareBlast] Build the database by makeblastdb");

@@ -15,11 +15,15 @@ import javax.persistence.Table;
 public class Uniprot {
     @Id
     @Column(name = "UNIPROT_ID_ISO")
-    private String uniprotIdIso;
+    private String uniprotAccessionIso;
 
     @Column(name = "UNIPROT_ID")
+    private String uniprotAccession;
+    
+    //Careful: It may confuse, but Name is really ID, as UniProt ID (`EGFR_HUMAN`) as uniProt Acc (`P00533`)
+    @Column(name = "NAME")
     private String uniprotId;
-
+    
     @Column(name = "ISOFORM")
     private String isoform;
 
@@ -33,27 +37,27 @@ public class Uniprot {
     public Uniprot() {
     }
 
-    public Uniprot(String uniprotIdIso) {
-        this.uniprotIdIso = uniprotIdIso;
+    public Uniprot(String uniprotAccessionIso) {
+        this.uniprotAccessionIso = uniprotAccessionIso;
     }
 
     // ------------------------
     // Methods
     // ------------------------
-    public String getUniprotIdIso() {
-        return uniprotIdIso;
+    public String getUniprotAccessionIso() {
+        return uniprotAccessionIso;
     }
 
-    public void setUniprotIdIso(String uniprotIdIso) {
-        this.uniprotIdIso = uniprotIdIso;
+    public void setUniprotAccessionIso(String uniprotAccessionIso) {
+        this.uniprotAccessionIso = uniprotAccessionIso;
     }
 
-    public String getUniprotId() {
-        return uniprotId;
+    public String getUniprotAccession() {
+        return uniprotAccession;
     }
 
-    public void setUniprotId(String uniprotId) {
-        this.uniprotId = uniprotId;
+    public void setUniprotAccession(String uniprotAccession) {
+        this.uniprotAccession = uniprotAccession;
     }
 
     public String getIsoform() {
@@ -71,5 +75,15 @@ public class Uniprot {
     public void setSeqId(String seqId) {
         this.seqId = seqId;
     }
+
+    public String getUniprotId() {
+        return uniprotId;
+    }
+
+    public void setUniprotId(String uniprotId) {
+        this.uniprotId = uniprotId;
+    }
+    
+    
 
 }
