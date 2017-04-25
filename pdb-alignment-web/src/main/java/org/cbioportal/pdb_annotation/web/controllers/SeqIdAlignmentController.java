@@ -7,6 +7,7 @@ import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.GeneSequenceRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Residue;
+import org.cbioportal.pdb_annotation.web.models.ResiduePresent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,7 +35,7 @@ import io.swagger.annotations.ApiResponses;
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "Protein SeqId", description = "Inner ID")
+@Api(tags = "QueryInnerID", description = "Inner ID")
 @RequestMapping(value = "/g2s/")
 public class SeqIdAlignmentController {
 
@@ -49,8 +50,7 @@ public class SeqIdAlignmentController {
             @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
         return alignmentRepository.findBySeqId(seqId);
     }
-    
-    
+
     // Query from EnsemblId
     @ApiOperation(value = "Get PDB Alignments by EnsemblId", nickname = "EnsemblStructureMappingQuery")
     @ApiResponses(value = {
@@ -60,11 +60,10 @@ public class SeqIdAlignmentController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public String getPdbAlignmentByEnsemblId(
-            @RequestParam @ApiParam(value = "Input Ensembl Id e.g. ENSP00000489609.1", required = true, allowMultiple = true) String ensemblId) {      
-            return ensemblId+"SS";
-        }
-    
-    
+            @RequestParam @ApiParam(value = "Input Ensembl Id e.g. ENSP00000489609.1", required = true, allowMultiple = true) String ensemblId) {
+        return ensemblId + "SS";
+    }
+
     @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by Protein SeqId")
     public List<Alignment> getPdbAlignmentByGeneSequenceIdPOST(
@@ -117,6 +116,26 @@ public class SeqIdAlignmentController {
             }
         }
         return outit;
+    }
+
+    // Query by AlignmentId, get all the Residue Mapping
+    @RequestMapping(value = "/ResidueMappingFromAlignmentId/{alignmentId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get All Residue Mapping by AlignmentId")
+    public List<ResiduePresent> getResidueMappingByAlignmentId(
+            @ApiParam(required = true, value = "Input AlignmentId e.g. 883556") @PathVariable int alignmentId) {
+
+        Alignment ali = alignmentRepository.findByAlignmentId(alignmentId);
+        List<ResiduePresent> residueList = new ArrayList<ResiduePresent>();
+
+        for (int i = ali.getSeqFrom(); i <= ali.getSeqTo(); i++) {
+            ResiduePresent residue = new ResiduePresent();
+            residue.setInputNum(i);
+            residue.setInputName(ali.getSeqAlign().substring(i - ali.getSeqFrom(), i - ali.getSeqFrom() + 1));
+            residue.setResidueNum(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (i - ali.getSeqFrom()));
+            residue.setResidueName(ali.getPdbAlign().substring(i - ali.getSeqFrom(), i - ali.getSeqFrom() + 1));
+            residueList.add(residue);
+        }
+        return residueList;
     }
 
 }
