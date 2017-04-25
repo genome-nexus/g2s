@@ -123,7 +123,7 @@ public class MainGetResidueMappingController {
                 log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
             }
         } else if (id_type.equals("hgvs")) {
-            // http://annotation.genomenexus.org/variant_annotation/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
+            // http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
 
             String genomeVersion = "GRCH37";
 
