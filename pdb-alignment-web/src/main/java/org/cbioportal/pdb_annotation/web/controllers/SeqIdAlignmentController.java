@@ -34,9 +34,9 @@ import io.swagger.annotations.ApiResponses;
  *
  */
 @RestController // shorthand for @Controller, @ResponseBody
-@CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "QueryInnerID", description = "Inner ID")
-@RequestMapping(value = "/g2s/")
+//@CrossOrigin(origins = "*") // allow all cross-domain requests
+//@Api(tags = "QueryInnerID", description = "Inner ID")
+//@RequestMapping(value = "/g2s/")
 public class SeqIdAlignmentController {
 
     @Autowired
@@ -118,24 +118,6 @@ public class SeqIdAlignmentController {
         return outit;
     }
 
-    // Query by AlignmentId, get all the Residue Mapping
-    @RequestMapping(value = "/ResidueMappingFromAlignmentId/{alignmentId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get All Residue Mapping by AlignmentId")
-    public List<ResiduePresent> getResidueMappingByAlignmentId(
-            @ApiParam(required = true, value = "Input AlignmentId e.g. 883556") @PathVariable int alignmentId) {
 
-        Alignment ali = alignmentRepository.findByAlignmentId(alignmentId);
-        List<ResiduePresent> residueList = new ArrayList<ResiduePresent>();
-
-        for (int i = ali.getSeqFrom(); i <= ali.getSeqTo(); i++) {
-            ResiduePresent residue = new ResiduePresent();
-            residue.setInputNum(i);
-            residue.setInputName(ali.getSeqAlign().substring(i - ali.getSeqFrom(), i - ali.getSeqFrom() + 1));
-            residue.setResidueNum(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (i - ali.getSeqFrom()));
-            residue.setResidueName(ali.getPdbAlign().substring(i - ali.getSeqFrom(), i - ali.getSeqFrom() + 1));
-            residueList.add(residue);
-        }
-        return residueList;
-    }
 
 }
