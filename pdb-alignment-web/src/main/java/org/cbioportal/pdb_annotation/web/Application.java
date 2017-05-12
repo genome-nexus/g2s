@@ -33,8 +33,8 @@ public class Application {
         // default swagger definition file location:
         // <root>/v2/api-docs?group=pdb_annotation
         // default swagger UI location: <root>/swagger-ui.html
-        return new Docket(DocumentationType.SWAGGER_2).groupName("g2s").apiInfo(annotationApiInfo()).select()
-                .paths(PathSelectors.regex("/g2s.*")).build();
+        return new Docket(DocumentationType.SWAGGER_2).groupName("api").apiInfo(annotationApiInfo()).select()
+                .paths(PathSelectors.regex("/api.*")).build();
     }
 
     private ApiInfo annotationApiInfo() {

@@ -1,7 +1,11 @@
 package org.cbioportal.pdb_annotation.web.controllers;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,14 +71,14 @@ public class MainController {
 
         List<InputResidue> residues = new ArrayList<InputResidue>();
         int inputAA = 0;
-        if (!inputsequence.getResidueNum().equals("")) {
-            inputAA = Integer.parseInt(inputsequence.getResidueNum());
+        if (inputsequence.getResidueNumList().size()!=0) {
+            inputAA = Integer.parseInt(inputsequence.getResidueNumList().get(0));
         }
 
         for (InputAlignment ali : alignments) {
             // if getResidueNum is empty, then return alignments
             // else, return residues
-            if (inputsequence.getResidueNum().equals("")
+            if (inputsequence.getResidueNumList().size() ==0
                     || (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo())) {
                 InputResidue re = new InputResidue();
                 re.setAlignmentId(ali.getAlignmentId());
@@ -95,7 +99,8 @@ public class MainController {
                 re.setPdbNo(ali.getPdbNo());
                 re.setPdbSeg(ali.getPdbSeg());
                 re.setPdbTo(ali.getPdbTo());
-                if (!(inputsequence.getResidueNum().equals(""))) {
+                
+                if (!(inputsequence.getResidueNumList().size()==0)) {
                     re.setResidueName(
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
                     re.setResidueNum(new Integer(
@@ -147,7 +152,7 @@ public class MainController {
 
                 // input
                 re.setSequence(inputsequence.getSequence());
-                re.setInputResidueNum(inputsequence.getResidueNum());
+                re.setInputResidueNum(inputsequence.getResidueNumList().get(0));
 
                 residues.add(re);
             }
@@ -156,10 +161,11 @@ public class MainController {
     }
 
     // Original Mapping
-    @GetMapping("/api")
+    @GetMapping("/pageapi")
     public ModelAndView apiInfo() {
         return new ModelAndView("api");
     }
+    
 
     @GetMapping("/clients")
     public ModelAndView clientsInfo() {

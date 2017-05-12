@@ -37,12 +37,12 @@ import io.swagger.annotations.ApiParam;
  *
  */
 @RestController // shorthand for @Controller, @ResponseBody
-@CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "RecognizeAlignments", description = "ensembl/uniprot/hgvs")
-@RequestMapping(value = "/g2s/")
+//@CrossOrigin(origins = "*") // allow all cross-domain requests
+//@Api(tags = "RecognizeAlignments", description = "ensembl/uniprot/hgvs")
+//@RequestMapping(value = "/api/")
 public class MainRecognitionAlignments {
 
-    final static Logger log = Logger.getLogger(MainGetAlignmentsController.class);
+    final static Logger log = Logger.getLogger(MainRecognitionAlignments.class);
 
     @Autowired
     private AlignmentRepository alignmentRepository;
@@ -57,11 +57,12 @@ public class MainRecognitionAlignments {
     @ApiOperation("Whether Id exists")
     public boolean getExistsAlignment(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g. ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
-                    + "uniprot:P04637/P53_HUMAN; "
-                    + "uniprot_isoform:P04637_9/P53_HUMAN_9; "
-                    + "hgvs:17_79478130C; "
-                    + "hgvs38:17_7676594T ") @PathVariable String id) {
+            @ApiParam(required = true, value = "Input id e.g. \n"
+                    +"ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
+                    + "uniprot:P04637/P53_HUMAN; \n"
+                    + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
+                    + "hgvs:17:g.79478130C>G;\n"
+                    + "hgvs38:17:g.7676594T>G ") @PathVariable String id) {
 
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
@@ -145,20 +146,20 @@ public class MainRecognitionAlignments {
 
             String genomeVersion = "GRCH37";
 
-            String chromosomeNum = id.split("_")[0];
-            String tmp = id.split("_")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 1));
-            String nucleotideType = tmp.substring(tmp.length() - 1, tmp.length());
+            String chromosomeNum = id.split(":g\\.")[0];
+            String tmp = id.split(":g\\.")[1];
+            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
+            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() -2);
             return (getExistedEnsemblIdinGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
         } else if (id_type.equals("hgvs38")) {
 
             String genomeVersion = "GRCH38";
 
-            String chromosomeNum = id.split("_")[0];
-            String tmp = id.split("_")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 1));
-            String nucleotideType = tmp.substring(tmp.length() - 1, tmp.length() );
+            String chromosomeNum = id.split(":g\\.")[0];
+            String tmp = id.split(":g\\.")[1];
+            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
+            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() -2);
             return (getExistedEnsemblIdinGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
         } else {

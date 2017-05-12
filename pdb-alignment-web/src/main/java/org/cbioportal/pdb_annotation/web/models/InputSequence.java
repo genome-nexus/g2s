@@ -1,5 +1,7 @@
 package org.cbioportal.pdb_annotation.web.models;
 
+import java.util.List;
+
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -23,9 +25,9 @@ public class InputSequence {
     @Pattern(regexp = "(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\s\\n\\r\\t]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\s\\n\\t\\r]+$)", message = "Fasta Format Error, please Check and Resubmit!")
     private String sequence;
 
-    private String residueNum;
+    private List<String> residueNumList;
 
-    private String residueName;
+    private List<String> residueNameList;
 
     // Parameters are list here:
     // default 1e-10
@@ -159,19 +161,19 @@ public class InputSequence {
         this.sequence = sequence;
     }
 
-    public String getResidueNum() {
-        return residueNum;
+    public List<String> getResidueNumList() {
+        return residueNumList;
     }
 
-    public void setResidueNum(String residueNum) {
-        this.residueNum = residueNum;
+    public void setResidueNumList(List<String> residueNumList) {
+        this.residueNumList = residueNumList;
     }
 
-    public String getResidueName() {
-        return residueName;
+    public List<String> getResidueNameList() {
+        return residueNameList;
     }
 
-    public void setResidueName(String residueName) {
-        this.residueName = residueName;
+    public void setResidueNameList(List<String> residueNameList) {
+        this.residueNameList = residueNameList;
     }
 }

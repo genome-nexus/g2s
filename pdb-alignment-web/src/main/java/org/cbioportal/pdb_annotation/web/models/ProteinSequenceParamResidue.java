@@ -1,25 +1,27 @@
 package org.cbioportal.pdb_annotation.web.models;
 
+import java.util.List;
+
 public class ProteinSequenceParamResidue extends ProteinSequenceParam{
     
-    private String residueNum;
+    private List<String> residueNumList;
 
-    private String residueName;
+    private List<String> residueNameList;
 
-    public String getResidueNum() {
-        return residueNum;
+    public List<String> getResidueNumList() {
+        return residueNumList;
     }
 
-    public void setResidueNum(String residueNum) {
-        this.residueNum = residueNum;
+    public void setResidueNumList(List<String> residueNumList) {
+        this.residueNumList = residueNumList;
     }
 
-    public String getResidueName() {
-        return residueName;
+    public List<String> getResidueNameList() {
+        return residueNameList;
     }
 
-    public void setResidueName(String residueName) {
-        this.residueName = residueName;
+    public void setResidueNameList(List<String> residueNameList) {
+        this.residueNameList = residueNameList;
     }
     
     
