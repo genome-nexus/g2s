@@ -33,9 +33,9 @@
 			<p th:if="${#fields.hasErrors('sequence')}" th:errors="*{sequence}">Sequence
 				Error</p>
 			<p>Input interested residue number:(Optional)</p>
-			<p th:if="${#fields.hasErrors('residueNum')}"
-				th:errors="*{residueNum}">Residue Number Error</p>
-			<input type="text" th:field="*{residueNum}"></input>
+			<p th:if="${#fields.hasErrors('residueNumList')}"
+				th:errors="*{residueNumList}">Residue Number Error</p>
+			<input type="text" th:field="*{residueNumList}"></input>
 			<!-- 
         	<p>Input corresponding residue name here:(Optional)</p> 
         	<p th:if="${#fields.hasErrors('residueName')}" th:errors="*{residueName}">Residue Name Error</p> 

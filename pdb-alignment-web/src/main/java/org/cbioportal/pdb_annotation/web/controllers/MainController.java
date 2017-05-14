@@ -152,7 +152,12 @@ public class MainController {
 
                 // input
                 re.setSequence(inputsequence.getSequence());
-                re.setInputResidueNum(inputsequence.getResidueNumList().get(0));
+                if(inputsequence.getResidueNumList().size()!=0){
+                    re.setInputResidueNum(inputsequence.getResidueNumList().get(0));
+                }else{
+                    re.setInputResidueNum("");
+                }
+                
 
                 residues.add(re);
             }
