@@ -19,11 +19,12 @@ public class Uniprot {
 
     @Column(name = "UNIPROT_ID")
     private String uniprotAccession;
-    
-    //Careful: It may confuse, but Name is really ID, as UniProt ID (`EGFR_HUMAN`) as uniProt Acc (`P00533`)
+
+    // Careful: It may confuse, but Name is really ID, as UniProt ID
+    // (`EGFR_HUMAN`) as uniProt Acc (`P00533`)
     @Column(name = "NAME")
     private String uniprotId;
-    
+
     @Column(name = "ISOFORM")
     private String isoform;
 
@@ -83,7 +84,5 @@ public class Uniprot {
     public void setUniprotId(String uniprotId) {
         this.uniprotId = uniprotId;
     }
-    
-    
 
 }

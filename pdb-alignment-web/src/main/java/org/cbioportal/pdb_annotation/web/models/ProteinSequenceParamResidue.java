@@ -2,8 +2,8 @@ package org.cbioportal.pdb_annotation.web.models;
 
 import java.util.List;
 
-public class ProteinSequenceParamResidue extends ProteinSequenceParam{
-    
+public class ProteinSequenceParamResidue extends ProteinSequenceParam {
+
     private List<String> residueNumList;
 
     private List<String> residueNameList;
@@ -23,7 +23,5 @@ public class ProteinSequenceParamResidue extends ProteinSequenceParam{
     public void setResidueNameList(List<String> residueNameList) {
         this.residueNameList = residueNameList;
     }
-    
-    
 
 }

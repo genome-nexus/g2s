@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 public class InputSequence {
 
     private String id;
-    
+
     @NotNull
     // @Size(min=1, max=10000)
     // @Pattern(regexp="(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)",message="Fasta

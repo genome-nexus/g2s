@@ -37,12 +37,12 @@ public class ReadConfig {
 
     public static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional
-                                                // '-' and decimal.
+        // '-' and decimal.
     }
 
     public static boolean isFolder(String str) {
         return str.matches("/.+/"); // match a folder start with / and end with
-                                    // /
+        // /
     }
 
     // TODO:
@@ -134,7 +134,7 @@ public class ReadConfig {
     public static void setBlastParaThreads(String blastParaThreads) {
         ReadConfig.blastParaThreads = blastParaThreads;
     }
-    
+
     public static String getGnApiEnsemblUrl() {
         return gnApiEnsemblUrl;
     }
@@ -214,8 +214,5 @@ public class ReadConfig {
     public static void setBlastWindowsize(String blastWindowsize) {
         ReadConfig.blastWindowsize = blastWindowsize;
     }
-    
-    
 
-    
 }

@@ -24,23 +24,23 @@ public class UtilAPI {
         this.gnApiUrl = gnApiUrl;
     }
 
-    public List<GenomeResidueInput> callAPI(String chromosomeNum, long positionNum, String nucleotideType, String genomeVersion)
-            throws Exception {
+    public List<GenomeResidueInput> callAPI(String chromosomeNum, long positionNum, String nucleotideType,
+            String genomeVersion) throws Exception {
         ReadConfig rc = ReadConfig.getInstance();
         // System.out.println("ReadURL:\t"+rc.getGnApiUrl());
         List<GenomeResidueInput> outlist = new ArrayList<GenomeResidueInput>();
 
         String url = "";
-        if(genomeVersion.equals("GRCH38")){
-            //For GRCH38, choose Ensembl
+        if (genomeVersion.equals("GRCH38")) {
+            // For GRCH38, choose Ensembl
             url = rc.getGnApiEnsemblUrl();
-        }else if(genomeVersion.equals("GRCH37")){
-            //For GRCH37, choose GenomeNexus annotation
+        } else if (genomeVersion.equals("GRCH37")) {
+            // For GRCH37, choose GenomeNexus annotation
             url = rc.getGnApiGnUrl();
-        }else{
+        } else {
             System.out.println("Only support GRCH37 and GRCH38 Now!");
         }
-        
+
         url = url.replace("CHROMSOME", chromosomeNum);
         url = url.replace("POSITION", Long.toString(positionNum));
         url = url.replace("ORIGINAL", nucleotideType);
@@ -51,7 +51,7 @@ public class UtilAPI {
             mutation = "T";
         }
         url = url.replace("MUTATION", mutation);
-        System.out.println("APIURL:\t"+url);
+        System.out.println("APIURL:\t" + url);
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -61,7 +61,8 @@ public class UtilAPI {
             List<Transcript_consequences> list = quote.getTranscript_consequences();
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i).getProtein_start() != 0) {
-                //if (list.get(i).getBiotype().equals("protein_coding") && list.get(i).getProtein_start() != 0) {
+                    // if (list.get(i).getBiotype().equals("protein_coding") &&
+                    // list.get(i).getProtein_start() != 0) {
                     GenomeResidueInput gr = new GenomeResidueInput();
                     Residue residue = new Residue();
                     residue.setResidueNum(list.get(i).getProtein_start());

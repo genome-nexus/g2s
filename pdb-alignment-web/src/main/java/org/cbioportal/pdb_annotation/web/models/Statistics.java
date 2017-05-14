@@ -10,7 +10,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "update_record")
 public class Statistics {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
@@ -18,13 +18,13 @@ public class Statistics {
 
     @Column(name = "UPDATE_DATE")
     private String updateDate;
-    
+
     @Column(name = "SEG_NUM")
     private int segNum;
-    
+
     @Column(name = "PDB_NUM")
     private int pdbNum;
-    
+
     @Column(name = "ALIGNMENT_NUM")
     private int alignmentNum;
 
@@ -67,7 +67,5 @@ public class Statistics {
     public void setAlignmentNum(int alignmentNum) {
         this.alignmentNum = alignmentNum;
     }
-    
-    
 
 }

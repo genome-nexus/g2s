@@ -57,7 +57,7 @@ public class PdbScriptsPipelineRunCommand {
         ArrayList<String> paralist = new ArrayList<String>();
 
         webInput2File(inputsequence);
-        
+
         // blastp input genes against pdb
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + inputsequence.getId() + ".fasta");
@@ -69,7 +69,7 @@ public class PdbScriptsPipelineRunCommand {
         List<InputAlignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
 
         // Clean Up
-        
+
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + inputsequence.getId() + ".fasta");
         cu.runCommand("rm", paralist, inputsequence);
@@ -77,7 +77,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName);
         cu.runCommand("rm", paralist, inputsequence);
-        
+
         return outresults;
     }
 
@@ -104,12 +104,12 @@ public class PdbScriptsPipelineRunCommand {
     public List<InputAlignment> parseblastresultsSingle(String currentDir) {
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
-                                                                     // is
-                                                                     // needed
-                                                                     // to fetch
-                                                                     // dtd from
-                                                                     // some
-                                                                     // servers
+        // is
+        // needed
+        // to fetch
+        // dtd from
+        // some
+        // servers
         List<InputAlignment> results = new ArrayList<InputAlignment>();
         try {
             log.info("[BLAST] Read blast results from xml file...");

@@ -1,11 +1,11 @@
 package org.cbioportal.pdb_annotation.web.models;
 
 public class ResidueMapping {
-    
+
     private int queryPosition;
-    
+
     private String queryAminoAcid;
-    
+
     private int pdbPosition;
 
     private String pdbAminoAcid;
@@ -41,8 +41,5 @@ public class ResidueMapping {
     public void setPdbAminoAcid(String pdbAminoAcid) {
         this.pdbAminoAcid = pdbAminoAcid;
     }
-
-    
-    
 
 }

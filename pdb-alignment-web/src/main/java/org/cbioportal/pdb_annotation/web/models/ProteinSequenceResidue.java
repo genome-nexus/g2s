@@ -2,10 +2,6 @@ package org.cbioportal.pdb_annotation.web.models;
 
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
-
 /**
  * Used for API usage
  * 
@@ -13,11 +9,11 @@ import javax.validation.constraints.Pattern;
  *
  */
 public class ProteinSequenceResidue {
-    
+
     private ProteinSequenceParamResidue param;
-    
+
     private BlastStatistics blastStat;
-    
+
     private List<CompleteResidue> residues;
 
     public ProteinSequenceParamResidue getParam() {
@@ -43,7 +39,5 @@ public class ProteinSequenceResidue {
     public void setResidues(List<CompleteResidue> residues) {
         this.residues = residues;
     }
-    
-    
 
 }

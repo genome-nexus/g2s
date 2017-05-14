@@ -15,7 +15,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 @Transactional
 public interface UniprotRepository extends JpaRepository<Uniprot, Long> {
     public List<Uniprot> findByUniprotAccessionIso(String uniprotAccessionIso);
-    public List<Uniprot> findByUniprotAccession   (String uniprotAccession);
-    public List<Uniprot> findByUniprotId          (String uniprotId);
+
+    public List<Uniprot> findByUniprotAccession(String uniprotAccession);
+
+    public List<Uniprot> findByUniprotId(String uniprotId);
 
 }

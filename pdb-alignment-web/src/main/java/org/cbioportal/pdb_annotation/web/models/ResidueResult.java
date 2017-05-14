@@ -3,9 +3,9 @@ package org.cbioportal.pdb_annotation.web.models;
 import java.util.List;
 
 public class ResidueResult {
-    
+
     private Alignment alignment;
-    
+
     private List<ResidueMapping> residueMapping;
 
     public Alignment getAlignment() {

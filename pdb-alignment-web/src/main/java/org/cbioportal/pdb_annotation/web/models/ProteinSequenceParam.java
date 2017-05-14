@@ -1,10 +1,7 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-import java.util.List;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 
 /**
  * Used for get parameters for API usage
@@ -13,7 +10,7 @@ import javax.validation.constraints.Pattern;
  *
  */
 public class ProteinSequenceParam {
-    
+
     @NotNull
     // @Size(min=1, max=10000)
     // @Pattern(regexp="(^[>].*[\\n|\\r]+[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)|(^[RrHhKkDdEeSsTtNnQqCcUuGgPpAaVvIiLlMmFfYyWw\\n\\r]+$)",message="Fasta
@@ -55,9 +52,6 @@ public class ProteinSequenceParam {
     // Window for multiple hits
     @Pattern(regexp = "^[1-9]|([1-9]\\d+)", message = "Parameter Error in Window_size: Should be >=1 Integer")
     private String window_size;
-    
-    
-    
 
     public String getSequence() {
         return sequence;
@@ -130,9 +124,5 @@ public class ProteinSequenceParam {
     public void setWindow_size(String window_size) {
         this.window_size = window_size;
     }
-    
-    
-    
-    
 
 }

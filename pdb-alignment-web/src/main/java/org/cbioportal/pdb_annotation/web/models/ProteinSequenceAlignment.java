@@ -3,11 +3,11 @@ package org.cbioportal.pdb_annotation.web.models;
 import java.util.List;
 
 public class ProteinSequenceAlignment {
-    
+
     private ProteinSequenceParam param;
-    
+
     private BlastStatistics blastStat;
-    
+
     private List<CompleteAlignment> alignment;
 
     public ProteinSequenceParam getParam() {
@@ -33,7 +33,5 @@ public class ProteinSequenceAlignment {
     public void setAlignment(List<CompleteAlignment> alignment) {
         this.alignment = alignment;
     }
-    
-    
 
 }

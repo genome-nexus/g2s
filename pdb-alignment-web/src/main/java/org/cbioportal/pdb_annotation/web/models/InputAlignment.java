@@ -1,8 +1,5 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
-
 /**
  * This is for Input Web Interfaces
  * 
@@ -101,7 +98,7 @@ public class InputAlignment {
     // For input
     private String sequence;
     private String inputResidueNum;
-    
+
     // For Percentage
     private String identityPercentage;
     private String positivePercentage;
@@ -111,7 +108,7 @@ public class InputAlignment {
     private String identityPercentageStr;
     private String positivePercentageStr;
     private String gapPercentageStr;
-   
+
     // ------------------------
     // Constructors
     // ------------------------
@@ -492,6 +489,5 @@ public class InputAlignment {
     public void setGapPercentageStr(String gapPercentageStr) {
         this.gapPercentageStr = gapPercentageStr;
     }
-    
 
 }

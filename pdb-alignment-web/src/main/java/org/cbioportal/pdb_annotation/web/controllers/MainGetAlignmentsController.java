@@ -73,14 +73,13 @@ public class MainGetAlignmentsController {
     private EnsemblRepository ensemblRepository;
     @Autowired
     private SeqIdAlignmentController seqController;
-    
 
     @RequestMapping(value = "/alignments/{id_type}/{id:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by ProteinId")
     public List<Alignment> getAlignment(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform") @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g.\n"
-                    +"ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
+                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
                     + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ") @PathVariable String id) {
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
@@ -142,7 +141,7 @@ public class MainGetAlignmentsController {
     public List<Alignment> getAlignmentByPDB(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform") @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g.\n"
-                    +"ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
+                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
                     + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ") @PathVariable String id,
             @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdb_id,
             @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id) {
@@ -228,7 +227,8 @@ public class MainGetAlignmentsController {
         return outList;
     }
 
-    @RequestMapping(value = "/alignments", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/alignments", method = { RequestMethod.GET,
+            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     @ApiOperation("Get PDB Alignments by Protein Sequence")
     public List<Alignment> getPdbAlignmentBySequence(HttpServletRequest request,

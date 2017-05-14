@@ -14,15 +14,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 @Transactional
 public interface EnsemblRepository extends JpaRepository<Ensembl, Long> {
-    //exact
+    // exact
     public List<Ensembl> findByEnsemblId(String ensemblId);
-    //like
-    public List<Ensembl> findByEnsemblIdStartingWith(String ensemblId);    
-    
+
+    // like
+    public List<Ensembl> findByEnsemblIdStartingWith(String ensemblId);
+
     public List<Ensembl> findByEnsemblGene(String ensemblGene);
-    public List<Ensembl> findByEnsemblGeneStartingWith(String ensemblGene);    
-    
+
+    public List<Ensembl> findByEnsemblGeneStartingWith(String ensemblGene);
+
     public List<Ensembl> findByEnsemblTranscript(String EnsemblTranscript);
+
     public List<Ensembl> findByEnsemblTranscriptStartingWith(String EnsemblTranscript);
-    
+
 }

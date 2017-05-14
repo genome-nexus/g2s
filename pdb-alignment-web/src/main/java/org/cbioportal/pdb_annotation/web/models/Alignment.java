@@ -8,7 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- *
+ * Basic Return Objects: Alignments
+ * 
  * @author Juexin Wang
  *
  */
@@ -32,7 +33,7 @@ public class Alignment {
 
     @Column(name = "PDB_SEG")
     private String pdbSeg;
-    
+
     @Column(name = "SEG_START")
     private String segStart;
 

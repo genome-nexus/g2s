@@ -3,10 +3,10 @@ package org.cbioportal.pdb_annotation.web.models;
 import java.util.List;
 
 public class ResidueEnsembl {
-    
-    //Primary KEY: EnsemblId
+
+    // Primary KEY: EnsemblId
     private String EnsemblId;
-    
+
     private List<Residue> residues;
 
     public String getEnsemblId() {

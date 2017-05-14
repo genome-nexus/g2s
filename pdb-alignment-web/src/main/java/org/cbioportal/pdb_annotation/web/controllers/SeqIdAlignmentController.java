@@ -13,7 +13,6 @@ import org.cbioportal.pdb_annotation.web.domain.UniprotRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
 import org.cbioportal.pdb_annotation.web.models.Ensembl;
 import org.cbioportal.pdb_annotation.web.models.GenomeResidueInput;
-import org.cbioportal.pdb_annotation.web.models.Residue;
 import org.cbioportal.pdb_annotation.web.models.ResidueResult;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.cbioportal.pdb_annotation.web.models.api.UtilAPI;
@@ -21,7 +20,6 @@ import org.cbioportal.pdb_annotation.web.models.ResidueMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -39,15 +36,15 @@ import io.swagger.annotations.ApiResponses;
 
 /**
  *
- * Controller of the API: Input Protein SeqId
+ * Controller of the API: Input Protein SeqId, inner control
  *
  * @author Juexin Wang
  *
  */
 @RestController // shorthand for @Controller, @ResponseBody
-//@CrossOrigin(origins = "*") // allow all cross-domain requests
-//@Api(tags = "QueryInnerID", description = "Inner ID")
-//@RequestMapping(value = "/api/")
+// @CrossOrigin(origins = "*") // allow all cross-domain requests
+// @Api(tags = "QueryInnerID", description = "Inner ID")
+// @RequestMapping(value = "/api/")
 public class SeqIdAlignmentController {
 
     @Autowired
@@ -94,11 +91,10 @@ public class SeqIdAlignmentController {
             @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
         return geneSequenceRepository.findBySeqId(seqId).size() != 0;
     }
-    
-    
-    
+
     /**
      * "Get All Residue Mapping by Protein SeqId
+     * 
      * @param seqId
      * @return
      */
@@ -108,18 +104,21 @@ public class SeqIdAlignmentController {
         List<ResidueResult> outit = new ArrayList<ResidueResult>();
 
         for (Alignment ali : it) {
-            ResidueResult rm = new ResidueResult();            
+            ResidueResult rm = new ResidueResult();
             List<ResidueMapping> residueMapping = new ArrayList<ResidueMapping>();
-            for(int inputAA = ali.getSeqFrom(); inputAA <= ali.getSeqTo(); inputAA++) {
+            for (int inputAA = ali.getSeqFrom(); inputAA <= ali.getSeqTo(); inputAA++) {
                 ResidueMapping rp = new ResidueMapping();
-                
-                rp.setQueryAminoAcid(ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                rp.setQueryPosition(inputAA-ali.getSeqFrom()+1);
-                
-                rp.setPdbAminoAcid(ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                rp.setPdbPosition(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
+
+                rp.setQueryAminoAcid(
+                        ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                rp.setQueryPosition(inputAA - ali.getSeqFrom() + 1);
+
+                rp.setPdbAminoAcid(
+                        ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                rp.setPdbPosition(
+                        Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 residueMapping.add(rp);
-            } 
+            }
             rm.setAlignment(ali);
             rm.setResidueMapping(residueMapping);
             outit.add(rm);
@@ -127,10 +126,10 @@ public class SeqIdAlignmentController {
         }
         return outit;
     }
-    
 
     /**
      * "Get Residue Mapping by Protein SeqId and Residue Positions
+     * 
      * @param seqId
      * @param positionList
      * @return
@@ -143,10 +142,11 @@ public class SeqIdAlignmentController {
         int inputAA = Integer.parseInt(position);
         for (Alignment ali : it) {
             if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
-                ResidueResult rm = new ResidueResult();                
+                ResidueResult rm = new ResidueResult();
                 ResidueMapping rp = new ResidueMapping();
                 List<ResidueMapping> residueMapping = new ArrayList<ResidueMapping>();
-                rp.setQueryAminoAcid(ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                rp.setQueryAminoAcid(
+                        ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
                 rp.setQueryPosition(inputAA);
                 rp.setPdbPosition(
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
@@ -160,10 +160,10 @@ public class SeqIdAlignmentController {
         }
         return outit;
     }
-    
-    
+
     /**
      * "Get Residue Mapping by Protein SeqId and Residue Positions list
+     * 
      * @param seqId
      * @param positionList
      * @return
@@ -184,7 +184,8 @@ public class SeqIdAlignmentController {
                 if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
 
                     ResidueMapping rp = new ResidueMapping();
-                    rp.setQueryAminoAcid(ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                    rp.setQueryAminoAcid(
+                            ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
                     rp.setQueryPosition(inputAA);
                     rp.setPdbPosition(
                             Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
@@ -201,15 +202,11 @@ public class SeqIdAlignmentController {
 
         return outit;
     }
-    
-    
-    
-    
+
     /*
      * Support function for alignments
      */
-    
-    
+
     // P04637
     public List<Alignment> getPdbAlignmentByUniprotAccession(String uniprotAccession) {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotAccession(uniprotAccession);
@@ -352,15 +349,14 @@ public class SeqIdAlignmentController {
 
         return outlist;
     }
-    
-    
+
     /**
-     * ResidueMapping parts support 
+     * ResidueMapping parts support
      */
-    
+
     // Implementation of API etPdbResidueByEnsemblIdGenome
-    public List<ResidueResult> getPdbResidueByEnsemblIdGenome(String chromosomeNum, long position, String nucleotideType,
-            String genomeVersion) {
+    public List<ResidueResult> getPdbResidueByEnsemblIdGenome(String chromosomeNum, long position,
+            String nucleotideType, String genomeVersion) {
         // Calling GenomeNexus
         UtilAPI uapi = new UtilAPI();
 
@@ -408,7 +404,7 @@ public class SeqIdAlignmentController {
             return null;
         }
     }
-    
+
     // P04637
     public List<ResidueResult> getPdbResidueByUniprotAccession(String uniprotAccession) {
 
@@ -430,7 +426,7 @@ public class SeqIdAlignmentController {
         }
         return outList;
     }
-    
+
     // P04637, 99,100
     public List<ResidueResult> getPdbResidueByUniprotAccession(String uniprotAccession, List<String> positionList) {
 
@@ -441,8 +437,7 @@ public class SeqIdAlignmentController {
         }
         return outList;
     }
-    
-    
+
     // P53_HUMAN
     public List<ResidueResult> getPdbResidueByUniprotId(String uniprotId) {
 
@@ -482,7 +477,7 @@ public class SeqIdAlignmentController {
         return outlist;
 
     }
-    
+
     // P53_HUMAN 99,100
     public List<ResidueResult> getPdbResidueByUniprotId(String uniprotId, List<String> positionList) {
 
@@ -502,7 +497,7 @@ public class SeqIdAlignmentController {
         return outlist;
 
     }
-    
+
     // P04637_9
     public List<ResidueResult> getPdbResidueByUniprotAccessionIso(String uniprotAccession, String isoform) {
 
@@ -515,7 +510,8 @@ public class SeqIdAlignmentController {
     }
 
     // P04637_9 100
-    public List<ResidueResult> getPdbResidueByUniprotAccessionIso(String uniprotAccession, String isoform, String position) {
+    public List<ResidueResult> getPdbResidueByUniprotAccessionIso(String uniprotAccession, String isoform,
+            String position) {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
         if (uniprotlist.size() == 1) {
@@ -524,10 +520,10 @@ public class SeqIdAlignmentController {
             return new ArrayList<ResidueResult>();
         }
     }
-    
-    
+
     // P04637_9 99,100
-    public List<ResidueResult> getPdbResidueByUniprotAccessionIso(String uniprotAccession, String isoform, List<String> positionList) {
+    public List<ResidueResult> getPdbResidueByUniprotAccessionIso(String uniprotAccession, String isoform,
+            List<String> positionList) {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
         if (uniprotlist.size() == 1) {
@@ -536,8 +532,7 @@ public class SeqIdAlignmentController {
             return new ArrayList<ResidueResult>();
         }
     }
-    
-    
+
     // P53_HUMAN_9
     public List<ResidueResult> getPdbResidueByUniprotIdIso(String uniprotId, String isoform) {
 
@@ -575,9 +570,10 @@ public class SeqIdAlignmentController {
 
         return outlist;
     }
-    
+
     // P53_HUMAN_9 99,100
-    public List<ResidueResult> getPdbResidueByUniprotIdIso(String uniprotId, String isoform, List<String> positionList) {
+    public List<ResidueResult> getPdbResidueByUniprotIdIso(String uniprotId, String isoform,
+            List<String> positionList) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
 
@@ -594,12 +590,5 @@ public class SeqIdAlignmentController {
 
         return outlist;
     }
-
-    
-    
-    
-    
-
-
 
 }

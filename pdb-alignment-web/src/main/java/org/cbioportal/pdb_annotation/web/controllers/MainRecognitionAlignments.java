@@ -18,28 +18,27 @@ import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.cbioportal.pdb_annotation.web.models.api.UtilAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
  * 
- * Recognize whether input alignments is existed in the system
+ * Recognize whether input alignments is existed in the system, not used for
+ * cBioportal, but it still works
  * 
  * @author Juexin Wang
  *
  */
 @RestController // shorthand for @Controller, @ResponseBody
-//@CrossOrigin(origins = "*") // allow all cross-domain requests
-//@Api(tags = "RecognizeAlignments", description = "ensembl/uniprot/hgvs")
-//@RequestMapping(value = "/api/")
+// @CrossOrigin(origins = "*") // allow all cross-domain requests
+// @Api(tags = "RecognizeAlignments", description = "ensembl/uniprot/hgvs")
+// @RequestMapping(value = "/api/")
 public class MainRecognitionAlignments {
 
     final static Logger log = Logger.getLogger(MainRecognitionAlignments.class);
@@ -58,11 +57,9 @@ public class MainRecognitionAlignments {
     public boolean getExistsAlignment(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g. \n"
-                    +"ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
-                    + "uniprot:P04637/P53_HUMAN; \n"
-                    + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs:17:g.79478130C>G;\n"
-                    + "hgvs38:17:g.7676594T>G ") @PathVariable String id) {
+                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
+                    + "uniprot:P04637/P53_HUMAN; \n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
+                    + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G ") @PathVariable String id) {
 
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
@@ -136,7 +133,7 @@ public class MainRecognitionAlignments {
                 return (getExistedUniprotAccessionIsoinAlignment(id.split("_")[0], id.split("_")[1]));
 
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                return (getExistedUniprotIdIsoinAlignment(id.split("_")[0]+"_"+id.split("_")[1], id.split("_")[2]));
+                return (getExistedUniprotIdIsoinAlignment(id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]));
 
             } else {
                 log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
@@ -149,7 +146,7 @@ public class MainRecognitionAlignments {
             String chromosomeNum = id.split(":g\\.")[0];
             String tmp = id.split(":g\\.")[1];
             long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() -2);
+            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
             return (getExistedEnsemblIdinGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
         } else if (id_type.equals("hgvs38")) {
@@ -159,7 +156,7 @@ public class MainRecognitionAlignments {
             String chromosomeNum = id.split(":g\\.")[0];
             String tmp = id.split(":g\\.")[1];
             long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() -2);
+            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
             return (getExistedEnsemblIdinGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
 
         } else {
