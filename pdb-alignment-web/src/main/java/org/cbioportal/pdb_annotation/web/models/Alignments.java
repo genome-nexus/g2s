@@ -2,19 +2,9 @@ package org.cbioportal.pdb_annotation.web.models;
 
 import java.util.List;
 
-public class ResidueResult {
-
-    private Alignment alignment;
+public class Alignments extends Alignment{
 
     private List<ResidueMapping> residueMapping;
-
-    public Alignment getAlignment() {
-        return alignment;
-    }
-
-    public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
-    }
 
     public List<ResidueMapping> getResidueMapping() {
         return residueMapping;

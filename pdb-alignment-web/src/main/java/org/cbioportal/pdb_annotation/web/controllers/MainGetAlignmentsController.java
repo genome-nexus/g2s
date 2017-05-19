@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
@@ -34,7 +35,7 @@ import org.cbioportal.pdb_annotation.web.models.ProteinSequenceParam;
 import org.cbioportal.pdb_annotation.web.models.ProteinSequenceParamResidue;
 import org.cbioportal.pdb_annotation.web.models.ProteinSequenceResidue;
 import org.cbioportal.pdb_annotation.web.models.Residue;
-import org.cbioportal.pdb_annotation.web.models.ResidueResult;
+import org.cbioportal.pdb_annotation.web.models.Alignments;
 import org.cbioportal.pdb_annotation.web.models.ResidueMapping;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.cbioportal.pdb_annotation.web.models.api.UtilAPI;
@@ -76,18 +77,27 @@ public class MainGetAlignmentsController {
 
     @RequestMapping(value = "/alignments/{id_type}/{id:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by ProteinId")
-    public List<Alignment> getAlignment(
+    public List<Alignments> getAlignment(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform") @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g.\n"
                     + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
                     + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ") @PathVariable String id) {
-        ArrayList<Alignment> outList = new ArrayList<Alignment>();
+        List<Alignments> outList = new ArrayList<Alignments>();
         if (id_type.equals("ensembl")) {
             if (id.startsWith("ENSP")) {// EnsemblID:
                 // ENSP00000484409.1/ENSP00000484409
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
                 for (Ensembl ensembl : ensembllist) {
-                    outList.addAll(alignmentRepository.findBySeqId(ensembl.getSeqId()));
+                    List<Alignment> tmpList = alignmentRepository.findBySeqId(ensembl.getSeqId());
+                    for (Alignment al:tmpList){
+                        Alignments e = new Alignments();
+                        try {
+                            BeanUtils.copyProperties(e, al);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }   
+                        outList.add(e);
+                    }
                 }
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
                 // ENSG00000141510.16
@@ -95,7 +105,16 @@ public class MainGetAlignmentsController {
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
                         System.out.println("en.getSeqId():" + en.getSeqId());
-                        outList.addAll(alignmentRepository.findBySeqId(en.getSeqId()));
+                        List<Alignment> tmpList = alignmentRepository.findBySeqId(en.getSeqId());
+                        for (Alignment al:tmpList){
+                            Alignments e = new Alignments();
+                            try {
+                                BeanUtils.copyProperties(e, al);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }   
+                            outList.add(e);
+                        }
                     }
                 }
             } else if (id.startsWith("ENST")) {// EnsemblTranscript:
@@ -103,7 +122,16 @@ public class MainGetAlignmentsController {
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
-                        outList.addAll(alignmentRepository.findBySeqId(en.getSeqId()));
+                        List<Alignment> tmpList = alignmentRepository.findBySeqId(en.getSeqId());
+                        for (Alignment al:tmpList){
+                            Alignments e = new Alignments();
+                            try {
+                                BeanUtils.copyProperties(e, al);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }   
+                            outList.add(e);
+                        }
                     }
                 }
             } else {
@@ -112,21 +140,58 @@ public class MainGetAlignmentsController {
         } else if (id_type.equals("uniprot")) {
             if (id.length() == 6 && id.split("_").length != 2) {// Accession:
                 // P04637
-                outList.addAll(seqController.getPdbAlignmentByUniprotAccession(id));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotAccession(id);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
 
             } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-                outList.addAll(seqController.getPdbAlignmentByUniprotId(id));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotId(id);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
             } else {
                 log.info("Error in Input. id_type:Uniprot id: " + id);
             }
         } else if (id_type.equals("uniprot_isoform")) {
             if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
                 // P04637
-                outList.addAll(seqController.getPdbAlignmentByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
 
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                outList.addAll(seqController.getPdbAlignmentByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                        id.split("_")[2]));
+                
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
+                        id.split("_")[2]);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
             } else {
                 log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
             }
@@ -138,7 +203,7 @@ public class MainGetAlignmentsController {
 
     @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get PDB Alignments by ProteinId, PDBId and Chain")
-    public List<Alignment> getAlignmentByPDB(
+    public List<Alignments> getAlignmentByPDB(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform") @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g.\n"
                     + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
@@ -146,7 +211,7 @@ public class MainGetAlignmentsController {
             @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdb_id,
             @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id) {
 
-        ArrayList<Alignment> outList = new ArrayList<Alignment>();
+        List<Alignments> outList = new ArrayList<Alignments>();
         if (id_type.equals("ensembl")) {
 
             if (id.startsWith("ENSP")) {// EnsemblID:
@@ -165,7 +230,17 @@ public class MainGetAlignmentsController {
                             alilist.add(ali);
                         }
                     }
-                    outList.addAll(alilist);
+                    
+                    for (Alignment al:alilist){
+                        Alignments e = new Alignments();
+                        try {
+                            BeanUtils.copyProperties(e, al);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }   
+                        outList.add(e);
+                    }
+                    
                 }
 
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
@@ -178,7 +253,15 @@ public class MainGetAlignmentsController {
                         String pd = ali.getPdbId().toLowerCase();
                         String ch = ali.getChain().toLowerCase();
                         if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                            outList.add(ali);
+                            
+                            Alignments e = new Alignments();
+                            try {
+                                BeanUtils.copyProperties(e, ali);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }   
+                            outList.add(e);
+
                         }
                     }
                 }
@@ -193,7 +276,13 @@ public class MainGetAlignmentsController {
                         String pd = ali.getPdbId().toLowerCase();
                         String ch = ali.getChain().toLowerCase();
                         if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                            outList.add(ali);
+                            Alignments e = new Alignments();
+                            try {
+                                BeanUtils.copyProperties(e, ali);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }   
+                            outList.add(e);
                         }
                     }
                 }
@@ -204,20 +293,56 @@ public class MainGetAlignmentsController {
         } else if (id_type.equals("uniprot")) {
             if (id.length() == 6 && id.split("_").length != 2) {// Accession:
                 // P04637
-                outList.addAll(seqController.getPdbAlignmentByUniprotAccession(id, pdb_id, chain_id));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotAccession(id, pdb_id, chain_id);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
             } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-                outList.addAll(seqController.getPdbAlignmentByUniprotId(id, pdb_id, chain_id));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotId(id, pdb_id, chain_id);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
             } else {
                 log.info("Error in Input. id_type:Uniprot id: " + id + " By PDB:" + pdb_id + " id:" + chain_id);
             }
         } else if (id_type.equals("uniprot_isoform")) {
             if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
                 // P04637_9
-                outList.addAll(seqController.getPdbAlignmentByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
-                        pdb_id, chain_id));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
+                        pdb_id, chain_id);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN_9
-                outList.addAll(seqController.getPdbAlignmentByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                        id.split("_")[2], pdb_id, chain_id));
+                List<Alignment> tmpList = seqController.getPdbAlignmentByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
+                        id.split("_")[2], pdb_id, chain_id);
+                for (Alignment al:tmpList){
+                    Alignments e = new Alignments();
+                    try {
+                        BeanUtils.copyProperties(e, al);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }   
+                    outList.add(e);
+                }
             } else {
                 log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
             }
@@ -231,7 +356,7 @@ public class MainGetAlignmentsController {
             RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     @ApiOperation("Get PDB Alignments by Protein Sequence")
-    public List<Alignment> getPdbAlignmentBySequence(HttpServletRequest request,
+    public List<Alignments> getPdbAlignmentBySequence(HttpServletRequest request,
             @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP") @RequestParam String sequence,
             @ApiParam(required = false, value = "Default Blast Parameters:\n"
                     + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
@@ -305,7 +430,7 @@ public class MainGetAlignmentsController {
         PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand = new PdbScriptsPipelineRunCommand();
         List<InputAlignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
 
-        List<Alignment> result = new ArrayList<Alignment>();
+        List<Alignments> result = new ArrayList<Alignments>();
 
         for (InputAlignment ali : alignments) {
             Alignment re = new Alignment();
@@ -332,7 +457,14 @@ public class MainGetAlignmentsController {
             Date today = Calendar.getInstance().getTime();
             re.setUpdateDate(df.format(today));
 
-            result.add(re);
+            
+            Alignments e = new Alignments();
+            try {
+                BeanUtils.copyProperties(e, re);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }   
+            result.add(e);
         }
 
         return result;

@@ -1,6 +1,6 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-public class CompleteResidue extends ResidueResult {
+public class CompleteResidue extends Alignments {
 
     private String identityPercentage;
     private String positivePercentage;

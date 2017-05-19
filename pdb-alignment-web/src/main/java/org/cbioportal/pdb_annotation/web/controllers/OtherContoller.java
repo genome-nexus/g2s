@@ -326,28 +326,28 @@ public class OtherContoller {
         for (InputAlignment ali : alignments) {
 
             CompleteResidue rm = new CompleteResidue();
-            Alignment re = new Alignment();
-            re.setAlignmentId(ali.getAlignmentId());
-            re.setBitscore((float) ali.getBitscore());
-            re.setChain(ali.getChain());
-            re.setSeqAlign(ali.getSeqAlign());
-            re.setSeqFrom(ali.getSeqFrom());
-            re.setSeqId(ali.getSeqId());
-            re.setSeqTo(ali.getSeqTo());
-            re.setSegStart(ali.getSegStart());
-            re.setEvalue(Double.toString(ali.getEvalue()));
-            re.setIdentity(ali.getIdentity());
-            re.setIdentityPositive(ali.getIdentp());
-            re.setMidlineAlign(ali.getMidlineAlign());
-            re.setPdbAlign(ali.getPdbAlign());
-            re.setPdbFrom(ali.getPdbFrom());
-            re.setPdbId(ali.getPdbId());
-            re.setPdbNo(ali.getPdbNo());
-            re.setPdbSeg(ali.getPdbSeg());
-            re.setPdbTo(ali.getPdbTo());
+
+            rm.setAlignmentId(ali.getAlignmentId());
+            rm.setBitscore((float) ali.getBitscore());
+            rm.setChain(ali.getChain());
+            rm.setSeqAlign(ali.getSeqAlign());
+            rm.setSeqFrom(ali.getSeqFrom());
+            rm.setSeqId(ali.getSeqId());
+            rm.setSeqTo(ali.getSeqTo());
+            rm.setSegStart(ali.getSegStart());
+            rm.setEvalue(Double.toString(ali.getEvalue()));
+            rm.setIdentity(ali.getIdentity());
+            rm.setIdentityPositive(ali.getIdentp());
+            rm.setMidlineAlign(ali.getMidlineAlign());
+            rm.setPdbAlign(ali.getPdbAlign());
+            rm.setPdbFrom(ali.getPdbFrom());
+            rm.setPdbId(ali.getPdbId());
+            rm.setPdbNo(ali.getPdbNo());
+            rm.setPdbSeg(ali.getPdbSeg());
+            rm.setPdbTo(ali.getPdbTo());
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
             Date today = Calendar.getInstance().getTime();
-            re.setUpdateDate(df.format(today));
+            rm.setUpdateDate(df.format(today));
 
             List<ResidueMapping> residueMapping = new ArrayList<ResidueMapping>();
             for (String position : positionList) {
@@ -364,7 +364,6 @@ public class OtherContoller {
                 }
             }
 
-            rm.setAlignment(re);
             rm.setResidueMapping(residueMapping);
 
             // For percentage
