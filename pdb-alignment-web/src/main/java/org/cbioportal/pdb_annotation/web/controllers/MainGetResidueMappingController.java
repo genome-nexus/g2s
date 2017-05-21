@@ -55,105 +55,8 @@ public class MainGetResidueMappingController {
     @Autowired
     private UniprotRepository uniprotRepository;
 
-    /*
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/residueMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Residue Mapping by ProteinId")
-    public List<Alignments> getRequestResidueMapping(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;\n"
-                    + "uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g.\n"
-                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
-                    + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs: 17:g.79478130C>G;\n" + "hgvs38: 17:g.7676594T>G") @PathVariable String id) {
-
-        List<Alignments> outList = new ArrayList<Alignments>();
-        if (id_type.equals("ensembl")) {
-            if (id.startsWith("ENSP")) {// EnsemblID:
-                // ENSP00000484409.1/ENSP00000484409
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
-                for (Ensembl ensembl : ensembllist) {
-                    outList.addAll(seqController.getPdbResidueBySeqId(ensembl.getSeqId()));
-                }
-            } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.16
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
-                if (ensembllist.size() >= 1) {
-                    for (Ensembl en : ensembllist) {
-                        outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId()));
-                    }
-                }
-            } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000504290.5
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
-                if (ensembllist.size() >= 1) {
-                    for (Ensembl en : ensembllist) {
-                        outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId()));
-                    }
-                }
-            } else {
-                log.info("Error in Input. id_type:Ensembl id: " + id);
-            }
-
-        } else if (id_type.equals("uniprot")) {
-            if (id.length() == 6 && id.split("_").length != 2) {// Accession:
-                // P04637
-                outList.addAll(seqController.getPdbResidueByUniprotAccession(id));
-
-            } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-                outList.addAll(seqController.getPdbResidueByUniprotId(id));
-            } else {
-                log.info("Error in Input. id_type:Uniprot id: " + id);
-            }
-
-        } else if (id_type.equals("uniprot_isoform")) {
-            if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
-                // P04637
-                outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
-
-            } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                outList.addAll(seqController.getPdbResidueByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
-                        id.split("_")[2]));
-
-            } else {
-                log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
-            }
-        } else if (id_type.equals("hgvs")) {
-            // http://annotation.genomenexus.org/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?isoformOverrideSource=uniprot&summary=summary
-
-            String genomeVersion = "GRCH37";
-
-            String chromosomeNum = id.split(":g\\.")[0];
-            String tmp = id.split(":g\\.")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
-
-            System.out.println(chromosomeNum + " " + pos + " " + nucleotideType + " " + genomeVersion);
-            outList.addAll(
-                    seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
-
-        } else if (id_type.equals("hgvs38")) {
-            // http://rest.ensembl.org/vep/human/hgvs/CHROMSOME:g.POSITIONORIGINAL%3EMUTATION?content-type=application/json&protein=1
-            String genomeVersion = "GRCH38";
-
-            String chromosomeNum = id.split(":g\\.")[0];
-            String tmp = id.split(":g\\.")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
-
-            System.out.println(chromosomeNum + " " + pos + " " + nucleotideType + " " + genomeVersion);
-            outList.addAll(
-                    seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos, nucleotideType, genomeVersion));
-
-        } else {
-            log.info("Error in Input. id_type:" + id_type + " id: " + id);
-        }
-        return outList;
-    }
-    */
-
-    
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/residueMapping", method = 
-            {RequestMethod.GET,RequestMethod.POST} , produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/residueMapping", method = { RequestMethod.GET,
+            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("POST PDB Residue Mapping by ProteinId")
     public List<Alignment> postResidueMapping(
             @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;\n"
@@ -165,37 +68,30 @@ public class MainGetResidueMappingController {
             @ApiParam(required = false, value = "Input Residue Position e.g. 100; Anynumber for hgvs;\n"
                     + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
-        /*
-        // if no residue position is defined
-        if (positionList == null) {
-            return getRequestResidueMapping(id_type, id);
-        }
-        */
-
         List<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
             if (id.startsWith("ENSP")) {// EnsemblID:
                 // ENSP00000484409.1/ENSP00000484409
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
                 for (Ensembl ensembl : ensembllist) {
-                    if (positionList == null){
+                    if (positionList == null) {
                         outList.addAll(seqController.getPdbResidueBySeqId(ensembl.getSeqId()));
-                    }else{
+                    } else {
                         outList.addAll(seqController.getPdbResidueBySeqId(ensembl.getSeqId(), positionList));
                     }
-                    
+
                 }
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
                 // ENSG00000141510.16
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
-                        if (positionList == null){
+                        if (positionList == null) {
                             outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId()));
-                        }else{
+                        } else {
                             outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId(), positionList));
                         }
-                        
+
                     }
                 }
             } else if (id.startsWith("ENST")) {// EnsemblTranscript:
@@ -203,12 +99,12 @@ public class MainGetResidueMappingController {
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
-                        if (positionList == null){
+                        if (positionList == null) {
                             outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId()));
-                        }else{
+                        } else {
                             outList.addAll(seqController.getPdbResidueBySeqId(en.getSeqId(), positionList));
                         }
-                        
+
                     }
                 }
             } else {
@@ -218,20 +114,19 @@ public class MainGetResidueMappingController {
         } else if (id_type.equals("uniprot")) {
             if (id.length() == 6 && id.split("_").length != 2) {// Accession:
                 // P04637
-                if (positionList == null){
+                if (positionList == null) {
                     outList.addAll(seqController.getPdbResidueByUniprotAccession(id));
-                }else{
+                } else {
                     outList.addAll(seqController.getPdbResidueByUniprotAccession(id, positionList));
                 }
-                
 
             } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-                if (positionList == null){
+                if (positionList == null) {
                     outList.addAll(seqController.getPdbResidueByUniprotId(id));
-                }else{
+                } else {
                     outList.addAll(seqController.getPdbResidueByUniprotId(id, positionList));
                 }
-                
+
             } else {
                 log.info("Error in Input. id_type:Uniprot id: " + id + " position:" + positionList);
             }
@@ -239,23 +134,22 @@ public class MainGetResidueMappingController {
         } else if (id_type.equals("uniprot_isoform")) {
             if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
                 // P04637
-                if (positionList == null){
-                    outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
-                }else{
+                if (positionList == null) {
+                    outList.addAll(
+                            seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
+                } else {
                     outList.addAll(seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
                             positionList));
                 }
-                
 
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                if (positionList == null){
+                if (positionList == null) {
                     outList.addAll(seqController.getPdbResidueByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
                             id.split("_")[2]));
-                }else{
+                } else {
                     outList.addAll(seqController.getPdbResidueByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
                             id.split("_")[2], positionList));
                 }
-                
 
             } else {
                 log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
@@ -292,190 +186,6 @@ public class MainGetResidueMappingController {
         return outList;
     }
 
-    /*
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}/residueMapping", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get Residue Mapping by ProteinId, PDBId and Chain")
-    public List<Alignments> getResidueMappingByPDB(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g. \n"
-                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
-                    + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G") @PathVariable String id,
-            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdb_id,
-            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id) {
-
-        ArrayList<Alignments> outList = new ArrayList<Alignments>();
-        if (id_type.equals("ensembl")) {
-
-            if (id.startsWith("ENSP")) {// EnsemblID:
-                // ENSP00000484409.1/ENSP00000484409
-
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
-                for (Ensembl ensembl : ensembllist) {
-
-                    List<Alignments> list = seqController.getPdbResidueBySeqId(ensembl.getSeqId());
-                    List<Alignments> alilist = new ArrayList<Alignments>();
-
-                    for (Alignments ali : list) {
-                        String pd = ali.getPdbId().toLowerCase();
-                        String ch = ali.getChain().toLowerCase();
-                        if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                            alilist.add(ali);
-                        }
-                    }
-                    outList.addAll(alilist);
-                }
-
-            } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.16
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
-                if (ensembllist.size() > 0) {
-                    List<Alignments> list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId());
-
-                    for (Alignments ali : list) {
-                        String pd = ali.getPdbId().toLowerCase();
-                        String ch = ali.getChain().toLowerCase();
-                        if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                            outList.add(ali);
-                        }
-                    }
-                }
-
-            } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000504290.5
-                List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
-                if (ensembllist.size() > 0) {
-                    List<Alignments> list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId());
-
-                    for (Alignments ali : list) {
-                        String pd = ali.getPdbId().toLowerCase();
-                        String ch = ali.getChain().toLowerCase();
-                        if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                            outList.add(ali);
-                        }
-                    }
-                }
-            } else {
-                log.info("Error in Input. id_type:Uniprot id: " + id + " By PDB:" + pdb_id + " id:" + chain_id);
-            }
-
-        } else if (id_type.equals("uniprot")) {
-            if (id.length() == 6 && id.split("_").length != 2) {// Accession:
-                // P04637
-
-                List<Uniprot> uniprotList = uniprotRepository.findByUniprotAccession(id);
-                List<Alignments> list = new ArrayList<Alignments>();
-                for (Uniprot entry : uniprotList) {
-                    list.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId()));
-                }
-                for (Alignments re : list) {
-                    String pd = re.getPdbId().toLowerCase();
-                    String ch = re.getChain().toLowerCase();
-                    if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                        outList.add(re);
-                    }
-                }
-
-            } else if (id.split("_").length == 2) {// ID: P53_HUMAN
-
-                List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(id);
-
-                Set<String> uniprotAccSet = new HashSet<String>();
-                for (Uniprot uniprot : uniprotList) {
-                    uniprotAccSet.add(uniprot.getUniprotAccession());
-                }
-
-                List<Alignments> outlist = new ArrayList<Alignments>();
-                Iterator<String> it = uniprotAccSet.iterator();
-                while (it.hasNext()) {
-                    outlist.addAll(seqController.getPdbResidueByUniprotAccession(it.next()));
-                }
-
-                for (Alignments residue : outlist) {
-                    String pd = residue.getPdbId().toLowerCase();
-                    String ch = residue.getChain().toLowerCase();
-                    if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                        outList.add(residue);
-                    }
-                }
-
-            } else {
-                log.info("Error in Input. id_type:Uniprot id: " + id + " By PDB:" + pdb_id + " id:" + chain_id);
-            }
-
-        } else if (id_type.equals("uniprot_isoform")) {
-            if (id.split("_").length == 2 && id.split("_")[0].length() == 6) {// Accession:
-                // P04637
-                List<Alignments> list = seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0],
-                        id.split("_")[1]);
-                for (Alignments re : list) {
-                    String pd = re.getPdbId().toLowerCase();
-                    String ch = re.getChain().toLowerCase();
-                    if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                        outList.add(re);
-                    }
-                }
-
-            } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                List<Alignments> list = seqController
-                        .getPdbResidueByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]);
-                for (Alignments re : list) {
-                    String pd = re.getPdbId().toLowerCase();
-                    String ch = re.getChain().toLowerCase();
-                    if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                        outList.add(re);
-                    }
-                }
-
-            } else {
-                log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
-            }
-
-        } else if (id_type.equals("hgvs")) {
-            String genomeVersion = "GRCH37";
-
-            String chromosomeNum = id.split(":g\\.")[0];
-            String tmp = id.split(":g\\.")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
-
-            List<Alignments> tmpList = seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos,
-                    nucleotideType, genomeVersion);
-
-            for (Alignments residue : tmpList) {
-                String pd = residue.getPdbId().toLowerCase();
-                String ch = residue.getChain().toLowerCase();
-                if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                    outList.add(residue);
-                }
-            }
-
-        } else if (id_type.equals("hgvs38")) {
-            String genomeVersion = "GRCH38";
-
-            String chromosomeNum = id.split(":g\\.")[0];
-            String tmp = id.split(":g\\.")[1];
-            long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
-            String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
-
-            List<Alignments> tmpList = seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos,
-                    nucleotideType, genomeVersion);
-
-            for (Alignments residue : tmpList) {
-                String pd = residue.getPdbId().toLowerCase();
-                String ch = residue.getChain().toLowerCase();
-                if (pd.equals(pdb_id.toLowerCase()) && ch.equals(chain_id.toLowerCase())) {
-                    outList.add(residue);
-                }
-            }
-
-        } else {
-            log.info("Error in Input. id_type:" + id_type + " id: " + id + " PDB:" + pdb_id + " ChainID:" + chain_id);
-        }
-        return outList;
-    }
-    */
-
     @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}/residueMapping", method = {
             RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Post Residue Mapping by ProteinId, PDBId and Chain")
@@ -490,13 +200,6 @@ public class MainGetResidueMappingController {
             @ApiParam(required = false, value = "Input Residue Position e.g. 100 (Anynumber for hgvs);\n"
                     + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
-        // If list is empty, return all
-        /*
-        if (positionList == null) {
-            return getResidueMappingByPDB(id_type, id, pdb_id, chain_id);
-        }
-        */
-
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
 
@@ -508,10 +211,10 @@ public class MainGetResidueMappingController {
                     List<Alignment> list = null;
                     if (positionList == null) {
                         list = seqController.getPdbResidueBySeqId(ensembl.getSeqId());
-                    }else{
+                    } else {
                         list = seqController.getPdbResidueBySeqId(ensembl.getSeqId(), positionList);
                     }
-                    
+
                     for (Alignment ali : list) {
                         String pd = ali.getPdbId().toLowerCase();
                         String ch = ali.getChain().toLowerCase();
@@ -519,7 +222,7 @@ public class MainGetResidueMappingController {
                             outList.add(ali);
                         }
                     }
-                    
+
                 }
 
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
@@ -529,9 +232,8 @@ public class MainGetResidueMappingController {
                     List<Alignment> list = null;
                     if (positionList == null) {
                         list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId());
-                    }else{
-                        list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId(),
-                                positionList);
+                    } else {
+                        list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId(), positionList);
                     }
 
                     for (Alignment ali : list) {
@@ -550,11 +252,9 @@ public class MainGetResidueMappingController {
                     List<Alignment> list = null;
                     if (positionList == null) {
                         list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId());
-                    }else{
-                        list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId(),
-                                positionList);
+                    } else {
+                        list = seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId(), positionList);
                     }
-                    
 
                     for (Alignment ali : list) {
                         String pd = ali.getPdbId().toLowerCase();
@@ -576,13 +276,13 @@ public class MainGetResidueMappingController {
                 List<Uniprot> uniprotList = uniprotRepository.findByUniprotAccession(id);
                 List<Alignment> list = new ArrayList<Alignment>();
                 for (Uniprot entry : uniprotList) {
-                    
+
                     if (positionList == null) {
                         list = seqController.getPdbResidueBySeqId(entry.getSeqId());
-                    }else{
+                    } else {
                         list = seqController.getPdbResidueBySeqId(entry.getSeqId(), positionList);
                     }
-                    
+
                 }
                 for (Alignment re : list) {
                     String pd = re.getPdbId().toLowerCase();
@@ -606,10 +306,10 @@ public class MainGetResidueMappingController {
                 while (it.hasNext()) {
                     if (positionList == null) {
                         outlist.addAll(seqController.getPdbResidueByUniprotAccession(it.next()));
-                    }else{
+                    } else {
                         outlist.addAll(seqController.getPdbResidueByUniprotAccession(it.next(), positionList));
                     }
-                    
+
                 }
 
                 for (Alignment residue : outlist) {
@@ -630,13 +330,12 @@ public class MainGetResidueMappingController {
                 // P04637
                 List<Alignment> list = null;
                 if (positionList == null) {
-                    list = seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0],
-                            id.split("_")[1]);
-                }else{
-                    list = seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0],
-                            id.split("_")[1], positionList);
+                    list = seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]);
+                } else {
+                    list = seqController.getPdbResidueByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
+                            positionList);
                 }
-                 
+
                 for (Alignment re : list) {
                     String pd = re.getPdbId().toLowerCase();
                     String ch = re.getChain().toLowerCase();
@@ -648,13 +347,13 @@ public class MainGetResidueMappingController {
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN
                 List<Alignment> list = null;
                 if (positionList == null) {
-                    list = seqController.getPdbResidueByUniprotIdIso(
-                            id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2]);
-                }else{
-                    list = seqController.getPdbResidueByUniprotIdIso(
-                            id.split("_")[0] + "_" + id.split("_")[1], id.split("_")[2], positionList);
+                    list = seqController.getPdbResidueByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
+                            id.split("_")[2]);
+                } else {
+                    list = seqController.getPdbResidueByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
+                            id.split("_")[2], positionList);
                 }
-                
+
                 for (Alignment re : list) {
                     String pd = re.getPdbId().toLowerCase();
                     String ch = re.getChain().toLowerCase();
@@ -675,8 +374,8 @@ public class MainGetResidueMappingController {
             long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
             String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
 
-            List<Alignment> tmpList = seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos,
-                    nucleotideType, genomeVersion);
+            List<Alignment> tmpList = seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos, nucleotideType,
+                    genomeVersion);
 
             for (Alignment residue : tmpList) {
                 String pd = residue.getPdbId().toLowerCase();
@@ -694,8 +393,8 @@ public class MainGetResidueMappingController {
             long pos = Long.parseLong(tmp.substring(0, tmp.length() - 3));
             String nucleotideType = tmp.substring(tmp.length() - 3, tmp.length() - 2);
 
-            List<Alignment> tmpList = seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos,
-                    nucleotideType, genomeVersion);
+            List<Alignment> tmpList = seqController.getPdbResidueByEnsemblIdGenome(chromosomeNum, pos, nucleotideType,
+                    genomeVersion);
 
             for (Alignment residue : tmpList) {
                 String pd = residue.getPdbId().toLowerCase();

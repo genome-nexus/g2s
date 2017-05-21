@@ -25,8 +25,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 
- * Main Controller of the whole website
- * Control the input sequence to blast Mainly use InputSequence in model
+ * Main Controller of the whole website Control the input sequence to blast
+ * Mainly use InputSequence in model
  * 
  * @author Juexin wang
  * 

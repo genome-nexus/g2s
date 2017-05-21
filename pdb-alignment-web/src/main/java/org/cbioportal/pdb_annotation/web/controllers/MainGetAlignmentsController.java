@@ -5,39 +5,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.EnsemblRepository;
-import org.cbioportal.pdb_annotation.web.domain.GeneSequenceRepository;
-import org.cbioportal.pdb_annotation.web.domain.UniprotRepository;
 import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.models.AlignmentEnsembl;
-import org.cbioportal.pdb_annotation.web.models.BlastStatistics;
-import org.cbioportal.pdb_annotation.web.models.CompleteAlignment;
-import org.cbioportal.pdb_annotation.web.models.CompleteResidue;
 import org.cbioportal.pdb_annotation.web.models.Ensembl;
-import org.cbioportal.pdb_annotation.web.models.GenomeResidueInput;
 import org.cbioportal.pdb_annotation.web.models.InputAlignment;
 import org.cbioportal.pdb_annotation.web.models.InputSequence;
-import org.cbioportal.pdb_annotation.web.models.ProteinSequenceAlignment;
-import org.cbioportal.pdb_annotation.web.models.ProteinSequenceParam;
-import org.cbioportal.pdb_annotation.web.models.ProteinSequenceParamResidue;
-import org.cbioportal.pdb_annotation.web.models.ProteinSequenceResidue;
-import org.cbioportal.pdb_annotation.web.models.Residue;
-import org.cbioportal.pdb_annotation.web.models.ResidueMapping;
-import org.cbioportal.pdb_annotation.web.models.Uniprot;
-import org.cbioportal.pdb_annotation.web.models.api.UtilAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -86,8 +65,8 @@ public class MainGetAlignmentsController {
             if (id.startsWith("ENSP")) {// EnsemblID:
                 // ENSP00000484409.1/ENSP00000484409
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblIdStartingWith(id);
-                for (Ensembl ensembl : ensembllist) {                   
-                    outList.addAll(alignmentRepository.findBySeqId(ensembl.getSeqId()));                   
+                for (Ensembl ensembl : ensembllist) {
+                    outList.addAll(alignmentRepository.findBySeqId(ensembl.getSeqId()));
                 }
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
                 // ENSG00000141510.16
@@ -103,7 +82,7 @@ public class MainGetAlignmentsController {
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
-                        outList.addAll( alignmentRepository.findBySeqId(en.getSeqId()));
+                        outList.addAll(alignmentRepository.findBySeqId(en.getSeqId()));
                     }
                 }
             } else {
@@ -125,7 +104,7 @@ public class MainGetAlignmentsController {
                 outList.addAll(seqController.getPdbAlignmentByUniprotAccessionIso(id.split("_")[0], id.split("_")[1]));
 
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN
-                
+
                 outList.addAll(seqController.getPdbAlignmentByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
                         id.split("_")[2]));
             } else {
@@ -165,7 +144,7 @@ public class MainGetAlignmentsController {
                             outList.add(ali);
                         }
                     }
-                    
+
                 }
 
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
@@ -216,11 +195,11 @@ public class MainGetAlignmentsController {
                 // P04637_9
                 outList.addAll(seqController.getPdbAlignmentByUniprotAccessionIso(id.split("_")[0], id.split("_")[1],
                         pdb_id, chain_id));
-                
+
             } else if (id.split("_").length == 3) {// ID: P53_HUMAN_9
                 outList.addAll(seqController.getPdbAlignmentByUniprotIdIso(id.split("_")[0] + "_" + id.split("_")[1],
                         id.split("_")[2], pdb_id, chain_id));
-                
+
             } else {
                 log.info("Error in Input. id_type:Uniprot_isoform id: " + id);
             }
@@ -334,7 +313,7 @@ public class MainGetAlignmentsController {
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
             Date today = Calendar.getInstance().getTime();
             re.setUpdateDate(df.format(today));
-  
+
             result.add(re);
         }
 

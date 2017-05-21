@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
 import org.cbioportal.pdb_annotation.web.domain.EnsemblRepository;
 import org.cbioportal.pdb_annotation.web.domain.GeneSequenceRepository;
@@ -118,7 +117,7 @@ public class SeqIdAlignmentController {
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 residueMapping.add(rp);
             }
-            
+
             ali.setResidueMapping(residueMapping);
             outit.add(ali);
 
@@ -150,7 +149,7 @@ public class SeqIdAlignmentController {
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 rp.setPdbAminoAcid(
                         ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                residueMapping.add(rp);               
+                residueMapping.add(rp);
 
                 ali.setResidueMapping(residueMapping);
                 outit.add(ali);
@@ -352,8 +351,8 @@ public class SeqIdAlignmentController {
      */
 
     // Implementation of API etPdbResidueByEnsemblIdGenome
-    public List<Alignment> getPdbResidueByEnsemblIdGenome(String chromosomeNum, long position,
-            String nucleotideType, String genomeVersion) {
+    public List<Alignment> getPdbResidueByEnsemblIdGenome(String chromosomeNum, long position, String nucleotideType,
+            String genomeVersion) {
         // Calling GenomeNexus
         UtilAPI uapi = new UtilAPI();
 
@@ -569,8 +568,7 @@ public class SeqIdAlignmentController {
     }
 
     // P53_HUMAN_9 99,100
-    public List<Alignment> getPdbResidueByUniprotIdIso(String uniprotId, String isoform,
-            List<String> positionList) {
+    public List<Alignment> getPdbResidueByUniprotIdIso(String uniprotId, String isoform, List<String> positionList) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
 
