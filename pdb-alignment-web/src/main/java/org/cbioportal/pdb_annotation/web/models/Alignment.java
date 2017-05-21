@@ -1,11 +1,14 @@
 package org.cbioportal.pdb_annotation.web.models;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Basic Return Objects: Alignments
@@ -75,6 +78,17 @@ public class Alignment {
 
     @Column(name = "UPDATE_DATE")
     private String updateDate;
+    
+    @Transient
+    private List<ResidueMapping> residueMapping;
+
+    public List<ResidueMapping> getResidueMapping() {
+        return residueMapping;
+    }
+
+    public void setResidueMapping(List<ResidueMapping> residueMapping) {
+        this.residueMapping = residueMapping;
+    }
 
     // ------------------------
     // Constructors
