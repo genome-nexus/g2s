@@ -115,7 +115,11 @@ public class SeqIdAlignmentController {
                         ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
                 rp.setPdbPosition(
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
-                residueMapping.add(rp);
+                
+                //Withdraw if mapped to linker of the protein
+                if(!rp.getPdbAminoAcid().equals("X")){
+                    residueMapping.add(rp);
+                }                
             }
 
             ali.setResidueMapping(residueMapping);
@@ -149,7 +153,10 @@ public class SeqIdAlignmentController {
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 rp.setPdbAminoAcid(
                         ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                residueMapping.add(rp);
+                //Withdraw if mapped to linker of the protein
+                if(!rp.getPdbAminoAcid().equals("X")){
+                    residueMapping.add(rp);
+                }
 
                 ali.setResidueMapping(residueMapping);
                 outit.add(ali);
@@ -187,7 +194,10 @@ public class SeqIdAlignmentController {
                             Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                     rp.setPdbAminoAcid(
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                    residueMapping.add(rp);
+                    //Withdraw if mapped to linker of the protein
+                    if(!rp.getPdbAminoAcid().equals("X")){
+                        residueMapping.add(rp);
+                    }
 
                 }
             }

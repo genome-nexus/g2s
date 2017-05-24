@@ -69,7 +69,7 @@ public class MainGetAlignmentsController {
                     outList.addAll(alignmentRepository.findBySeqId(ensembl.getSeqId()));
                 }
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.16
+                // ENSG00000141510.16/ENSG00000141510
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
@@ -78,7 +78,7 @@ public class MainGetAlignmentsController {
                     }
                 }
             } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000504290.5
+                // ENST00000504290.5/ENST00000504290
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
@@ -148,7 +148,7 @@ public class MainGetAlignmentsController {
                 }
 
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.16
+                // ENSG00000141510.16/ENSG00000141510
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
                 if (ensembllist.size() > 0) {
                     List<Alignment> list = alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());
@@ -163,7 +163,7 @@ public class MainGetAlignmentsController {
                 }
 
             } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000504290.5
+                // ENST00000504290.5/ENST00000504290
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() > 0) {
                     List<Alignment> list = alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());

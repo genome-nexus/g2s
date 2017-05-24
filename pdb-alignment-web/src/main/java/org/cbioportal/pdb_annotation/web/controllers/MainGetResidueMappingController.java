@@ -65,7 +65,7 @@ public class MainGetResidueMappingController {
                     + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
                     + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
                     + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G") @PathVariable String id,
-            @ApiParam(required = false, value = "Input Residue Position e.g. 100; Anynumber for hgvs;\n"
+            @ApiParam(required = false, value = "Input Residue Positions e.g. 10,100; Anynumber for hgvs;\n"
                     + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
         List<Alignment> outList = new ArrayList<Alignment>();
@@ -82,8 +82,12 @@ public class MainGetResidueMappingController {
 
                 }
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.16
+                // ENSG00000141510.16/ENSG00000141510
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+                // Original implementation, just find exact word
+                // ENSG00000141510.16
+                // List<Ensembl> ensembllist =
+                // ensemblRepository.findByEnsemblGene(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
                         if (positionList == null) {
@@ -95,7 +99,7 @@ public class MainGetResidueMappingController {
                     }
                 }
             } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000504290.5
+                // ENST00000504290.5/ENST00000504290
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() >= 1) {
                     for (Ensembl en : ensembllist) {
@@ -197,7 +201,7 @@ public class MainGetResidueMappingController {
                     + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G") @PathVariable String id,
             @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdb_id,
             @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id,
-            @ApiParam(required = false, value = "Input Residue Position e.g. 100 (Anynumber for hgvs);\n"
+            @ApiParam(required = false, value = "Input Residue Positions e.g. 10,100 (Anynumber for hgvs);\n"
                     + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
 
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
@@ -226,8 +230,9 @@ public class MainGetResidueMappingController {
                 }
 
             } else if (id.startsWith("ENSG")) {// EnsemblGene:
-                // ENSG00000141510.16
+                // ENSG00000141510.16/ENSG00000141510
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblGene(id);
+
                 if (ensembllist.size() > 0) {
                     List<Alignment> list = null;
                     if (positionList == null) {
@@ -246,7 +251,7 @@ public class MainGetResidueMappingController {
                 }
 
             } else if (id.startsWith("ENST")) {// EnsemblTranscript:
-                // ENST00000504290.5
+                // ENST00000504290.5/ENST00000504290
                 List<Ensembl> ensembllist = ensemblRepository.findByEnsemblTranscript(id);
                 if (ensembllist.size() > 0) {
                     List<Alignment> list = null;
@@ -416,7 +421,7 @@ public class MainGetResidueMappingController {
     @ApiOperation("Get PDB Residue Mapping by Protein Sequence and Residue position")
     public List<Alignment> getPdbAlignmentReisudeBySequence(
             @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP") @RequestParam String sequence,
-            @ApiParam(required = false, value = "Input Residue Position e.g. 20") @RequestParam(required = false) List<String> positionList,
+            @ApiParam(required = false, value = "Input Residue Positions e.g. 10,20") @RequestParam(required = false) List<String> positionList,
             @ApiParam(required = false, value = "Default Blast Parameters:\n"
                     + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
                     + "Threshold=11,Windowsize=40") @RequestParam(required = false) List<String> paramList
@@ -533,7 +538,10 @@ public class MainGetResidueMappingController {
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
                     rp.setPdbPosition(
                             Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
-                    residueMapping.add(rp);
+                    // Withdraw if mapped to linker of the protein
+                    if (!rp.getPdbAminoAcid().equals("X")) {
+                        residueMapping.add(rp);
+                    }
                 }
 
             } else {
@@ -547,7 +555,10 @@ public class MainGetResidueMappingController {
                                 inputAA - ali.getSeqFrom() + 1));
                         rp.setPdbPosition(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom()
                                 + (inputAA - ali.getSeqFrom()));
-                        residueMapping.add(rp);
+                        // Withdraw if mapped to linker of the protein
+                        if (!rp.getPdbAminoAcid().equals("X")) {
+                            residueMapping.add(rp);
+                        }
                     }
                 }
             }
