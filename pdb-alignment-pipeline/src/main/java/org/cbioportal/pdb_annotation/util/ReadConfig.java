@@ -44,6 +44,7 @@ public class ReadConfig {
     public static String mysql;
     public static String username;
     public static String password;
+    public static String dbHost;
     public static String dbName;
     public static String dbNameScript;
     public static String releaseTag;
@@ -126,6 +127,7 @@ public class ReadConfig {
             ReadConfig.mysql = prop.getProperty("mysql").trim();
             ReadConfig.username = prop.getProperty("username").trim();
             ReadConfig.password = prop.getProperty("password").trim();
+            ReadConfig.dbHost = prop.getProperty("db_host").trim();
             ReadConfig.dbName = prop.getProperty("db_name").trim();
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
             ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
@@ -613,5 +615,14 @@ public class ReadConfig {
     public static void setSaveSpaceTag(String saveSpaceTag) {
         ReadConfig.saveSpaceTag = saveSpaceTag;
     }
+
+    public static String getDbHost() {
+        return dbHost;
+    }
+
+    public static void setDbHost(String dbHost) {
+        ReadConfig.dbHost = dbHost;
+    }
+    
 
 }

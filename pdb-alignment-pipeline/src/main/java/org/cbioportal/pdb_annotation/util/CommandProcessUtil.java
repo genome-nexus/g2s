@@ -284,6 +284,8 @@ public class CommandProcessUtil {
         list.add(ReadConfig.username);
         list.add("--password=" + ReadConfig.password);
         list.add(ReadConfig.dbName);
+        list.add("--host" + ReadConfig.dbHost);
+        list.add(ReadConfig.dbHost);
         return list;
     }
 
