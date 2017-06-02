@@ -156,7 +156,8 @@ public class CommandProcessUtil {
                 pb = new ProcessBuilder(makdeRmCommand(paralist.get(0)));
                 break;
             case "releaseTag":
-                log.info("[MYSQL] Running releaseTag command from " + paralist.get(0) + " to " + paralist.get(1) + " ...");
+                log.info("[MYSQL] Running releaseTag command from " + paralist.get(0) + " to " + paralist.get(1)
+                        + " ...");
                 pb = new ProcessBuilder(makeDBCommand());
                 pb.redirectInput(ProcessBuilder.Redirect.from(new File(paralist.get(0))));
                 pb.redirectOutput(ProcessBuilder.Redirect.to(new File(paralist.get(1))));

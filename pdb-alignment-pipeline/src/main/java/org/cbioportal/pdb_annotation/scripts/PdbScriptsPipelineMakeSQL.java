@@ -36,7 +36,7 @@ public class PdbScriptsPipelineMakeSQL {
     private String sqlInsertOutputInterval;
     private String sqlDeleteFile;
     private String insertSequenceSQL;
-    private boolean updateTag;//if update, then true;
+    private boolean updateTag;// if update, then true;
 
     /**
      * 
@@ -65,16 +65,16 @@ public class PdbScriptsPipelineMakeSQL {
      *            on which directory to store this sql
      */
     public void parse2sql(boolean oneInputTag, String currentDir, int countnum) {
-        //System.out.println(this.updateTag);
+        // System.out.println(this.updateTag);
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
-                                                                     // is
-                                                                     // needed
-                                                                     // to fetch
-                                                                     // dtd from
-                                                                     // some
-                                                                     // servers
-        //System.out.println("this.seqFileCount:" + this.seqFileCount);
+        // is
+        // needed
+        // to fetch
+        // dtd from
+        // some
+        // servers
+        // System.out.println("this.seqFileCount:" + this.seqFileCount);
         this.workspace = currentDir;
         this.seqFileCount = countnum;
         if (!oneInputTag) {
@@ -94,25 +94,27 @@ public class PdbScriptsPipelineMakeSQL {
             generateSQLstatementsSingle(outresults, currentDir);
         }
     }
-    
+
     /**
-     * Used for save space
+     * Used for individual results to save space
+     * 
      * @param oneInputTag
      * @param currentDir
      * @param countnum
      * @param i
      */
-    public void parse2sqlPartition(boolean oneInputTag, String currentDir, int countnum, int i, HashMap<String, String> pdbHm) {
-        //System.out.println(this.updateTag);
+    public void parse2sqlPartition(boolean oneInputTag, String currentDir, int countnum, int i,
+            HashMap<String, String> pdbHm) {
+        // System.out.println(this.updateTag);
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
-                                                                     // is
-                                                                     // needed
-                                                                     // to fetch
-                                                                     // dtd from
-                                                                     // some
-                                                                     // servers
-        //System.out.println("this.seqFileCount:" + this.seqFileCount);
+        // is
+        // needed
+        // to fetch
+        // dtd from
+        // some
+        // servers
+        // System.out.println("this.seqFileCount:" + this.seqFileCount);
         this.workspace = currentDir;
         this.seqFileCount = countnum;
         if (!oneInputTag) {
@@ -120,10 +122,7 @@ public class PdbScriptsPipelineMakeSQL {
             if (this.seqFileCount == -1) {
                 parseblastresultsSmallMem();
             } else {
-                
-                
                 parseblastresultsSmallMem(i, pdbHm);
-                
             }
         } else {
             // test for small datasets: single input, single sql generated in
@@ -205,24 +204,21 @@ public class PdbScriptsPipelineMakeSQL {
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
                     results.addAll(parseSingleAlignment(querytext, hit, count));
-                    count=results.size()+1;
-                   
-                    //No need anymore
-                    //TODO: need number
+                    count = results.size() + 1;
+
+                    // No need anymore
+                    // TODO: need number
                     /*
-                    if (count % sql_insert_output_interval == 0) {
-                        // Once get the criteria, output contents to the SQL
-                        // file
-                        genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
-                        count+=results.size();
-                        results.clear();                        
-                    }
-                    */
+                     * if (count % sql_insert_output_interval == 0) { // Once
+                     * get the criteria, output contents to the SQL // file
+                     * genereateSQLstatementsSmallMem(results, pdbHm, count,
+                     * outputfile); count+=results.size(); results.clear(); }
+                     */
                 }
             }
             // output remaining contents to the SQL file
             genereateSQLstatementsSmallMem(results, pdbHm, count, outputfile);
-            
+
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
             log.error(ex.getMessage());
@@ -241,9 +237,10 @@ public class PdbScriptsPipelineMakeSQL {
         String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
         String segStart = br.getSseqid().split("\\s+")[3];
-        
-        String str = "INSERT IGNORE INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`) VALUES ('" + pdbNo
-                + "', '" + strarrayS[0] + "', '" + strarrayS[1] + "', '" + strarrayS[2] + "', '" + segStart + "');\n";
+
+        String str = "INSERT IGNORE INTO `pdb_entry` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`) VALUES ('"
+                + pdbNo + "', '" + strarrayS[0] + "', '" + strarrayS[1] + "', '" + strarrayS[2] + "', '" + segStart
+                + "');\n";
         return str;
     }
 
@@ -255,7 +252,7 @@ public class PdbScriptsPipelineMakeSQL {
      */
     public String makeTable_pdb_ensembl_insert(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split(";");
-        String pdbNo =  br.getSseqid().split("\\s+")[0];
+        String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
         String segStart = br.getSseqid().split("\\s+")[3];
         String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
@@ -265,40 +262,50 @@ public class PdbScriptsPipelineMakeSQL {
                 + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
         return str;
     }
-    
-    
+
     /**
-     * Used for Update:
-     * generate SQL insert text to Table pdb_ensembl_alignment
+     * Used for Update: generate SQL insert text to Table pdb_ensembl_alignment
      * 
-     * The only variate in the procedure is alignment limit, which now is set as 50
+     * The only variate in the procedure is alignment limit, which now is set as
+     * 50
      * 
      * Call Procedure InsertUpdate ()
      * 
      * The Procedure is integrated with pdb.sql:
      * 
-DROP PROCEDURE IF EXISTS `InsertUpdate`;
-DELIMITER //
-CREATE PROCEDURE InsertUpdate(IN inPDB_NO VARCHAR(12), IN inPDB_ID VARCHAR(4), IN inCHAIN VARCHAR(4), IN inPDB_SEG VARCHAR(2), IN inSEG_START VARCHAR(4), IN inSEQ_ID int, IN inPDB_FROM int, IN inPDB_TO int, IN inSEQ_FROM int, IN inSEQ_TO int, IN inEVALUE double, IN inBITSCORE float, IN inIDENTITY float, IN inIDENTP float, IN inSEQ_ALIGN text, IN inPDB_ALIGN text, IN inMIDLINE_ALIGN text, IN inUPDATE_DATE DATE )
-BEGIN
-DECLARE maxEvalue double;
-DECLARE countEvalue double;
-SELECT COUNT(*) INTO countEvalue FROM pdb_seq_alignment where PDB_NO=inPDB_NO;
-SELECT MAX(D) INTO countEvalue FROM pdb_seq_alignment where PDB_NO=inPDB_NO;
-IF(inEVALUE<maxEvalue) THEN
-  IF(countEvalue<50) THEN
-    INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`) VALUES (inPDB_NO,inPDB_ID,inCHAIN,inPDB_SEG,inSEG_START,inSEQ_ID,inPDB_FROM,inPDB_TO,inSEQ_FROM,inSEQ_TO,inEVALUE,inBITSCORE,inIDENTITY,inIDENTP,inSEQ_ALIGN,inPDB_ALIGN,inMIDLINE_ALIGN,inUPDATE_DATE);
-  ELSE
-    DELETE FROM `pdb_seq_alignment` WHERE (PDB_NO=inPDB_NO and EVALUE=inEVALUE);
-    INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`) VALUES (inPDB_NO,inPDB_ID,inCHAIN,inPDB_SEG,inSEG_START,inSEQ_ID,inPDB_FROM,inPDB_TO,inSEQ_FROM,inSEQ_TO,inEVALUE,inBITSCORE,inIDENTITY,inIDENTP,inSEQ_ALIGN,inPDB_ALIGN,inMIDLINE_ALIGN,inUPDATE_DATE);
-  END IF;
-ELSE
-  IF(countEvalue<50) THEN
-    INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`) VALUES (inPDB_NO,inPDB_ID,inCHAIN,inPDB_SEG,inSEG_START,inSEQ_ID,inPDB_FROM,inPDB_TO,inSEQ_FROM,inSEQ_TO,inEVALUE,inBITSCORE,inIDENTITY,inIDENTP,inSEQ_ALIGN,inPDB_ALIGN,inMIDLINE_ALIGN,inUPDATE_DATE);
-  END IF;
-END IF;
-END //
-DELIMITER ;
+     * DROP PROCEDURE IF EXISTS `InsertUpdate`; DELIMITER // CREATE PROCEDURE
+     * InsertUpdate(IN inPDB_NO VARCHAR(12), IN inPDB_ID VARCHAR(4), IN inCHAIN
+     * VARCHAR(4), IN inPDB_SEG VARCHAR(2), IN inSEG_START VARCHAR(4), IN
+     * inSEQ_ID int, IN inPDB_FROM int, IN inPDB_TO int, IN inSEQ_FROM int, IN
+     * inSEQ_TO int, IN inEVALUE double, IN inBITSCORE float, IN inIDENTITY
+     * float, IN inIDENTP float, IN inSEQ_ALIGN text, IN inPDB_ALIGN text, IN
+     * inMIDLINE_ALIGN text, IN inUPDATE_DATE DATE ) BEGIN DECLARE maxEvalue
+     * double; DECLARE countEvalue double; SELECT COUNT(*) INTO countEvalue FROM
+     * pdb_seq_alignment where PDB_NO=inPDB_NO; SELECT MAX(D) INTO countEvalue
+     * FROM pdb_seq_alignment where PDB_NO=inPDB_NO; IF(inEVALUE<maxEvalue) THEN
+     * IF(countEvalue<50) THEN INSERT INTO `pdb_seq_alignment`
+     * (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`
+     * PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`
+     * SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`) VALUES
+     * (inPDB_NO,inPDB_ID,inCHAIN,inPDB_SEG,inSEG_START,inSEQ_ID,inPDB_FROM,
+     * inPDB_TO,inSEQ_FROM,inSEQ_TO,inEVALUE,inBITSCORE,inIDENTITY,inIDENTP,
+     * inSEQ_ALIGN,inPDB_ALIGN,inMIDLINE_ALIGN,inUPDATE_DATE); ELSE DELETE FROM
+     * `pdb_seq_alignment` WHERE (PDB_NO=inPDB_NO and EVALUE=inEVALUE); INSERT
+     * INTO `pdb_seq_alignment`
+     * (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`
+     * PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`
+     * SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`) VALUES
+     * (inPDB_NO,inPDB_ID,inCHAIN,inPDB_SEG,inSEG_START,inSEQ_ID,inPDB_FROM,
+     * inPDB_TO,inSEQ_FROM,inSEQ_TO,inEVALUE,inBITSCORE,inIDENTITY,inIDENTP,
+     * inSEQ_ALIGN,inPDB_ALIGN,inMIDLINE_ALIGN,inUPDATE_DATE); END IF; ELSE
+     * IF(countEvalue<50) THEN INSERT INTO `pdb_seq_alignment`
+     * (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`
+     * PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`
+     * SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`) VALUES
+     * (inPDB_NO,inPDB_ID,inCHAIN,inPDB_SEG,inSEG_START,inSEQ_ID,inPDB_FROM,
+     * inPDB_TO,inSEQ_FROM,inSEQ_TO,inEVALUE,inBITSCORE,inIDENTITY,inIDENTP,
+     * inSEQ_ALIGN,inPDB_ALIGN,inMIDLINE_ALIGN,inUPDATE_DATE); END IF; END IF;
+     * END // DELIMITER ;
      * 
      * 
      * 
@@ -308,28 +315,29 @@ DELIMITER ;
      */
     public String makeTable_pdb_ensembl_insert_Update(BlastResult br) {
         String[] strarrayQ = br.getQseqid().split(";");
-        String pdbNo =  br.getSseqid().split("\\s+")[0];
+        String pdbNo = br.getSseqid().split("\\s+")[0];
         String[] strarrayS = pdbNo.split("_");
         String segStart = br.getSseqid().split("\\s+")[3];
-        
-        String str = "call InsertUpdate('"
-                + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
-                + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
-                + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
-               
+
+        String str = "call InsertUpdate('" + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2]
+                + "','" + segStart + "','" + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + ","
+                + br.getqStart() + "," + br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
+                + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() + "','" + br.getPdb_align() + "','"
+                + br.getMidline_align() + "',CURDATE());\n";
+
         /*
-        String str = "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
-                + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" + strarrayS[2] + "','" + segStart + "','"
-                + strarrayQ[0] + "'," + br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," + br.getqEnd()
-                + ",'" + br.getEvalue() + "'," + br.getBitscore() + "," + br.getIdent() + "," + br.getIdentp() + ",'"
-                + br.getSeq_align() + "','" + br.getPdb_align() + "','" + br.getMidline_align() + "',CURDATE());\n";
-        */
+         * String str =
+         * "INSERT INTO `pdb_seq_alignment` (`PDB_NO`,`PDB_ID`,`CHAIN`,`PDB_SEG`,`SEG_START`,`SEQ_ID`,`PDB_FROM`,`PDB_TO`,`SEQ_FROM`,`SEQ_TO`,`EVALUE`,`BITSCORE`,`IDENTITY`,`IDENTP`,`SEQ_ALIGN`,`PDB_ALIGN`,`MIDLINE_ALIGN`,`UPDATE_DATE`)VALUES ('"
+         * + pdbNo + "','" + strarrayS[0] + "','" + strarrayS[1] + "','" +
+         * strarrayS[2] + "','" + segStart + "','" + strarrayQ[0] + "'," +
+         * br.getsStart() + "," + br.getsEnd() + "," + br.getqStart() + "," +
+         * br.getqEnd() + ",'" + br.getEvalue() + "'," + br.getBitscore() + ","
+         * + br.getIdent() + "," + br.getIdentp() + ",'" + br.getSeq_align() +
+         * "','" + br.getPdb_align() + "','" + br.getMidline_align() +
+         * "',CURDATE());\n";
+         */
         return str;
     }
-    
-    
-    
 
     /**
      * Parse list of String blast results to input SQL statements, time and
@@ -404,14 +412,14 @@ DELIMITER ;
                 outputlist.add(makeTable_pdb_entry_insert(br));
                 pdbHm.put(br.getSseqid(), "");
             }
-            //If it is update, then call function
-            if(this.updateTag){
+            // If it is update, then call function
+            if (this.updateTag) {
                 outputlist.add(makeTable_pdb_ensembl_insert_Update(br));
-            //If it is init, generate INSERT statements
-            }else{
+                // If it is init, generate INSERT statements
+            } else {
                 outputlist.add(makeTable_pdb_ensembl_insert(br));
             }
-            
+
         }
         outputlist.add("commit;");
         return outputlist;
@@ -439,7 +447,7 @@ DELIMITER ;
                 IterationHits hits = iteration.getIterationHits();
                 for (Hit hit : hits.getHit()) {
                     results.addAll(parseSingleAlignment(querytext, hit, count));
-                    count = results.size()+1;
+                    count = results.size() + 1;
                 }
             }
             this.matches = count - 1;
@@ -461,29 +469,29 @@ DELIMITER ;
      * @return
      */
     public List<BlastResult> parseSingleAlignment(String querytext, Hit hit, int count) {
-        
+
         List<BlastResult> resultList = new ArrayList<BlastResult>();
-        
+
         List<Hsp> tmplist = hit.getHitHsps().getHsp();
         for (Hsp tmp : tmplist) {
             BlastResult br = new BlastResult(count);
             br.qseqid = querytext;
             br.sseqid = hit.getHitDef();
-            br.ident = Double.parseDouble(tmp.getHspIdentity()); 
-            br.identp = Double.parseDouble(tmp.getHspPositive()); 
-            br.evalue = Double.parseDouble(tmp.getHspEvalue()); 
-            br.bitscore = Double.parseDouble(tmp.getHspBitScore()); 
-            br.qStart = Integer.parseInt(tmp.getHspQueryFrom()); 
-            br.qEnd = Integer.parseInt(tmp.getHspQueryTo()); 
-            br.sStart = Integer.parseInt(tmp.getHspHitFrom()); 
-            br.sEnd = Integer.parseInt(tmp.getHspHitTo()); 
-            br.seq_align = tmp.getHspQseq(); 
-            br.pdb_align = tmp.getHspHseq(); 
+            br.ident = Double.parseDouble(tmp.getHspIdentity());
+            br.identp = Double.parseDouble(tmp.getHspPositive());
+            br.evalue = Double.parseDouble(tmp.getHspEvalue());
+            br.bitscore = Double.parseDouble(tmp.getHspBitScore());
+            br.qStart = Integer.parseInt(tmp.getHspQueryFrom());
+            br.qEnd = Integer.parseInt(tmp.getHspQueryTo());
+            br.sStart = Integer.parseInt(tmp.getHspHitFrom());
+            br.sEnd = Integer.parseInt(tmp.getHspHitTo());
+            br.seq_align = tmp.getHspQseq();
+            br.pdb_align = tmp.getHspHseq();
             br.midline_align = tmp.getHspMidline();
             resultList.add(br);
             count++;
         }
-         
+
         return resultList;
     }
 

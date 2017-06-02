@@ -79,12 +79,12 @@ public class ReadConfig {
 
     public static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional
-                                                // '-' and decimal.
+        // '-' and decimal.
     }
 
     public static boolean isFolder(String str) {
         return str.matches("/.+/"); // match a folder start with / and end with
-                                    // /
+        // /
     }
 
     // TODO:
@@ -172,7 +172,6 @@ public class ReadConfig {
         return rcObj;
     }
 
-    
     public static String getUpdateWebProperties() {
         return updateStatisticsSQL;
     }
@@ -623,6 +622,5 @@ public class ReadConfig {
     public static void setDbHost(String dbHost) {
         ReadConfig.dbHost = dbHost;
     }
-    
 
 }
