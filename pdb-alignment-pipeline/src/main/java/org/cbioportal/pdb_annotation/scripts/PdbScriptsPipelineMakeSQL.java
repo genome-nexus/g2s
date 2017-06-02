@@ -94,6 +94,44 @@ public class PdbScriptsPipelineMakeSQL {
             generateSQLstatementsSingle(outresults, currentDir);
         }
     }
+    
+    /**
+     * Used for save space
+     * @param oneInputTag
+     * @param currentDir
+     * @param countnum
+     * @param i
+     */
+    public void parse2sqlPartition(boolean oneInputTag, String currentDir, int countnum, int i, HashMap<String, String> pdbHm) {
+        //System.out.println(this.updateTag);
+        System.setProperty("javax.xml.accessExternalDTD", "all");
+        System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
+                                                                     // is
+                                                                     // needed
+                                                                     // to fetch
+                                                                     // dtd from
+                                                                     // some
+                                                                     // servers
+        //System.out.println("this.seqFileCount:" + this.seqFileCount);
+        this.workspace = currentDir;
+        this.seqFileCount = countnum;
+        if (!oneInputTag) {
+            // multiple input, multiple sql generated incrementally
+            if (this.seqFileCount == -1) {
+                parseblastresultsSmallMem();
+            } else {
+                
+                
+                parseblastresultsSmallMem(i, pdbHm);
+                
+            }
+        } else {
+            // test for small datasets: single input, single sql generated in
+            // one time
+            List<BlastResult> outresults = parseblastresultsSingle(currentDir);
+            generateSQLstatementsSingle(outresults, currentDir);
+        }
+    }
 
     /**
      * parse Single blast XML results, output to SQL file incrementally

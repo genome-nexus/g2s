@@ -293,6 +293,8 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
+        //Original
+        /*
         // Step 4: blastp ensembl genes against pdb; Use splited FASTA results
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
@@ -395,6 +397,125 @@ public class PdbScriptsPipelineRunCommand {
                 }
 
             } else {
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile);
+                cu.runCommand("gzip", paralist);
+
+            }
+
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.sqlDeleteFile);
+            cu.runCommand("gzip", paralist);
+
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + this.db.dbphr);
+            cu.runCommand("rm", paralist);
+
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + this.db.dbpin);
+            cu.runCommand("rm", paralist);
+
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + this.db.dbpsq);
+            cu.runCommand("rm", paralist);
+
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + this.db.resultfileName);
+            cu.runCommand("rm", paralist);
+
+            // raw, delete one, zip one
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.pdbSeqresDownloadFile);
+            cu.runCommand("rm", paralist);
+
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.pdbSeqresFastaFile);
+            cu.runCommand("gzip", paralist);
+        }
+        */
+        
+        
+        
+        //Modified for smaller disk usage, blast/parse/insert/delete
+        // Step 5: Insert delete SQL of obsolete and modified alignments
+        parseprocess.generateDeleteSql(currentDir, listOld);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
+        cu.runCommand("mysql", paralist);
+        
+        
+        HashMap<String, String> pdbHm = new HashMap<String, String>();
+        // Step 6: Create and insert SQL statements of new and modified alignments; Use splited FASTA results
+        // Step 4: blastp ensembl genes against pdb; Use splited FASTA results
+        
+        if (this.seqFileCount != -1) {
+            for (int i = 0; i < this.seqFileCount; i++) {
+                paralist = new ArrayList<String>();
+                paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile + "." + new Integer(i).toString());
+                paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
+                paralist.add(currentDir + this.db.dbName);
+                cu.runCommand("blastp", paralist);
+                
+                parseprocess.parse2sqlPartition(false, currentDir, this.seqFileCount, i, pdbHm);
+                
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("mysql", paralist);
+                
+                
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
+                cu.runCommand("rm", paralist);
+                
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("gzip", paralist);
+            }
+        } else {
+            paralist = new ArrayList<String>();
+            paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile);
+            paralist.add(currentDir + this.db.resultfileName);
+            paralist.add(currentDir + this.db.dbName);
+            cu.runCommand("blastp", paralist);
+            
+            parseprocess.parse2sql(false, currentDir, this.seqFileCount);
+            
+            paralist = new ArrayList<String>();
+            paralist.add(currentDir + ReadConfig.sqlInsertFile);
+            cu.runCommand("mysql", paralist);
+        }
+
+
+
+        // Step 7: After update all the new alignments,
+        // Create complete PDB sequences for de novo sequence blast
+        preprocess.denovoPreprocessPDBsequencesUpdate(dateVersion, listOld, currentDir + ReadConfig.pdbSeqresFastaFile,
+                currentDir + ReadConfig.pdbSeqresFastaFile);
+
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+        paralist.add(ReadConfig.workspace + this.db.dbName);
+        cu.runCommand("makeblastdb", paralist);
+
+        // Step 8: Create release tags
+        // Change messages.properties in web module
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
+        paralist.add(currentDir + ReadConfig.releaseTagResult);
+        cu.runCommand("releaseTag", paralist);
+
+        // Use MYSQL to update
+        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
+                currentDir + ReadConfig.updateStatisticsSQL);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
+        cu.runCommand("mysql", paralist);
+
+        // Step 9: Clean up
+        if (ReadConfig.saveSpaceTag.equals("true")) {
+            log.info("[PIPELINE] Start cleaning up in filesystem");
+
+            if (this.seqFileCount == -1) {
                 paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlInsertFile);
                 cu.runCommand("gzip", paralist);
