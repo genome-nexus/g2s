@@ -19,8 +19,8 @@ import org.cbioportal.pdb_annotation.util.blast.Hsp;
 import org.cbioportal.pdb_annotation.util.blast.Iteration;
 import org.cbioportal.pdb_annotation.util.blast.IterationHits;
 import org.cbioportal.pdb_annotation.util.blast.Statistics;
-import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.models.Inputsequence;
+import org.cbioportal.pdb_annotation.web.models.InputAlignment;
+import org.cbioportal.pdb_annotation.web.models.InputSequence;
 
 /**
  * Shell-based command running
@@ -48,7 +48,7 @@ public class PdbScriptsPipelineRunCommand {
     /**
      * main steps of init pipeline
      */
-    public List<Alignment> runCommand(Inputsequence inputsequence) {
+    public List<InputAlignment> runCommand(InputSequence inputsequence) {
 
         CommandProcessUtil cu = new CommandProcessUtil();
         ReadConfig rc = ReadConfig.getInstance();
@@ -66,9 +66,10 @@ public class PdbScriptsPipelineRunCommand {
         cu.runCommand("blastp", paralist, inputsequence);
 
         // parse results and output results
-        List<Alignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
+        List<InputAlignment> outresults = parseblastresultsSingle(ReadConfig.uploaddir);
 
         // Clean Up
+
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + inputsequence.getId() + ".fasta");
         cu.runCommand("rm", paralist, inputsequence);
@@ -76,6 +77,7 @@ public class PdbScriptsPipelineRunCommand {
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.uploaddir + this.db.resultfileName);
         cu.runCommand("rm", paralist, inputsequence);
+
         return outresults;
     }
 
@@ -84,7 +86,7 @@ public class PdbScriptsPipelineRunCommand {
      * @param inputsequence
      * @return
      */
-    public void webInput2File(Inputsequence inputsequence) {
+    public void webInput2File(InputSequence inputsequence) {
         try {
             FileUtils.writeStringToFile(new File(ReadConfig.uploaddir + inputsequence.getId() + ".fasta"),
                     inputsequence.getSequence());
@@ -99,23 +101,23 @@ public class PdbScriptsPipelineRunCommand {
      * 
      * @return List<BlastResult>
      */
-    public List<Alignment> parseblastresultsSingle(String currentDir) {
+    public List<InputAlignment> parseblastresultsSingle(String currentDir) {
         System.setProperty("javax.xml.accessExternalDTD", "all");
         System.setProperty("http.agent", HTTP_AGENT_PROPERTY_VALUE); // http.agent
-                                                                     // is
-                                                                     // needed
-                                                                     // to fetch
-                                                                     // dtd from
-                                                                     // some
-                                                                     // servers
-        List<Alignment> results = new ArrayList<Alignment>();
+        // is
+        // needed
+        // to fetch
+        // dtd from
+        // some
+        // servers
+        List<InputAlignment> results = new ArrayList<InputAlignment>();
         try {
             log.info("[BLAST] Read blast results from xml file...");
             File blastresults = new File(currentDir + this.db.resultfileName);
             JAXBContext jc = JAXBContext.newInstance("org.cbioportal.pdb_annotation.util.blast");
             Unmarshaller u = jc.createUnmarshaller();
             u.setSchema(null);
-            int count =1;
+            int count = 1;
             BlastOutput blast = (BlastOutput) u.unmarshal(blastresults);
             BlastOutputIterations iterations = blast.getBlastOutputIterations();
             for (Iteration iteration : iterations.getIteration()) {
@@ -123,29 +125,32 @@ public class PdbScriptsPipelineRunCommand {
                 IterationHits hits = iteration.getIterationHits();
                 Statistics stat = iteration.getIterationStat().getStatistics();
                 for (Hit hit : hits.getHit()) {
-                    
-                    //Old: only select Best for one PDB
+
+                    // Old: only select Best for one PDB
                     /*
-                    Alignment alignment = parseSingleAlignmentBest(querytext, hit);
-                    alignment.setBlast_dblen(stat.getStatisticsDbLen());
-                    alignment.setBlast_dbnum(stat.getStatisticsDbNum());
-                    alignment.setBlast_effspace(stat.getStatisticsEffSpace());
-                    alignment.setBlast_entropy(stat.getStatisticsEntropy());
-                    alignment.setBlast_hsplen(stat.getStatisticsHspLen());
-                    alignment.setBlast_kappa(stat.getStatisticsKappa());
-                    alignment.setBlast_lambda(stat.getStatisticsLambda());
-                    alignment.setBlast_reference(blast.getBlastOutputReference());
-                    alignment.setBlast_version(blast.getBlastOutputVersion());
-                    results.add(alignment);
-                    */
-                    
-                    //Select all for one PDB
-                    results.addAll(parseSingleAlignment(querytext, hit, stat, blast, count));                   
-                    count=results.size()+1;                                       
+                     * Alignment alignment = parseSingleAlignmentBest(querytext,
+                     * hit);
+                     * alignment.setBlast_dblen(stat.getStatisticsDbLen());
+                     * alignment.setBlast_dbnum(stat.getStatisticsDbNum());
+                     * alignment.setBlast_effspace(stat.getStatisticsEffSpace())
+                     * ;
+                     * alignment.setBlast_entropy(stat.getStatisticsEntropy());
+                     * alignment.setBlast_hsplen(stat.getStatisticsHspLen());
+                     * alignment.setBlast_kappa(stat.getStatisticsKappa());
+                     * alignment.setBlast_lambda(stat.getStatisticsLambda());
+                     * alignment.setBlast_reference(blast.
+                     * getBlastOutputReference());
+                     * alignment.setBlast_version(blast.getBlastOutputVersion())
+                     * ; results.add(alignment);
+                     */
+
+                    // Select all for one PDB
+                    results.addAll(parseSingleAlignment(querytext, hit, stat, blast, count));
+                    count = results.size() + 1;
                 }
 
             }
-            log.info("[BLAST] Total Insert " + (count-1) + " alignments");
+            log.info("[BLAST] Total Insert " + (count - 1) + " alignments");
         } catch (Exception ex) {
             log.error("[BLAST] Error Parsing BLAST Result");
             log.error(ex.getMessage());
@@ -155,15 +160,16 @@ public class PdbScriptsPipelineRunCommand {
     }
 
     /**
-     * Parse XML structure into Object Alignment, only get best alignment for one PDB
+     * Parse XML structure into Object Alignment, only get best alignment for
+     * one PDB
      * 
      * @param querytext
      * @param hit
      * @param count
      * @return
      */
-    public Alignment parseSingleAlignmentBest(String querytext, Hit hit) {
-        Alignment alignment = new Alignment();
+    public InputAlignment parseSingleAlignmentBest(String querytext, Hit hit) {
+        InputAlignment alignment = new InputAlignment();
 
         alignment.setSeqId(querytext.split("\\s+")[0]);
         alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
@@ -171,7 +177,7 @@ public class PdbScriptsPipelineRunCommand {
         alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
         alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
         alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
-        
+
         List<Hsp> tlist = hit.getHitHsps().getHsp();
         Hsp tmp = tlist.get(0);
         alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
@@ -184,37 +190,35 @@ public class PdbScriptsPipelineRunCommand {
         alignment.setPdbTo(Integer.parseInt(tmp.getHspHitTo()));
         alignment.setSeqAlign(tmp.getHspQseq());
         alignment.setPdbAlign(tmp.getHspHseq());
-        alignment.setMidlineAlign(tmp.getHspMidline());        
+        alignment.setMidlineAlign(tmp.getHspMidline());
 
         return alignment;
     }
-    
-    
-    
+
     /**
      * 
-     * Choose all alignments
-     * Parse XML structure into Object Alignment, 
+     * Choose all alignments Parse XML structure into Object Alignment,
      * 
      * @param querytext
      * @param hit
      * @return
      */
-    public List<Alignment> parseSingleAlignment(String querytext, Hit hit, Statistics stat, BlastOutput blast, int count) {
-        List<Alignment> alignments = new ArrayList<Alignment>();
-        
+    public List<InputAlignment> parseSingleAlignment(String querytext, Hit hit, Statistics stat, BlastOutput blast,
+            int count) {
+        List<InputAlignment> alignments = new ArrayList<InputAlignment>();
+
         List<Hsp> tlist = hit.getHitHsps().getHsp();
-        for(Hsp tmp: tlist){
-            Alignment alignment = new Alignment(count);
-            
+        for (Hsp tmp : tlist) {
+            InputAlignment alignment = new InputAlignment(count);
+
             alignment.setSeqId(querytext.split("\\s+")[0]);
             alignment.setPdbNo(hit.getHitDef().split("\\s+")[0]);
             alignment.setPdbId(hit.getHitDef().split("\\s+")[0].split("_")[0]);
             alignment.setChain(hit.getHitDef().split("\\s+")[0].split("_")[1]);
             alignment.setPdbSeg(hit.getHitDef().split("\\s+")[0].split("_")[2]);
             alignment.setSegStart(hit.getHitDef().split("\\s+")[3]);
-            
-            //results;
+
+            // results;
             alignment.setIdentity(Integer.parseInt(tmp.getHspIdentity()));
             alignment.setIdentp(Integer.parseInt(tmp.getHspPositive()));
             alignment.setEvalue(Double.parseDouble(tmp.getHspEvalue()));
@@ -226,7 +230,7 @@ public class PdbScriptsPipelineRunCommand {
             alignment.setSeqAlign(tmp.getHspQseq());
             alignment.setPdbAlign(tmp.getHspHseq());
             alignment.setMidlineAlign(tmp.getHspMidline());
-            
+
             alignment.setBlast_dblen(stat.getStatisticsDbLen());
             alignment.setBlast_dbnum(stat.getStatisticsDbNum());
             alignment.setBlast_effspace(stat.getStatisticsEffSpace());
@@ -236,7 +240,7 @@ public class PdbScriptsPipelineRunCommand {
             alignment.setBlast_lambda(stat.getStatisticsLambda());
             alignment.setBlast_reference(blast.getBlastOutputReference());
             alignment.setBlast_version(blast.getBlastOutputVersion());
-            
+
             alignments.add(alignment);
             count++;
         }

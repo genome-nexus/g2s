@@ -1,100 +1,94 @@
 package org.cbioportal.pdb_annotation.web.models;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Min;
+import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+/**
+ * Basic Return Objects: Alignments
+ * 
+ * @author Juexin Wang
+ *
+ */
+
+@Entity
+@Table(name = "pdb_seq_alignment")
 public class Alignment {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "ALIGNMENT_ID")
     private int alignmentId;
 
+    @Column(name = "PDB_NO")
     private String pdbNo;
 
+    @Column(name = "PDB_ID")
     private String pdbId;
 
+    @Column(name = "CHAIN")
     private String chain;
 
+    @Column(name = "PDB_SEG")
     private String pdbSeg;
-    
+
+    @Column(name = "SEG_START")
     private String segStart;
 
+    @Column(name = "SEQ_ID")
     private String seqId;
 
+    @Column(name = "PDB_FROM")
     private int pdbFrom;
 
+    @Column(name = "PDB_TO")
     private int pdbTo;
 
+    @Column(name = "SEQ_FROM")
     private int seqFrom;
 
+    @Column(name = "SEQ_TO")
     private int seqTo;
 
-    private double evalue;
+    @Column(name = "EVALUE")
+    private String evalue;
 
-    private double bitscore;
+    @Column(name = "BITSCORE")
+    private float bitscore;
 
-    private int identity;
+    @Column(name = "IDENTITY")
+    private float identity;
 
-    private int identp;
+    @Column(name = "IDENTP")
+    private float identityPositive;
 
+    @Column(name = "SEQ_ALIGN")
     private String seqAlign;
 
+    @Column(name = "PDB_ALIGN")
     private String pdbAlign;
 
+    @Column(name = "MIDLINE_ALIGN")
     private String midlineAlign;
 
-    // Blast Version and Results;
-    private String blast_version;
-
-    private String blast_reference;
-
-    // Results related statistics;
-    private String blast_dblen;
-
-    private String blast_dbnum;
-
-    private String blast_effspace;
-
-    private String blast_entropy;
-
-    private String blast_hsplen;
-
-    private String blast_kappa;
-
-    private String blast_lambda;
-
-    // Other parameters and output statistics
-    // default 1e-10
-    // different with evalue got
-    private String paraEvalue;
-
-    // 2,3,6
-    // default 3
-    private String word_size;
-
-    // default 11
-    private String gapopen;
-
-    // default 1
-    private String gapextend;
-
-    // default BLOSUM62
-    private String matrix;
-
-    // 0,1,2,3 default 2
-    private String comp_based_stats;
-
-    // default 11
-    // Neighboring words threshold
-    private String threshold;
-
-    // default 40
-    // Window for multiple hits
-    private String window_size;
-
-    private String timenow;
+    @Column(name = "UPDATE_DATE")
+    private String updateDate;
     
-    // For input
-    private String sequence;
-    private String inputResidueNum;
+    @Transient
+    private List<ResidueMapping> residueMapping;
+
+    public List<ResidueMapping> getResidueMapping() {
+        return residueMapping;
+    }
+
+    public void setResidueMapping(List<ResidueMapping> residueMapping) {
+        this.residueMapping = residueMapping;
+    }
 
     // ------------------------
     // Constructors
@@ -102,32 +96,17 @@ public class Alignment {
 
     public Alignment() {
     }
-    
+
     public Alignment(int alignmentid) {
         this.alignmentId = alignmentid;
     }
-    
 
-    // Set and get
-    
-    public String getParaEvalue() {
-        return paraEvalue;
-    }
+    // ------------------------
+    // Methods
+    // ------------------------
 
-    public String getInputResidueNum() {
-        return inputResidueNum;
-    }
-
-    public void setInputResidueNum(String inputResidueNum) {
-        this.inputResidueNum = inputResidueNum;
-    }
-
-    public String getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(String sequence) {
-        this.sequence = sequence;
+    public int getAlignmentId() {
+        return alignmentId;
     }
 
     public String getSegStart() {
@@ -136,150 +115,6 @@ public class Alignment {
 
     public void setSegStart(String segStart) {
         this.segStart = segStart;
-    }
-
-    public String getTimenow() {
-        return timenow;
-    }
-
-    public void setTimenow(String timenow) {
-        this.timenow = timenow;
-    }
-
-    public void setParaEvalue(String paraEvalue) {
-        this.paraEvalue = paraEvalue;
-    }    
-
-    public String getBlast_version() {
-        return blast_version;
-    }
-
-    public void setBlast_version(String blast_version) {
-        this.blast_version = blast_version;
-    }
-
-    public String getBlast_reference() {
-        return blast_reference;
-    }
-
-    public void setBlast_reference(String blast_reference) {
-        this.blast_reference = blast_reference;
-    }
-
-    public String getBlast_dblen() {
-        return blast_dblen;
-    }
-
-    public void setBlast_dblen(String blast_dblen) {
-        this.blast_dblen = blast_dblen;
-    }
-
-    public String getBlast_dbnum() {
-        return blast_dbnum;
-    }
-
-    public void setBlast_dbnum(String blast_dbnum) {
-        this.blast_dbnum = blast_dbnum;
-    }
-
-    public String getBlast_effspace() {
-        return blast_effspace;
-    }
-
-    public void setBlast_effspace(String blast_effspace) {
-        this.blast_effspace = blast_effspace;
-    }
-
-    public String getBlast_entropy() {
-        return blast_entropy;
-    }
-
-    public void setBlast_entropy(String blast_entropy) {
-        this.blast_entropy = blast_entropy;
-    }
-
-    public String getBlast_hsplen() {
-        return blast_hsplen;
-    }
-
-    public void setBlast_hsplen(String blast_hsplen) {
-        this.blast_hsplen = blast_hsplen;
-    }
-
-    public String getBlast_kappa() {
-        return blast_kappa;
-    }
-
-    public void setBlast_kappa(String blast_kappa) {
-        this.blast_kappa = blast_kappa;
-    }
-
-    public String getBlast_lambda() {
-        return blast_lambda;
-    }
-
-    public void setBlast_lambda(String blast_lambda) {
-        this.blast_lambda = blast_lambda;
-    }
-
-    public String getWord_size() {
-        return word_size;
-    }
-
-    public void setWord_size(String word_size) {
-        this.word_size = word_size;
-    }
-
-    public String getGapopen() {
-        return gapopen;
-    }
-
-    public void setGapopen(String gapopen) {
-        this.gapopen = gapopen;
-    }
-
-    public String getGapextend() {
-        return gapextend;
-    }
-
-    public void setGapextend(String gapextend) {
-        this.gapextend = gapextend;
-    }
-
-    public String getMatrix() {
-        return matrix;
-    }
-
-    public void setMatrix(String matrix) {
-        this.matrix = matrix;
-    }
-
-    public String getComp_based_stats() {
-        return comp_based_stats;
-    }
-
-    public void setComp_based_stats(String comp_based_stats) {
-        this.comp_based_stats = comp_based_stats;
-    }
-
-    public String getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(String threshold) {
-        this.threshold = threshold;
-    }
-
-    public String getWindow_size() {
-        return window_size;
-    }
-
-    public void setWindow_size(String window_size) {
-        this.window_size = window_size;
-    }
-
-    public int getAlignmentId() {
-        return alignmentId;
     }
 
     public void setAlignmentId(int alignmentId) {
@@ -358,36 +193,36 @@ public class Alignment {
         this.seqTo = seqTo;
     }
 
-    public double getEvalue() {
+    public String getEvalue() {
         return evalue;
     }
 
-    public void setEvalue(double evalue) {
+    public void setEvalue(String evalue) {
         this.evalue = evalue;
     }
 
-    public double getBitscore() {
+    public float getBitscore() {
         return bitscore;
     }
 
-    public void setBitscore(double bitscore) {
+    public void setBitscore(float bitscore) {
         this.bitscore = bitscore;
     }
 
-    public int getIdentity() {
+    public float getIdentity() {
         return identity;
     }
 
-    public void setIdentity(int identity) {
+    public void setIdentity(float identity) {
         this.identity = identity;
     }
 
-    public int getIdentp() {
-        return identp;
+    public float getIdentityPositive() {
+        return identityPositive;
     }
 
-    public void setIdentp(int identp) {
-        this.identp = identp;
+    public void setIdentityPositive(float identityPositive) {
+        this.identityPositive = identityPositive;
     }
 
     public String getSeqAlign() {
@@ -412,6 +247,14 @@ public class Alignment {
 
     public void setMidlineAlign(String midlineAlign) {
         this.midlineAlign = midlineAlign;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
     }
 
 }

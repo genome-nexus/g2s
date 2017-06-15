@@ -11,7 +11,9 @@ import org.cbioportal.pdb_annotation.web.models.Residue;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,18 +47,16 @@ public class UniprotIdAlignmentController {
     private UniprotRepository uniprotRepository;
     @Autowired
     private SeqIdAlignmentController seqController;
+    
 
     // Query from UniprotIdIso
-    @ApiOperation(value = "Get PDB Alignments by UniprotId and Isofrom", nickname = "UniprotIsoformStructureMappingQuery")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/UniprotIsoformStructureMappingQuery", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/UniprotIsoformStructureMapping/{uniprotId}/{isoform}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by UniprotId and Isofrom")
     public List<Alignment> getPdbAlignmentByUniprotIdIso(
-            @RequestParam @ApiParam(value = "Input uniprot Id e.g. Q26540", required = true, allowMultiple = true) String uniprotId,
-            @RequestParam(required = true) @ApiParam(value = "Input Isoform e.g. 1", required = true, allowMultiple = true) String isoform) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
+            @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 1")
+            @PathVariable String isoform) {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
             return alignmentRepository.findBySeqId(uniprotlist.get(0).getSeqId());
@@ -65,15 +65,13 @@ public class UniprotIdAlignmentController {
         }
     }
 
-    @ApiOperation(value = "Whether Isoform of UniprotId Exists", nickname = "UniprotIsoformRecognitionQuery")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
-            @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/UniprotIsoformRecognitionQuery", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/UniprotIsoformRecognition/{uniprotId}/{isoform}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Whether Isoform of UniprotId Exists")
     public boolean getExistedUniprotIdIsoinAlignment(
-            @RequestParam @ApiParam(value = "Input UniprotId e.g. Q26540", required = true, allowMultiple = true) String uniprotId,
-            @RequestParam(required = true) @ApiParam(value = "Input Isoform e.g. 1", required = true, allowMultiple = true) String isoform) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
+            @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 1")
+            @PathVariable String isoform) {
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
             return geneSequenceRepository.findBySeqId(uniprotlist.get(0).getSeqId()).size() != 0;
@@ -82,36 +80,31 @@ public class UniprotIdAlignmentController {
         }
     }
 
-    @ApiOperation(value = "Get Residue Mapping by UniprotId, Isofrom and Residue Position", nickname = "UniprotIsoformResidueMappingQuery")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/UniprotIsoformResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
+    
+    @RequestMapping(value = "/UniprotIsoformResidueMapping/{uniprotId}/{isoform}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get Residue Mapping by UniprotId, Isofrom and Residue Position")
     public List<Residue> getPdbResidueByUniprotIdIso(
-            @RequestParam(required = true) @ApiParam(value = "Input Uniprot Id e.g. Q26540", required = true, allowMultiple = true) String uniprotId,
-            @RequestParam(required = true) @ApiParam(value = "Input Isoform e.g. 1", required = true, allowMultiple = true) String isoform,
-            @RequestParam(required = true) @ApiParam(value = "Input Residue Position e.g. 12", required = true, allowMultiple = true) String aaPosition) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
+            @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Isoform e.g. 1")
+            @PathVariable String isoform,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 12")
+            @PathVariable String position) {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotIdIso(uniprotId + "_" + isoform);
         if (uniprotlist.size() == 1) {
-            return seqController.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId(), aaPosition);
+            return seqController.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId(), position);
         } else {
             return new ArrayList<Residue>();
         }
     }
 
-    // Query from UniprotId
-    @ApiOperation(value = "Get PDB Alignments by UniprotId", nickname = "UniprotStructureMappingQuery")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Alignment.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/UniprotStructureMappingQuery", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
+    // Query from UniprotId    
+    @RequestMapping(value = "/UniprotStructureMapping/{uniprotId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get PDB Alignments by UniprotId")
     public List<Alignment> getPdbAlignmentByUniprotId(
-            @RequestParam @ApiParam(value = "Input Uniprot Id e.g. Q26540", required = true, allowMultiple = true) String uniprotId) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
+            @PathVariable String uniprotId) {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         for (Uniprot entry : uniprotList) {
@@ -120,14 +113,12 @@ public class UniprotIdAlignmentController {
         return outList;
     }
 
-    @ApiOperation(value = "Whether UniprotId Exists", nickname = "UniprotRecognitionQuery")
-    @ApiResponses(value = { @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
-            @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/UniprotRecognitionQuery", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
+    
+    @RequestMapping(value = "/UniprotRecognition/{uniprotId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Whether UniprotId Exists")
     public boolean getExistedUniprotIdinAlignment(
-            @RequestParam @ApiParam(value = "Input UniprotId e.g. Q26540", required = true, allowMultiple = true) String uniprotId) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
+            @PathVariable String uniprotId) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
@@ -137,21 +128,19 @@ public class UniprotIdAlignmentController {
         return outList.size() != 0;
     }
 
-    @ApiOperation(value = "Get Residue Mapping by UniprotId and Residue Number", nickname = "UniprotResidueMappingQuery")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Bad Request") })
-    @RequestMapping(value = "/UniprotResidueMappingQuery", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    @ResponseStatus(HttpStatus.OK)
+    
+    @RequestMapping(value = "/UniprotResidueMapping/{uniprotId}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Get Residue Mapping by UniprotId and Residue Position")
     public List<Residue> getPdbResidueByUniprotId(
-            @RequestParam(required = true) @ApiParam(value = "Input Uniprot Id e.g. Q26540", required = true, allowMultiple = true) String uniprotId,
-            @RequestParam(required = true) @ApiParam(value = "Input Residue Position e.g. 12", required = true, allowMultiple = true) String aaPosition) {
+            @ApiParam(required = true, value = "Input uniprot Id e.g. Q26540")
+            @PathVariable String uniprotId,
+            @ApiParam(required = true, value = "Input Residue Position e.g. 12")
+            @PathVariable String position) {
 
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotId(uniprotId);
         ArrayList<Residue> outList = new ArrayList<Residue>();
         for (Uniprot entry : uniprotList) {
-            outList.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId(), aaPosition));
+            outList.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId(), position));
         }
         return outList;
     }
