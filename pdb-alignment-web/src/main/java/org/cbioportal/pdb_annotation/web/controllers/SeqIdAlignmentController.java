@@ -109,17 +109,18 @@ public class SeqIdAlignmentController {
 
                 rp.setQueryAminoAcid(
                         ali.getSeqAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                rp.setQueryPosition(inputAA - ali.getSeqFrom() + 1);
+                // rp.setQueryPosition(inputAA - ali.getSeqFrom() + 1);
+                rp.setQueryPosition(inputAA);
 
                 rp.setPdbAminoAcid(
                         ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
                 rp.setPdbPosition(
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
-                
-                //Withdraw if mapped to linker of the protein
-                if(!rp.getPdbAminoAcid().equals("X")){
+
+                // Withdraw if mapped to linker of the protein
+                if (!rp.getPdbAminoAcid().equals("X")) {
                     residueMapping.add(rp);
-                }                
+                }
             }
 
             ali.setResidueMapping(residueMapping);
@@ -153,8 +154,8 @@ public class SeqIdAlignmentController {
                         Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                 rp.setPdbAminoAcid(
                         ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                //Withdraw if mapped to linker of the protein
-                if(!rp.getPdbAminoAcid().equals("X")){
+                // Withdraw if mapped to linker of the protein
+                if (!rp.getPdbAminoAcid().equals("X")) {
                     residueMapping.add(rp);
                 }
 
@@ -194,8 +195,8 @@ public class SeqIdAlignmentController {
                             Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
                     rp.setPdbAminoAcid(
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                    //Withdraw if mapped to linker of the protein
-                    if(!rp.getPdbAminoAcid().equals("X")){
+                    // Withdraw if mapped to linker of the protein
+                    if (!rp.getPdbAminoAcid().equals("X")) {
                         residueMapping.add(rp);
                     }
 
