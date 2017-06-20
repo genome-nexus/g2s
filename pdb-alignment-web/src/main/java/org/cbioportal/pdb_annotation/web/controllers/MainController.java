@@ -7,10 +7,14 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
-import org.cbioportal.pdb_annotation.web.models.Alignment;
-import org.cbioportal.pdb_annotation.web.models.Inputsequence;
-import org.cbioportal.pdb_annotation.web.models.Residue;
+import org.cbioportal.pdb_annotation.web.domain.StatisticsRepository;
+import org.cbioportal.pdb_annotation.web.models.InputAlignment;
+import org.cbioportal.pdb_annotation.web.models.InputSequence;
+import org.cbioportal.pdb_annotation.web.models.Statistics;
+import org.cbioportal.pdb_annotation.web.models.InputResidue;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,25 +25,29 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 
- * Control the input sequence to blast
+ * Main Controller of the whole website Control the input sequence to blast
+ * Mainly use InputSequence in model
  * 
  * @author Juexin wang
  * 
  */
 @Controller
-public class InputsequenceController {
+public class MainController {
 
-    @GetMapping("/input")
+    @Autowired
+    private StatisticsRepository statisticsRepository;
+
+    @GetMapping("/sequence")
     public ModelAndView inputForm(Model model) {
-        model.addAttribute("inputsequence", new Inputsequence());
-        return new ModelAndView("input");
+        model.addAttribute("inputsequence", new InputSequence());
+        return new ModelAndView("sequence");
     }
 
-    @PostMapping("/input")
-    public ModelAndView resultBack(@ModelAttribute @Valid Inputsequence inputsequence, BindingResult bindingResult,
+    @PostMapping("/sequence")
+    public ModelAndView resultBack(@ModelAttribute @Valid InputSequence inputsequence, BindingResult bindingResult,
             HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            return new ModelAndView("input");
+            return new ModelAndView("sequence");
         }
 
         // is client behind something?
@@ -52,24 +60,24 @@ public class InputsequenceController {
         // inputsequence.setSequence(inputsequence.getSequence());
 
         PdbScriptsPipelineRunCommand pdbScriptsPipelineRunCommand = new PdbScriptsPipelineRunCommand();
-        List<Alignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
+        List<InputAlignment> alignments = pdbScriptsPipelineRunCommand.runCommand(inputsequence);
 
         // Instant instant = Instant.now ();
         // inputsequence.setTimenow(instant.toString());
         inputsequence.setTimenow(LocalDateTime.now().toString().replace("T", " "));
 
-        List<Residue> residues = new ArrayList<Residue>();
+        List<InputResidue> residues = new ArrayList<InputResidue>();
         int inputAA = 0;
-        if (!inputsequence.getResidueNum().equals("")) {
-            inputAA = Integer.parseInt(inputsequence.getResidueNum());
+        if (inputsequence.getResidueNumList().size() != 0) {
+            inputAA = Integer.parseInt(inputsequence.getResidueNumList().get(0));
         }
 
-        for (Alignment ali : alignments) {
+        for (InputAlignment ali : alignments) {
             // if getResidueNum is empty, then return alignments
             // else, return residues
-            if (inputsequence.getResidueNum().equals("")
+            if (inputsequence.getResidueNumList().size() == 0
                     || (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo())) {
-                Residue re = new Residue();
+                InputResidue re = new InputResidue();
                 re.setAlignmentId(ali.getAlignmentId());
                 re.setBitscore(ali.getBitscore());
                 re.setChain(ali.getChain());
@@ -88,11 +96,34 @@ public class InputsequenceController {
                 re.setPdbNo(ali.getPdbNo());
                 re.setPdbSeg(ali.getPdbSeg());
                 re.setPdbTo(ali.getPdbTo());
-                if (!(inputsequence.getResidueNum().equals(""))) {
+
+                if (!(inputsequence.getResidueNumList().size() == 0)) {
                     re.setResidueName(
                             ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                    re.setResidueNum(new Integer(Integer.parseInt(ali.getSegStart())-1+ali.getPdbFrom() + (inputAA - ali.getSeqFrom())).toString());
+                    re.setResidueNum(new Integer(
+                            Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()))
+                                    .toString());
                 }
+                // For percentage
+                int queryLength = ali.getSeqAlign().length();
+                int targetLength = ali.getPdbAlign().length();
+                int queryGapLength = StringUtils.countMatches(ali.getSeqAlign(), "-");
+                int targetGapLength = StringUtils.countMatches(ali.getPdbAlign(), "-");
+                int gapLength = Math.abs(queryGapLength - targetGapLength);
+
+                // Test:
+                if (queryLength != targetLength) {
+                    System.out.println("Error! in " + ali.getPdbNo());
+                }
+
+                re.setIdentityPercentage(String.format("%.2f", ali.getIdentity() * 1.0f / queryLength));
+                re.setPositivePercentage(String.format("%.2f", ali.getIdentp() * 1.0f / queryLength));
+                re.setGapPercentage(String.format("%.2f", gapLength * 1.0f / queryLength));
+                re.setGap(gapLength);
+                re.setLength(queryLength);
+                re.setIdentityPercentageStr("(" + ali.getIdentity() + "/" + queryLength + ")");
+                re.setPositivePercentageStr("(" + ali.getIdentp() + "/" + queryLength + ")");
+                re.setGapPercentageStr("(" + gapLength + "/" + queryLength + ")");
 
                 // Parameters for output TODO: not optimize
                 re.setParaEvalue(inputsequence.getEvalue());
@@ -115,10 +146,14 @@ public class InputsequenceController {
                 re.setBlast_version(ali.getBlast_version());
 
                 re.setTimenow(inputsequence.getTimenow());
-                
-                //input
+
+                // input
                 re.setSequence(inputsequence.getSequence());
-                re.setInputResidueNum(inputsequence.getResidueNum());
+                if (inputsequence.getResidueNumList().size() != 0) {
+                    re.setInputResidueNum(inputsequence.getResidueNumList().get(0));
+                } else {
+                    re.setInputResidueNum("");
+                }
 
                 residues.add(re);
             }
@@ -126,7 +161,8 @@ public class InputsequenceController {
         return new ModelAndView("/result", "residues", residues);
     }
 
-    @GetMapping("/api")
+    // Original Mapping
+    @GetMapping("/pageapi")
     public ModelAndView apiInfo() {
         return new ModelAndView("api");
     }
@@ -137,8 +173,9 @@ public class InputsequenceController {
     }
 
     @GetMapping("/statistics")
-    public ModelAndView statisticsInfo() {
-        return new ModelAndView("statistics");
+    public ModelAndView statisticsInfo(Model model) {
+        List<Statistics> statistics = statisticsRepository.findTop2ByOrderByIdDesc();
+        return new ModelAndView("/statistics", "statistics", statistics);
     }
 
     @GetMapping("/about")
@@ -153,7 +190,7 @@ public class InputsequenceController {
 
     @GetMapping("/")
     public ModelAndView homeInfo() {
-        return new ModelAndView("api");
+        return new ModelAndView("frontpage");
     }
 
 }

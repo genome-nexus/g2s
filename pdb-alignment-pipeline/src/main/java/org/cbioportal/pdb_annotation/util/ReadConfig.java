@@ -44,8 +44,12 @@ public class ReadConfig {
     public static String mysql;
     public static String username;
     public static String password;
+    public static String dbHost;
     public static String dbName;
     public static String dbNameScript;
+    public static String releaseTag;
+    public static String releaseTagResult;
+    public static String updateStatisticsSQL;
     public static String pdbWholeSource;
     public static String ensemblWholeSource;
     public static String swissprotWholeSource;
@@ -75,12 +79,12 @@ public class ReadConfig {
 
     public static boolean isNumeric(String str) {
         return str.matches("-?\\d+(\\.\\d+)?"); // match a number with optional
-                                                // '-' and decimal.
+        // '-' and decimal.
     }
 
     public static boolean isFolder(String str) {
         return str.matches("/.+/"); // match a folder start with / and end with
-                                    // /
+        // /
     }
 
     // TODO:
@@ -123,8 +127,12 @@ public class ReadConfig {
             ReadConfig.mysql = prop.getProperty("mysql").trim();
             ReadConfig.username = prop.getProperty("username").trim();
             ReadConfig.password = prop.getProperty("password").trim();
+            ReadConfig.dbHost = prop.getProperty("db_host").trim();
             ReadConfig.dbName = prop.getProperty("db_name").trim();
             ReadConfig.dbNameScript = prop.getProperty("db_name_script").trim();
+            ReadConfig.releaseTag = prop.getProperty("update.releaseTag_script").trim();
+            ReadConfig.releaseTagResult = prop.getProperty("update.release_result").trim();
+            ReadConfig.updateStatisticsSQL = prop.getProperty("update.statistics.sql").trim();
             ReadConfig.pdbWholeSource = prop.getProperty("pdb.wholeSource").trim();
             ReadConfig.ensemblWholeSource = prop.getProperty("ensembl.wholeSource").trim();
             ReadConfig.swissprotWholeSource = prop.getProperty("swissprot.wholeSource").trim();
@@ -162,6 +170,30 @@ public class ReadConfig {
             rcObj = new ReadConfig();
         }
         return rcObj;
+    }
+
+    public static String getUpdateWebProperties() {
+        return updateStatisticsSQL;
+    }
+
+    public static void setUpdateWebProperties(String updateWebProperties) {
+        ReadConfig.updateStatisticsSQL = updateWebProperties;
+    }
+
+    public static String getReleaseTagResult() {
+        return releaseTagResult;
+    }
+
+    public static void setReleaseTagResult(String releaseTagResult) {
+        ReadConfig.releaseTagResult = releaseTagResult;
+    }
+
+    public static String getReleaseTag() {
+        return releaseTag;
+    }
+
+    public static void setReleaseTag(String releaseTag) {
+        ReadConfig.releaseTag = releaseTag;
     }
 
     public static String getUpdateSeqFastaFileNum() {
@@ -581,6 +613,14 @@ public class ReadConfig {
 
     public static void setSaveSpaceTag(String saveSpaceTag) {
         ReadConfig.saveSpaceTag = saveSpaceTag;
+    }
+
+    public static String getDbHost() {
+        return dbHost;
+    }
+
+    public static void setDbHost(String dbHost) {
+        ReadConfig.dbHost = dbHost;
     }
 
 }

@@ -23,6 +23,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Main SpringBoot Application
+ * This module is fully integrated into pdb-alignment-web, will not maintain anymore
  *
  * @author Juexin Wang
  *

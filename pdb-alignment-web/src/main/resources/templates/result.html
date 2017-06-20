@@ -14,15 +14,25 @@
 					<td>PDB</td>
 					<td>Chain</td>
 					<td>Segment</td>
-					<td>PDBFrom</td>
-					<td>PDBTo</td>
-					<td>SeqFrom</td>
-					<td>SeqTo</td>
-					<td>Evalue</td>
+					<td>PDB<br />From
+					</td>
+					<td>PDB<br />To
+					</td>
+					<td>Seq<br />From
+					</td>
+					<td>Seq<br />To
+					</td>
+					<td><abbr
+						title="Expectation value (E) threshold for saving hits">Evalue</abbr></td>
 					<td>Bitscore</td>
-					<td>Identities</td>
-					<td>Positives</td>
-					<td>Mapped Residue</td>
+					<td><abbr
+						title="The extent to which two (nucleotide or amino acid) sequences have similar residues at the same positions in an alignment, often expressed as a percentage.">Identities</abbr></td>
+					<td><abbr
+						title="The extent to which two (nucleotide or amino acid) sequences have the same residues at the same positions in an alignment, often expressed as a percentage.">Positives</abbr></td>
+					<td><abbr
+						title="A space introduced into an alignment to compensate for insertions and deletions in one sequence relative to another">Gaps</abbr></td>
+					<td>Mapped<br />Residue
+					</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -43,8 +53,11 @@
 					<td th:text="${residue.seqTo}">1</td>
 					<td th:text="${residue.evalue}">1</td>
 					<td th:text="${residue.bitscore}">1</td>
-					<td th:text="${residue.identity}">1</td>
-					<td th:text="${residue.identp}">1</td>
+					<td
+						th:text="${residue.identityPercentage}+${residue.identityPercentageStr}">1</td>
+					<td
+						th:text="${residue.positivePercentage}+${residue.positivePercentageStr}">1</td>
+					<td th:text="${residue.gapPercentage}+${residue.gapPercentageStr}">1</td>
 					<td><a
 						th:href="@{'http://www.rcsb.org/pdb/pv/pv.do'(pdbid=${residue.pdbId}, highlight=${residue.chain}+':'+${residue.residueNum})}"><p
 								th:text="${residue.residueNum}"></p></a></td>
@@ -75,9 +88,14 @@
 
 			<dl>
 				<dt>Input Sequence:</dt>
-				<pre><dd th:text="${residues[0].sequence}"></dd></pre>
+				<pre>
+					<dd th:text="${residues[0].sequence}"></dd>
+				</pre>
 				<dt>Input Residue Number:</dt>
-				<pre><dd th:if="${residues[0].inputResidueNum.empty}">NA</dd> <dd th:text="${residues[0].inputResidueNum}"></dd></pre>								
+				<pre>
+					<dd th:if="${residues[0].inputResidueNum.empty}">NA</dd> <dd
+						th:text="${residues[0].inputResidueNum}"></dd>
+				</pre>
 			</dl>
 
 
@@ -187,7 +205,7 @@
 
 		<p></p>
 		<div class="btn-group">
-			<a th:href="@{/input}" href="input.html"><button
+			<a th:href="@{/sequence}" href="sequence.html"><button
 					class="btn btn-primary dropdown-toggle">Submit another
 					sequence</button></a>
 		</div>

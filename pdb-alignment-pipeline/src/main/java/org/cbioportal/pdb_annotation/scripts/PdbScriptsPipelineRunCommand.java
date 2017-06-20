@@ -25,6 +25,7 @@ public class PdbScriptsPipelineRunCommand {
     private BlastDataBase db;
     private int matches;
     private int seqFileCount;
+    private boolean updateTag;
 
     /**
      * Constructor
@@ -32,6 +33,7 @@ public class PdbScriptsPipelineRunCommand {
     public PdbScriptsPipelineRunCommand() {
         this.matches = 0;
         this.seqFileCount = -1;
+        this.updateTag = false;
     }
 
     public BlastDataBase getDb() {
@@ -58,6 +60,14 @@ public class PdbScriptsPipelineRunCommand {
         this.seqFileCount = seqFileCount;
     }
 
+    public boolean isUpdateTag() {
+        return updateTag;
+    }
+
+    public void setUpdateTag(boolean updateTag) {
+        this.updateTag = updateTag;
+    }
+
     /**
      * main steps of init pipeline
      */
@@ -76,13 +86,21 @@ public class PdbScriptsPipelineRunCommand {
         log.info(
                 "[Download] A cloned copy of whole PDB will be downloaded and parse to sequences, unziped and parsing to get the PDB sequences");
         PdbSequenceUtil pu = new PdbSequenceUtil();
-        // pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",ReadConfig.workspace
-        // + ReadConfig.pdbSeqresDownloadFile);
+        pu.initSequencefromFolder("/home/wangjue/gsoc/pdb_all/pdb",
+                ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
         // pu.initSequencefromFolder("/home/wangjue/gsoc/testpdb/test",ReadConfig.workspace
         // + ReadConfig.pdbSeqresDownloadFile);
-        pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile);
+        // pu.initSequencefromAll(ReadConfig.pdbRepo, ReadConfig.workspace +
+        // ReadConfig.pdbSeqresDownloadFile);
 
+        // Step 2:
         log.info("********************[STEP 2]********************");
+        log.info("[Processing] Preprocess PDB sequence and sequence files");
+        // Select only PDB files of proteins, parse PDB files to sequences
+        preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile,
+                ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+
+        log.info("********************[STEP 3]********************");
         log.info("[Download] Download and unzip Ensembl, Uniprot and Isoform");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.ensemblWholeSource);
@@ -132,37 +150,39 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + ReadConfig.isoformDownloadFile);
         cu.runCommand("gunzip", paralist);
 
-        // Step 3:
-        log.info("********************[STEP 3]********************");
-        log.info(
-                "[Processing] Preprocess PDB sequence and sequence files; Then Incorprate ensembl, swissprot, trembl and isoform togethe");
-        // Select only PDB files of proteins, parse PDB files to sequences
-        preprocess.preprocessPDBsequences(ReadConfig.workspace + ReadConfig.pdbSeqresDownloadFile,
-                ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
+        // Step 4:
+        log.info("********************[STEP 4]********************");
+        log.info("[Processing] Incorprate ensembl, swissprot, trembl and isoform togethe");
+        // This step takes memory, then split into small files to save the
+        // running memory
+        // Read Uniprot Files First, get HashMap<Uniprot, Accession>
+        HashMap<String, String> accHm = preprocess
+                .getUniProtAccHm(ReadConfig.workspace + ReadConfig.swissprotDownloadFile);
 
-        // Incorprate ensembl, swissprot, trembl and isoform together; This step
-        // takes memory
-        // Then split into small files to save the running memory
         HashMap<String, String> uniqSeqHm = new HashMap<String, String>();
-        uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.ensemblDownloadFile, uniqSeqHm);
-        uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, uniqSeqHm);
+        uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.swissprotDownloadFile, accHm,
+                uniqSeqHm);
         // uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace +
         // ReadConfig.tremblDownloadFile,uniqSeqHm);
-        uniqSeqHm = preprocess.preprocessUniqSeq(ReadConfig.workspace + ReadConfig.isoformDownloadFile, uniqSeqHm);
+        uniqSeqHm = preprocess.preprocessUniqSeqUniprot(ReadConfig.workspace + ReadConfig.isoformDownloadFile, accHm,
+                uniqSeqHm);
+
+        uniqSeqHm = preprocess.preprocessUniqSeqEnsembl(ReadConfig.workspace + ReadConfig.ensemblDownloadFile,
+                uniqSeqHm);
 
         this.seqFileCount = preprocess.preprocessGENEsequences(uniqSeqHm,
                 ReadConfig.workspace + ReadConfig.seqFastaFile);
 
-        // Step 4:
-        log.info("********************[STEP 4]********************");
+        // Step 5:
+        log.info("********************[STEP 5]********************");
         log.info("[PrepareBlast] Build the database by makeblastdb");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.pdbSeqresFastaFile);
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-        // Step 5:
-        log.info("********************[STEP 5]********************");
+        // Step 6:
+        log.info("********************[STEP 6]********************");
         log.info("[Blast] blastp ensembl genes against pdb (Warning: This step takes time)");
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
@@ -182,27 +202,27 @@ public class PdbScriptsPipelineRunCommand {
 
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
 
-        // Step 6:
-        log.info("********************[STEP 6]********************");
+        // Step 7:
+        log.info("********************[STEP 7]********************");
         log.info("[PrepareSQL] Parse results and output as input sql statments");
         parseprocess.parse2sql(false, ReadConfig.workspace, this.seqFileCount);
 
-        // Step 7:
-        log.info("********************[STEP 7]********************");
+        // Step 8:
+        log.info("********************[STEP 8]********************");
         log.info("[SQL] Create data schema");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.resourceDir + ReadConfig.dbNameScript);
         cu.runCommand("mysql", paralist);
 
-        // Step 8:
-        log.info("********************[STEP 8]********************");
+        // Step 9:
+        log.info("********************[STEP 9]********************");
         log.info("[SQL] Import gene sequence SQL statements into the database");
         paralist = new ArrayList<String>();
         paralist.add(ReadConfig.workspace + ReadConfig.insertSequenceSQL);
         cu.runCommand("mysql", paralist);
 
-        // Step 9:
-        log.info("********************[STEP 9]********************");
+        // Step 10:
+        log.info("********************[STEP 10]********************");
         log.info("[SQL] Import INSERT SQL statements into the database (Warning: This step takes time)");
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
@@ -216,8 +236,8 @@ public class PdbScriptsPipelineRunCommand {
             cu.runCommand("mysql", paralist);
         }
 
-        // Step 10:
-        log.info("********************[STEP 10]********************");
+        // Step 11:
+        log.info("********************[STEP 11]********************");
         log.info("[FileSystem] Clean Up");
         /*
          * if(ReadConfig.saveSpaceTag.equals("true")){ log.info(
@@ -250,6 +270,7 @@ public class PdbScriptsPipelineRunCommand {
     public void runUpdatePDB() {
         CommandProcessUtil cu = new CommandProcessUtil();
         this.db = new BlastDataBase(ReadConfig.pdbSeqresDownloadFile);
+        this.setUpdateTag(true);
         PdbScriptsPipelinePreprocessing preprocess = new PdbScriptsPipelinePreprocessing();
         PdbScriptsPipelineMakeSQL parseprocess = new PdbScriptsPipelineMakeSQL(this);
         this.seqFileCount = Integer.parseInt(ReadConfig.updateSeqFastaFileNum);
@@ -273,7 +294,130 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(currentDir + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-        // Step 4: Change
+        // Original implementation, take some disk spaces
+        /*
+         * // Step 4: blastp ensembl genes against pdb; Use splited FASTA
+         * results if (this.seqFileCount != -1) { for (int i = 0; i <
+         * this.seqFileCount; i++) { paralist = new ArrayList<String>();
+         * paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile + "." +
+         * new Integer(i).toString()); paralist.add(currentDir +
+         * this.db.resultfileName + "." + new Integer(i).toString());
+         * paralist.add(currentDir + this.db.dbName); cu.runCommand("blastp",
+         * paralist); } } else { paralist = new ArrayList<String>();
+         * paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile);
+         * paralist.add(currentDir + this.db.resultfileName);
+         * paralist.add(currentDir + this.db.dbName); cu.runCommand("blastp",
+         * paralist); }
+         * 
+         * // Step 4: Obsolete: blastp ensembl genes against pdb; Use one input,
+         * // drawback is too huge xml results // The problem is too huge
+         * results for one blast results file // paralist = new
+         * ArrayList<String>(); // paralist.add(ReadConfig.workspace +
+         * ReadConfig.seqFastaFile); // paralist.add(currentDir +
+         * this.db.resultfileName); // paralist.add(currentDir +
+         * this.db.dbName); // cu.runCommand("blastp", paralist);
+         * 
+         * // Step 5: Insert delete SQL of obsolete and modified alignments
+         * parseprocess.generateDeleteSql(currentDir, listOld); paralist = new
+         * ArrayList<String>(); paralist.add(currentDir +
+         * ReadConfig.sqlDeleteFile); cu.runCommand("mysql", paralist);
+         * 
+         * // Step 6: Create and insert SQL statements of new and modified //
+         * alignments; Use splited FASTA results parseprocess.parse2sql(false,
+         * currentDir, this.seqFileCount);
+         * 
+         * if (this.seqFileCount != -1) { for (int i = 0; i < this.seqFileCount;
+         * i++) { paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+         * cu.runCommand("mysql", paralist); } } else { paralist = new
+         * ArrayList<String>(); paralist.add(currentDir +
+         * ReadConfig.sqlInsertFile); cu.runCommand("mysql", paralist); }
+         * 
+         * // Step 6: Obsolete: Create and insert SQL statements of new and //
+         * modified alignments; Use one input, drawback is too huge xml results
+         * // The problem is too huge results for one blast results file //
+         * parseprocess.parse2sql(true, currentDir); // paralist = new
+         * ArrayList<String>(); // paralist.add(currentDir +
+         * ReadConfig.sqlInsertFile); // cu.runCommand("mysql", paralist);
+         * 
+         * // Step 7: After update all the new alignments, // Create complete
+         * PDB sequences for de novo sequence blast
+         * preprocess.denovoPreprocessPDBsequencesUpdate(dateVersion, listOld,
+         * currentDir + ReadConfig.pdbSeqresFastaFile, currentDir +
+         * ReadConfig.pdbSeqresFastaFile);
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(ReadConfig.workspace
+         * + ReadConfig.pdbSeqresFastaFile); paralist.add(ReadConfig.workspace +
+         * this.db.dbName); cu.runCommand("makeblastdb", paralist);
+         * 
+         * // Step 8: Create release tags // Change messages.properties in web
+         * module paralist = new ArrayList<String>();
+         * paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
+         * paralist.add(currentDir + ReadConfig.releaseTagResult);
+         * cu.runCommand("releaseTag", paralist);
+         * 
+         * // Use MYSQL to update preprocess.releasTagUpdateSQL(currentDir +
+         * ReadConfig.releaseTagResult, currentDir +
+         * ReadConfig.updateStatisticsSQL); paralist = new ArrayList<String>();
+         * paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
+         * cu.runCommand("mysql", paralist);
+         * 
+         * // Step 9: Clean up if (ReadConfig.saveSpaceTag.equals("true")) {
+         * log.info("[PIPELINE] Start cleaning up in filesystem");
+         * 
+         * if (this.seqFileCount != -1) {
+         * 
+         * for (int i = 0; i < this.seqFileCount; i++) { paralist = new
+         * ArrayList<String>(); paralist.add(currentDir + this.db.resultfileName
+         * + "." + new Integer(i).toString()); cu.runCommand("rm", paralist); }
+         * 
+         * }
+         * 
+         * if (this.seqFileCount != -1) { for (int i = 0; i < this.seqFileCount;
+         * i++) { paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+         * cu.runCommand("gzip", paralist); }
+         * 
+         * } else { paralist = new ArrayList<String>(); paralist.add(currentDir
+         * + ReadConfig.sqlInsertFile); cu.runCommand("gzip", paralist);
+         * 
+         * }
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * ReadConfig.sqlDeleteFile); cu.runCommand("gzip", paralist);
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * this.db.dbphr); cu.runCommand("rm", paralist);
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * this.db.dbpin); cu.runCommand("rm", paralist);
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * this.db.dbpsq); cu.runCommand("rm", paralist);
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * this.db.resultfileName); cu.runCommand("rm", paralist);
+         * 
+         * // raw, delete one, zip one paralist = new ArrayList<String>();
+         * paralist.add(currentDir + ReadConfig.pdbSeqresDownloadFile);
+         * cu.runCommand("rm", paralist);
+         * 
+         * paralist = new ArrayList<String>(); paralist.add(currentDir +
+         * ReadConfig.pdbSeqresFastaFile); cu.runCommand("gzip", paralist); }
+         */
+
+        // Modified for smaller disk usage, blast/parse/insert/delete
+        // Step 4: Insert delete SQL of obsolete and modified alignments
+        parseprocess.generateDeleteSql(currentDir, listOld);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
+        cu.runCommand("mysql", paralist);
+
+        HashMap<String, String> pdbHm = new HashMap<String, String>();
+        // Step 5: Create and insert SQL statements of new and modified
+        // alignments; Use splited FASTA results
+        // Step 6: blastp ensembl genes against pdb; Use splited FASTA results
+
         if (this.seqFileCount != -1) {
             for (int i = 0; i < this.seqFileCount; i++) {
                 paralist = new ArrayList<String>();
@@ -281,6 +425,20 @@ public class PdbScriptsPipelineRunCommand {
                 paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
                 paralist.add(currentDir + this.db.dbName);
                 cu.runCommand("blastp", paralist);
+
+                parseprocess.parse2sqlPartition(false, currentDir, this.seqFileCount, i, pdbHm);
+
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("mysql", paralist);
+
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
+                cu.runCommand("rm", paralist);
+
+                paralist = new ArrayList<String>();
+                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
+                cu.runCommand("gzip", paralist);
             }
         } else {
             paralist = new ArrayList<String>();
@@ -288,41 +446,13 @@ public class PdbScriptsPipelineRunCommand {
             paralist.add(currentDir + this.db.resultfileName);
             paralist.add(currentDir + this.db.dbName);
             cu.runCommand("blastp", paralist);
-        }
 
-        // Step 4: Obsolete: blastp ensembl genes against pdb
-        // paralist = new ArrayList<String>();
-        // paralist.add(ReadConfig.workspace + ReadConfig.seqFastaFile);
-        // paralist.add(currentDir + this.db.resultfileName);
-        // paralist.add(currentDir + this.db.dbName);
-        // cu.runCommand("blastp", paralist);
+            parseprocess.parse2sql(false, currentDir, this.seqFileCount);
 
-        // Step 5: Insert delete SQL of obsolete and modified alignments
-        parseprocess.generateDeleteSql(currentDir, listOld);
-        paralist = new ArrayList<String>();
-        paralist.add(currentDir + ReadConfig.sqlDeleteFile);
-        cu.runCommand("mysql", paralist);
-
-        // Step 6: Change
-        parseprocess.parse2sql(false, currentDir, this.seqFileCount);
-        if (this.seqFileCount != -1) {
-            for (int i = 0; i < this.seqFileCount; i++) {
-                paralist = new ArrayList<String>();
-                paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                cu.runCommand("mysql", paralist);
-            }
-        } else {
             paralist = new ArrayList<String>();
             paralist.add(currentDir + ReadConfig.sqlInsertFile);
             cu.runCommand("mysql", paralist);
         }
-
-        // Step 6: Obsolete: Create and insert SQL statements of new and
-        // modified alignments
-        // parseprocess.parse2sql(true, currentDir);
-        // paralist = new ArrayList<String>();
-        // paralist.add(currentDir + ReadConfig.sqlInsertFile);
-        // cu.runCommand("mysql", paralist);
 
         // Step 7: After update all the new alignments,
         // Create complete PDB sequences for de novo sequence blast
@@ -334,29 +464,25 @@ public class PdbScriptsPipelineRunCommand {
         paralist.add(ReadConfig.workspace + this.db.dbName);
         cu.runCommand("makeblastdb", paralist);
 
-        // Step 8: Clean up
+        // Step 8: Create release tags
+        // Change messages.properties in web module
+        paralist = new ArrayList<String>();
+        paralist.add(ReadConfig.resourceDir + ReadConfig.releaseTag);
+        paralist.add(currentDir + ReadConfig.releaseTagResult);
+        cu.runCommand("releaseTag", paralist);
 
+        // Use MYSQL to update
+        preprocess.releasTagUpdateSQL(currentDir + ReadConfig.releaseTagResult,
+                currentDir + ReadConfig.updateStatisticsSQL);
+        paralist = new ArrayList<String>();
+        paralist.add(currentDir + ReadConfig.updateStatisticsSQL);
+        cu.runCommand("mysql", paralist);
+
+        // Step 9: Clean up
         if (ReadConfig.saveSpaceTag.equals("true")) {
             log.info("[PIPELINE] Start cleaning up in filesystem");
 
-            if (this.seqFileCount != -1) {
-
-                for (int i = 0; i < this.seqFileCount; i++) {
-                    paralist = new ArrayList<String>();
-                    paralist.add(currentDir + this.db.resultfileName + "." + new Integer(i).toString());
-                    cu.runCommand("rm", paralist);
-                }
-
-            }
-
-            if (this.seqFileCount != -1) {
-                for (int i = 0; i < this.seqFileCount; i++) {
-                    paralist = new ArrayList<String>();
-                    paralist.add(currentDir + ReadConfig.sqlInsertFile + "." + new Integer(i).toString());
-                    cu.runCommand("gzip", paralist);
-                }
-
-            } else {
+            if (this.seqFileCount == -1) {
                 paralist = new ArrayList<String>();
                 paralist.add(currentDir + ReadConfig.sqlInsertFile);
                 cu.runCommand("gzip", paralist);

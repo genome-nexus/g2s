@@ -150,101 +150,122 @@ public class PdbScriptsPipelinePreprocessing {
     }
 
     /**
-     * Update! New! Preprocess the Gene sequences download from Ensembl, uniprot
-     * This function is designed to split the original FASTA file into several
-     * small files. Each small files contains Constants.ensembl_input_interval
-     * lines The purpose of doing this is saving memory in next step
+     * Obsolete, used only for input and output for either Ensembl or Uniprot
+     * Preprocess the Gene sequences download from Ensembl, uniprot This
+     * function is designed to split the original FASTA file into several small
+     * files. Each small files contains Constants.ensembl_input_interval lines
+     * The purpose of doing this is saving memory in next step
      * 
      * @param infilename
      * @param outfilename
      * @return
      */
-    public int preprocessGENEsequences(String infilename, String outfilename) {
-        // count of all generated small files
-        int filecount = 0;
-        try {
-            log.info("[Preprocessing] Preprocessing gene sequences... ");
-
-            LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper
-                    .readFastaProteinSequence(new File(infilename));
-            HashMap<String, String> outHm = new HashMap<String, String>();
-            for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
-                if (outHm.containsKey(entry.getValue().getSequenceAsString())) {
-                    String tmpStr = outHm.get(entry.getValue().getSequenceAsString());
-                    tmpStr = tmpStr + ";" + getUniqueSeqID(entry.getKey());
-                    outHm.put(entry.getValue().getSequenceAsString(), tmpStr);
-                } else {
-                    outHm.put(entry.getValue().getSequenceAsString(), getUniqueSeqID(entry.getKey()));
-                }
-            }
-
-            List<String> list = new ArrayList<String>();
-
-            Collection<String> c = new ArrayList<String>();
-            // line count of the original FASTA file, Start from 1
-            int count = 1;
-            for (Entry<String, String> entry : outHm.entrySet()) {
-                c.add(">" + count + ";" + entry.getValue() + "\n" + entry.getKey());
-                list.add(count + ";" + entry.getValue());
-                if (count % this.seqInputInterval == this.seqInputInterval - 1) {
-                    FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount).toString()), c);
-                    FileUtils.writeLines(new File(outfilename), c, true);
-                    c.clear();
-                    filecount++;
-                }
-                count++;
-            }
-            if (c.size() != 0) {
-                FileUtils.writeLines(new File(outfilename + "." + new Integer(filecount++).toString()), c);
-                FileUtils.writeLines(new File(outfilename), c, true);
-            }
-            setSeq_file_count(filecount);
-            generateSeqSQLTmpFile(list);
-        } catch (Exception ex) {
-            log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing gene sequences");
-            log.error(ex.getMessage());
-            ex.printStackTrace();
-        }
-        return filecount;
-    }
+    /*
+     * public int preprocessGENEsequences(String infilename, String outfilename)
+     * { // count of all generated small files int filecount = 0; try {
+     * log.info("[Preprocessing] Preprocessing gene sequences... ");
+     * 
+     * LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper
+     * .readFastaProteinSequence(new File(infilename)); HashMap<String, String>
+     * outHm = new HashMap<String, String>(); for (Entry<String,
+     * ProteinSequence> entry : originalHm.entrySet()) { if
+     * (outHm.containsKey(entry.getValue().getSequenceAsString())) { String
+     * tmpStr = outHm.get(entry.getValue().getSequenceAsString()); //Careful:
+     * choose either Ensembl using getUniqueSeqIDEnsembl // or Uniprot using
+     * getUniqueSeqIDUniprot tmpStr = tmpStr + ";" +
+     * getUniqueSeqIDEnsembl(entry.getKey());
+     * outHm.put(entry.getValue().getSequenceAsString(), tmpStr); } else {
+     * outHm.put(entry.getValue().getSequenceAsString(),
+     * getUniqueSeqIDEnsembl(entry.getKey())); } }
+     * 
+     * List<String> list = new ArrayList<String>();
+     * 
+     * Collection<String> c = new ArrayList<String>(); // line count of the
+     * original FASTA file, Start from 1 int count = 1; for (Entry<String,
+     * String> entry : outHm.entrySet()) { c.add(">" + count + ";" +
+     * entry.getValue() + "\n" + entry.getKey()); list.add(count + ";" +
+     * entry.getValue()); if (count % this.seqInputInterval ==
+     * this.seqInputInterval - 1) { FileUtils.writeLines(new File(outfilename +
+     * "." + new Integer(filecount).toString()), c); FileUtils.writeLines(new
+     * File(outfilename), c, true); c.clear(); filecount++; } count++; } if
+     * (c.size() != 0) { FileUtils.writeLines(new File(outfilename + "." + new
+     * Integer(filecount++).toString()), c); FileUtils.writeLines(new
+     * File(outfilename), c, true); } setSeq_file_count(filecount);
+     * generateSeqSQLTmpFile(list); } catch (Exception ex) { log.error(
+     * "[Preprocessing] Fatal Error: Could not Successfully Preprocessing gene sequences"
+     * ); log.error(ex.getMessage()); ex.printStackTrace(); } return filecount;
+     * }
+     */
 
     /**
      * parsing fasta names: ENSEMBL: return ID,gene,transcript UNIPROT:
-     * uniprotID
      * 
      * @param inputStr
      * @return
      */
-    String getUniqueSeqID(String inputStr) {
-        // ENSEMBL
-        if (inputStr.startsWith("ENSP") && inputStr.trim().split("\\s+").length > 3) {
-            String tmpArray[] = inputStr.trim().split("\\s+");
-            return tmpArray[0] + " " + tmpArray[3].split("gene:")[1] + " " + tmpArray[4].split("transcript:")[1];
-        }
-        // UNIPROT
-        else if (inputStr.length() >= 6 && inputStr.length() <= 12) {
-            String tmpArray[] = inputStr.trim().split("-");
-            if (tmpArray.length == 2) {
-                return tmpArray[0] + "_" + tmpArray[1];
-            } else {
-                return inputStr + "_1";
-            }
-        }
-        // Others, to continue
-        else {
-            log.error("Sequence ID Parsing Format error in: " + inputStr);
-            return "";
+    String getUniqueSeqIDEnsembl(String inputStr) {
+        String tmpArray[] = inputStr.trim().split("\\s+");
+        return tmpArray[0] + " " + tmpArray[3].split("gene:")[1] + " " + tmpArray[4].split("transcript:")[1];
+    }
+
+    /**
+     * parsing fasta names: UniprotID and Acc
+     * 
+     * @param inputStr
+     * @param accMap
+     * @return
+     */
+    String getUniqueSeqIDUniprot(String inputStr, HashMap<String, String> accMap) {
+        String tmpArray[] = inputStr.trim().split("-");
+        if (tmpArray.length == 2) {
+            return tmpArray[0] + "_" + tmpArray[1] + " " + accMap.get(tmpArray[0]);
+        } else {
+            return inputStr + "_1" + " " + accMap.get(inputStr);
         }
     }
 
     /**
-     * deal with redundancy,combine the name together, split with ";"
+     * 
+     * Read HashMap of Uniprot: <UniprotID, Accession>
+     * 
+     * @param inputFileName
+     * @return HashMap<UniprotID, Accession>
+     */
+    HashMap<String, String> getUniProtAccHm(String inputFileName) {
+        HashMap<String, String> accMap = new HashMap<String, String>();
+        try {
+            // List<String> list = FileUtils.readLines(new
+            // File("/home/wangjue/gsoc/uniprot_sprot.fasta"));
+            List<String> list = FileUtils.readLines(new File(inputFileName));
+            for (String str : list) {
+                if (str.startsWith(">")) {
+                    String[] strs = str.split("\\|");
+                    String acc = strs[2].split("\\s+")[0];
+                    String id = strs[1];
+                    if (accMap.containsKey(id)) {
+                        if (!accMap.get(id).equals(acc)) {
+                            System.out.println("Error in Uniprot:" + id + "\t" + accMap.get(id) + "\t" + acc);
+                        }
+                    }
+                    accMap.put(id, acc);
+
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return accMap;
+    }
+
+    /**
+     * For Ensembl: deal with redundancy,combine the name together, split with
+     * ";"
      * 
      * @param infilename
      * @param outHm
      * @return
      */
-    HashMap<String, String> preprocessUniqSeq(String infilename, HashMap<String, String> outHm) {
+    HashMap<String, String> preprocessUniqSeqEnsembl(String infilename, HashMap<String, String> outHm) {
         try {
             LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper
                     .readFastaProteinSequence(new File(infilename));
@@ -252,10 +273,41 @@ public class PdbScriptsPipelinePreprocessing {
             for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
                 if (outHm.containsKey(entry.getValue().getSequenceAsString())) {
                     String tmpStr = outHm.get(entry.getValue().getSequenceAsString());
-                    tmpStr = tmpStr + ";" + getUniqueSeqID(entry.getKey());
+                    tmpStr = tmpStr + ";" + getUniqueSeqIDEnsembl(entry.getKey());
                     outHm.put(entry.getValue().getSequenceAsString(), tmpStr);
                 } else {
-                    outHm.put(entry.getValue().getSequenceAsString(), getUniqueSeqID(entry.getKey()));
+                    outHm.put(entry.getValue().getSequenceAsString(), getUniqueSeqIDEnsembl(entry.getKey()));
+                }
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return outHm;
+    }
+
+    /**
+     * 
+     * For Uniprot deal with redundancy,combine the name together, split with
+     * ";"
+     * 
+     * @param infilename
+     * @param outHm
+     * @return
+     */
+    HashMap<String, String> preprocessUniqSeqUniprot(String infilename, HashMap<String, String> accMap,
+            HashMap<String, String> outHm) {
+        try {
+            LinkedHashMap<String, ProteinSequence> originalHm = FastaReaderHelper
+                    .readFastaProteinSequence(new File(infilename));
+
+            for (Entry<String, ProteinSequence> entry : originalHm.entrySet()) {
+                if (outHm.containsKey(entry.getValue().getSequenceAsString())) {
+                    String tmpStr = outHm.get(entry.getValue().getSequenceAsString());
+                    tmpStr = tmpStr + ";" + getUniqueSeqIDUniprot(entry.getKey(), accMap);
+                    outHm.put(entry.getValue().getSequenceAsString(), tmpStr);
+                } else {
+                    outHm.put(entry.getValue().getSequenceAsString(), getUniqueSeqIDUniprot(entry.getKey(), accMap));
                 }
             }
         } catch (Exception ex) {
@@ -271,6 +323,7 @@ public class PdbScriptsPipelinePreprocessing {
      *
      * @param list
      */
+
     public void generateSeqSQLTmpFile(List<String> list) {
         List<String> outputlist = new ArrayList<String>();
         try {
@@ -288,11 +341,15 @@ public class PdbScriptsPipelinePreprocessing {
                                         + strarrayQQ[0] + "', '" + strarrayQQ[1] + "', '" + strarrayQQ[2] + "', '"
                                         + strarrayQ[0] + "');");
                     } else {// uniprot
-                        String[] strarrayQQ = strarrayQ[i].split("_");
+
+                        // old, can be delete
+
+                        String[] strarrayQQ = strarrayQ[i].split("\\s+");
+                        String[] strarrayQQQ = strarrayQQ[0].split("_");
                         outputlist
-                                .add("INSERT IGNORE INTO `uniprot_entry`(`UNIPROT_ID_ISO`,`UNIPROT_ID`,`ISOFORM`,`SEQ_ID`) VALUES('"
-                                        + strarrayQ[i] + "', '" + strarrayQQ[0] + "', '" + strarrayQQ[1] + "', '"
-                                        + strarrayQ[0] + "');");
+                                .add("INSERT IGNORE INTO `uniprot_entry`(`UNIPROT_ID_ISO`,`UNIPROT_ID`,`NAME`,`ISOFORM`,`SEQ_ID`) VALUES('"
+                                        + strarrayQQ[0] + "', '" + strarrayQQQ[0] + "', '" + strarrayQQ[1] + "', '"
+                                        + strarrayQQQ[1] + "', '" + strarrayQ[0] + "');");
                     }
                 }
             }
@@ -304,6 +361,40 @@ public class PdbScriptsPipelinePreprocessing {
             ex.printStackTrace();
         }
     }
+
+    /**
+     * 
+     * Patch: Add colomn to the database table uniprot_entry, contract with
+     * generateSeqSQLTmpFile Careful!
+     *
+     * @param list
+     */
+    /*
+     * public void generateSeqSQLTmpFile(List<String> list) { List<String>
+     * outputlist = new ArrayList<String>(); try { // Add transaction
+     * outputlist.add("SET autocommit = 0;"); outputlist.add(
+     * "start transaction;"); outputlist.add(
+     * "ALTER TABLE uniprot_entry ADD NAME VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL;"
+     * ); outputlist.add("ALTER TABLE TABLE_NAME ADD INDEX (COLUMN_NAME);");
+     * HashMap<String,String> hm = new HashMap<String,String>(); for (String str
+     * : list) { String[] strarrayQ = str.split(";"); //outputlist.add(
+     * "INSERT IGNORE INTO `seq_entry`(`SEQ_ID`) VALUES('" + strarrayQ[0] +
+     * "');"); for (int i = 1; i < strarrayQ.length; i++) { if
+     * (strarrayQ[i].split("\\s+").length == 3) {// ensembl //Do nothing } else
+     * {// uniprot //UPDATE uniprot_entry SET NAME='ab' WHERE
+     * UNIPROT_ID='O54828'; String[] strarrayQQ = strarrayQ[i].split("\\s+");
+     * String[] strarrayQQQ = strarrayQQ[0].split("_");
+     * 
+     * if(hm.containsKey(strarrayQQQ[0])){
+     * 
+     * }else{ outputlist .add("UPDATE uniprot_entry SET NAME='" + strarrayQQ[1]
+     * + "' WHERE UNIPROT_ID='" + strarrayQQQ[0] + "';"); hm.put(strarrayQQQ[0],
+     * ""); } } } } outputlist.add("commit;"); // Write File named as
+     * insertSequenceSQL in application.properties FileUtils.writeLines(new
+     * File(ReadConfig.workspace + ReadConfig.insertSequenceSQL), outputlist); }
+     * catch (Exception ex) { log.error(ex.getMessage()); ex.printStackTrace();
+     * } }
+     */
 
     /**
      * prepare weekly updated PDB files
@@ -338,6 +429,7 @@ public class PdbScriptsPipelinePreprocessing {
                 listNewCont = listNewCont + pu.readPDB2Results(pdbName);
             }
             FileUtils.writeStringToFile(addFastaFile, listNewCont);
+            log.info("Write PDB sequences to" + addFastaFile + "...Done");
         } catch (Exception ex) {
             log.error("[SHELL] Error in fetching weekly updates: " + ex.getMessage());
             ex.printStackTrace();
@@ -384,6 +476,67 @@ public class PdbScriptsPipelinePreprocessing {
             fw.close();
         } catch (Exception ex) {
             log.error("[Preprocessing] Fatal Error: Could not Successfully Preprocessing PDB sequences");
+            log.error(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Obsolete, use Thymeleaf, but does not start automatically
+     * 
+     * @param releaseResultFilename
+     * @param propertyFilename
+     */
+    /*
+     * public void releasTagUpdate(String releaseResultFilename, String
+     * propertyFilename){ try{ log.info(
+     * "[Update] Generate releaseTag and statistics for update ..."); boolean
+     * tag = true; List<String> contents= FileUtils.readLines(new
+     * File(releaseResultFilename)); if(contents.size()!=8){ tag = false; }
+     * 
+     * String outstr = ""; outstr = outstr + "updateDate=" + contents.get(1) +
+     * "\r\n"; outstr = outstr + "pdbEntries=" + contents.get(3) + "\r\n";
+     * outstr = outstr + "pdbUniqueEntries=" + contents.get(5) + "\r\n"; outstr
+     * = outstr + "alignmentEntries=" + contents.get(7) + "\r\n";
+     * 
+     * FileUtils.writeStringToFile(new File(propertyFilename), outstr);
+     * 
+     * if(!tag){ log.error(
+     * "[Update] Update Error: Could not Successfully generate releaseTag from "
+     * + releaseResultFilename +" to "+ propertyFilename +", Please Check"); }
+     * 
+     * }catch(Exception ex){ log.error(
+     * "[Update] Update Error: Could not Successfully generate releaseTag from "
+     * + releaseResultFilename +" to "+ propertyFilename +", Please Check");
+     * log.error(ex.getMessage()); ex.printStackTrace(); } }
+     */
+
+    public void releasTagUpdateSQL(String releaseResultFilename, String sqlFilename) {
+        try {
+            log.info("[Update] Generate releaseTag and statistics for update ...");
+            boolean tag = true;
+            List<String> contents = FileUtils.readLines(new File(releaseResultFilename));
+            if (contents.size() != 8) {
+                tag = false;
+            }
+
+            String outstr = "SET autocommit = 0;\nstart transaction;\n";
+            outstr = outstr
+                    + "INSERT IGNORE INTO `update_record`(`UPDATE_DATE`,`SEG_NUM`,`PDB_NUM`,`ALIGNMENT_NUM`) VALUES('"
+                    + contents.get(1) + "', '" + contents.get(3) + "', '" + contents.get(5) + "', '" + contents.get(7)
+                    + "');\n";
+            outstr = outstr + "commit;\n";
+
+            FileUtils.writeStringToFile(new File(sqlFilename), outstr);
+
+            if (!tag) {
+                log.error("[Update] Update Error: Could not Successfully generate releaseTag from "
+                        + releaseResultFilename + " to " + sqlFilename + ", Please Check");
+            }
+
+        } catch (Exception ex) {
+            log.error("[Update] Update Error: Could not Successfully generate releaseTag from " + releaseResultFilename
+                    + " to " + sqlFilename + ", Please Check");
             log.error(ex.getMessage());
             ex.printStackTrace();
         }

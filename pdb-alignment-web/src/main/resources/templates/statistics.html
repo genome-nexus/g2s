@@ -18,7 +18,7 @@
 			<tbody>
 				<tr>
 					<td>Last Update Date:</td>
-					<td th:text="#{updateDate}">1</td>
+					<td th:text="${statistics[0].updateDate}">1</td>
 				</tr>
 				<tr>
 					<td>Ensembl version</td>
@@ -42,19 +42,19 @@
 				</tr>
 				<tr>
 					<td>Number of PDB Entries of Chains and Segments:</td>
-					<td th:text="#{pdbEntries}">284458</td>
+					<td th:text="${statistics[0].segNum}">284458</td>
 				</tr>
 				<tr>
 					<td>Number of PDB Biological Macromolecular Structures:</td>
-					<td th:text="#{pdbUniqueEntries}">108237</td>
+					<td th:text="${statistics[0].pdbNum}">108237</td>
 				</tr>
 				<tr>
 					<td>Number of Protein-PDB alignments:</td>
-					<td th:text="#{alignmentEntries}">108237</td>
+					<td th:text="${statistics[0].alignmentNum}">108237</td>
 				</tr>
 			</tbody>
 		</table>
-		<p>Genome Nexus G2S database stored alignments from protein
+		<p>G2S database stored alignments from protein
 			sequences against PDB sequences.</p>
 		<p>
 			The sources of protein sequences are from <a
@@ -65,7 +65,7 @@
 			redundancy.
 		</p>
 		<p>
-			Genome Nexus G2S makes automatic frequent (<b>WEEKLY</b>) updates to
+			G2S makes automatic frequent (<b>WEEKLY</b>) updates to
 			the set of pre-caculated alignments as new/obsolete/modified protein
 			structures are added to <a href="http://www.rcsb.org/">RCSB
 				Protein Data Bank</a>, while keeping the set of protein sequences from

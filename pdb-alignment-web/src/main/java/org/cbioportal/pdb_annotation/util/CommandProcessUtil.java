@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.cbioportal.pdb_annotation.web.models.Inputsequence;
+import org.cbioportal.pdb_annotation.web.models.InputSequence;
 
 /**
  * Command Utils for dealing with the processes invoked by JAVA
@@ -108,7 +108,7 @@ public class CommandProcessUtil {
      * @param inputsequence
      * @return
      */
-    public int runCommand(String commandName, ArrayList<String> paralist, Inputsequence inputsequence) {
+    public int runCommand(String commandName, ArrayList<String> paralist, InputSequence inputsequence) {
         int shellReturnCode = 0;
         try {
             checkCommandParam(commandName, paralist);
@@ -149,7 +149,7 @@ public class CommandProcessUtil {
      * @return A List of command arguments for the processbuilder
      */
     private List<String> makeBlastPCommand(String queryFilename, String outFilename, String dbFilename,
-            Inputsequence inputsequence) {
+            InputSequence inputsequence) {
         List<String> list = new ArrayList<String>();
         list.add(ReadConfig.blastp);
         list.add("-db");
