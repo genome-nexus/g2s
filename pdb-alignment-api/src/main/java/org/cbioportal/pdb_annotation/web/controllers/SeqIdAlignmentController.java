@@ -42,16 +42,20 @@ public class SeqIdAlignmentController {
     private AlignmentRepository alignmentRepository;
     @Autowired
     private GeneSequenceRepository geneSequenceRepository;
-    
-            
-            @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-            @ApiOperation("Get PDB Alignments by Protein SeqId")            
-            public List<Alignment> getPdbAlignmentByGeneSequenceId(
-                    @ApiParam(required = true, value = "Input SeqId e.g. 1233")
-                    @PathVariable String seqId) {
-                return alignmentRepository.findBySeqId(seqId);
-            }
-            
+
+    // TODO duplicate (see SeqIdAlignmentController in the pdb-alignment-web module)
+    @ApiOperation(value="Retrieves PDB Alignments by Protein SeqId",
+        nickname = "fetchPdbAlignmentsByProteinSequenceIdGET")
+    @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchPdbAlignmentsByProteinSequenceIdGET(
+            @ApiParam(required = true, value = "SeqId, e.g. 1233")
+            @PathVariable String seqId)
+    {
+        return alignmentRepository.findBySeqId(seqId);
+    }
+
 /*
     // Query from seqId
     @ApiOperation(value = "Get PDB Alignments by Protein SeqId", nickname = "GeneSeqStructureMappingQuery")
@@ -67,15 +71,19 @@ public class SeqIdAlignmentController {
     }
 */
 
-            
-            @RequestMapping(value = "/GeneSeqRecognition/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-            @ApiOperation("Whether Protein SeqId Exists")  
-    public boolean getExistedSeqIdinAlignment(
-            @ApiParam(required = true, value = "Input SeqId e.g. 1233")
-            @PathVariable String seqId) {
+    // TODO duplicate (see SeqIdAlignmentController in the pdb-alignment-web module)
+    @ApiOperation(value = "Checks if protein sequence exists for a given SeqId",
+        nickname = "proteinSeqExistsByIdGET")
+    @RequestMapping(value = "/GeneSeqRecognition/{seqId}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean proteinSeqExistsByIdGET(
+            @ApiParam(required = true, value = "SeqId, e.g. 1233")
+            @PathVariable String seqId)
+    {
         return geneSequenceRepository.findBySeqId(seqId).size() != 0;
     }
-    
+
     /*
     @ApiOperation(value = "Whether Protein SeqId Exists", nickname = "GeneSeqRecognitionQuery")
     @ApiResponses(value = { @ApiResponse(code = 200, message = "Success", responseContainer = "boolean"),
@@ -89,48 +97,52 @@ public class SeqIdAlignmentController {
     }
     */
 
-            @RequestMapping(value = "/GeneSeqResidueMapping/{seqId}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-            @ApiOperation("Get Residue Mapping by Protein SeqId and Residue Position") 
-            public List<Residue> getPdbResidueBySeqId(
-                    @ApiParam(required = true, value = "Input SeqId e.g. 1233")
-                    @PathVariable String seqId,
-                    @ApiParam(required = true, value = "Input Residue Position e.g. 42")
-                    @PathVariable String position) {
-                List<Alignment> it = alignmentRepository.findBySeqId(seqId);
-                List<Residue> outit = new ArrayList<Residue>();
-                int inputAA = Integer.parseInt(position);
-                for (Alignment ali : it) {
-                    if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
-                        Residue re = new Residue();
-                        re.setAlignmentId(ali.getAlignmentId());
-                        re.setBitscore(ali.getBitscore());
-                        re.setChain(ali.getChain());
-                        re.setSegStart(ali.getSegStart());
-                        re.setSeqAlign(ali.getSeqAlign());
-                        re.setSeqFrom(ali.getSeqFrom());
-                        re.setSeqId(ali.getSeqId());
-                        re.setSeqTo(ali.getSeqTo());
-                        re.setEvalue(ali.getEvalue());
-                        re.setIdentity(ali.getIdentity());
-                        re.setIdentityPositive(ali.getIdentityPositive());
-                        re.setMidlineAlign(ali.getMidlineAlign());
-                        re.setPdbAlign(ali.getPdbAlign());
-                        re.setPdbFrom(ali.getPdbFrom());
-                        re.setPdbId(ali.getPdbId());
-                        re.setPdbNo(ali.getPdbNo());
-                        re.setPdbSeg(ali.getPdbSeg());
-                        re.setPdbTo(ali.getPdbTo());
-                        re.setUpdateDate(ali.getUpdateDate());
-                        re.setResidueName(
-                                ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
-                        re.setResidueNum(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
-                        outit.add(re);
-                    }
-                }
-                return outit;
+    @ApiOperation(value = "Retrieves Residue Mapping by Protein SeqId and Residue Position",
+        nickname = "fetchPdbResiduesBySeqIdGET")
+    @RequestMapping(value = "/GeneSeqResidueMapping/{seqId}/{position}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Residue> fetchPdbResiduesBySeqIdGET(
+            @ApiParam(required = true, value = "SeqId, e.g. 1233")
+            @PathVariable String seqId,
+            @ApiParam(required = true, value = "Residue Position, e.g. 42")
+            @PathVariable String position)
+    {
+        List<Alignment> it = alignmentRepository.findBySeqId(seqId);
+        List<Residue> outit = new ArrayList<Residue>();
+        int inputAA = Integer.parseInt(position);
+        for (Alignment ali : it) {
+            if (inputAA >= ali.getSeqFrom() && inputAA <= ali.getSeqTo()) {
+                Residue re = new Residue();
+                re.setAlignmentId(ali.getAlignmentId());
+                re.setBitscore(ali.getBitscore());
+                re.setChain(ali.getChain());
+                re.setSegStart(ali.getSegStart());
+                re.setSeqAlign(ali.getSeqAlign());
+                re.setSeqFrom(ali.getSeqFrom());
+                re.setSeqId(ali.getSeqId());
+                re.setSeqTo(ali.getSeqTo());
+                re.setEvalue(ali.getEvalue());
+                re.setIdentity(ali.getIdentity());
+                re.setIdentityPositive(ali.getIdentityPositive());
+                re.setMidlineAlign(ali.getMidlineAlign());
+                re.setPdbAlign(ali.getPdbAlign());
+                re.setPdbFrom(ali.getPdbFrom());
+                re.setPdbId(ali.getPdbId());
+                re.setPdbNo(ali.getPdbNo());
+                re.setPdbSeg(ali.getPdbSeg());
+                re.setPdbTo(ali.getPdbTo());
+                re.setUpdateDate(ali.getUpdateDate());
+                re.setResidueName(
+                        ali.getPdbAlign().substring(inputAA - ali.getSeqFrom(), inputAA - ali.getSeqFrom() + 1));
+                re.setResidueNum(Integer.parseInt(ali.getSegStart()) - 1 + ali.getPdbFrom() + (inputAA - ali.getSeqFrom()));
+                outit.add(re);
             }
-            
-/*            
+        }
+        return outit;
+    }
+
+/*
     @ApiOperation(value = "Get Residue Mapping by Protein SeqId and Residue Position", nickname = "GeneSeqResidueMappingQuery")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success", response = Residue.class, responseContainer = "List"),

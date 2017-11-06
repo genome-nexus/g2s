@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
@@ -38,7 +36,7 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Other Controllers, for detailed results of Alignments and ResidueMappings
- * 
+ *
  * @author wangjue
  *
  */
@@ -46,46 +44,51 @@ import io.swagger.annotations.ApiParam;
 // @CrossOrigin(origins = "*") // allow all cross-domain requests
 // @Api(tags = "OtherInnerID", description = "Other")
 // @RequestMapping(value = "/api/")
-public class OtherContoller {
+public class OtherController {
 
-    final static Logger log = Logger.getLogger(OtherContoller.class);
+    final static Logger log = Logger.getLogger(OtherController.class);
 
     @Autowired
     private AlignmentRepository alignmentRepository;
 
-    @RequestMapping(value = "/alignmentsComplex", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by Protein Sequence")
-    public ProteinSequenceAlignment getPdbAlignmentBySequenceFull(HttpServletRequest request,
-            @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP") @RequestParam String sequence,
-            @ApiParam(required = false, value = "Default Blast Parameters:\n"
-                    + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
-                    + "Threshold=11,Windowsize=40") @RequestParam(required = false) List<String> paramList
+    @ApiOperation(value = "Retrieves PDB Alignments by Protein Sequence",
+        nickname = "fetchPdbAlignmentBySequencePOST")
+    @RequestMapping(value = "/alignmentsComplex",
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProteinSequenceAlignment fetchPdbAlignmentBySequencePOST(
+        @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP")
+        @RequestParam String sequence,
+        @ApiParam(required = false, value = "Default Blast Parameters:\n"
+            + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
+            + "Threshold=11,Windowsize=40")
+        @RequestParam(required = false) List<String> paramList
     /*
      * @ApiParam(value = "Blast Parameters Evalue: (Default) 1e-10") String
      * evalue,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Wordsize: (Default) 3") String
      * wordsize,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapopen: (Default) 11") String
      * gapopen,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapextend: (Default) 1") String
      * gapextend,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Matrix: (Default) BLOSUM62") String
      * matrix,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Comp_based_stats: (Default) 2")
      * String compbasedstats,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Threshold: (Default) 11") String
      * threshold,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Windowsize: (Default) 40") String
      * windowsize
-     */) {
-
+     */)
+    {
         InputSequence inputsequence = new InputSequence();
         inputsequence.setSequence(sequence);
         inputsequence.setResidueNumList(null);
@@ -212,40 +215,46 @@ public class OtherContoller {
         return result;
     }
 
-    @RequestMapping(value = "/alignments/residueMappingComplex", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by Protein Sequence and Residue position")
-    public ProteinSequenceResidue getPdbAlignmentReisudeBySequenceFull(
-            @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP") @RequestParam String sequence,
-            @ApiParam(required = false, value = "Input Residue Position e.g. 20") @RequestParam(required = false) List<String> positionList,
-            @ApiParam(required = false, value = "Default Blast Parameters:\n"
-                    + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
-                    + "Threshold=11,Windowsize=40") @RequestParam(required = false) List<String> paramList
+    @ApiOperation(value = "Retrieves PDB Alignments by Protein Sequence and Residue position",
+        nickname = "fetchPdbAlignmentResidueBySequencePOST")
+    @RequestMapping(value = "/alignments/residueMappingComplex",
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProteinSequenceResidue fetchPdbAlignmentResidueBySequencePOST(
+        @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP")
+        @RequestParam String sequence,
+        @ApiParam(required = false, value = "Input Residue Position e.g. 20")
+        @RequestParam(required = false) List<String> positionList,
+        @ApiParam(required = false, value = "Default Blast Parameters:\n"
+            + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
+            + "Threshold=11,Windowsize=40")
+        @RequestParam(required = false) List<String> paramList
     /*
      * @ApiParam(value = "Blast Parameters Evalue: (Default) 1e-10") String
      * evalue,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Wordsize: (Default) 3") String
      * wordsize,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapopen: (Default) 11") String
      * gapopen,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapextend: (Default) 1") String
      * gapextend,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Matrix: (Default) BLOSUM62") String
      * matrix,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Comp_based_stats: (Default) 2")
      * String compbasedstats,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Threshold: (Default) 11") String
      * threshold,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Windowsize: (Default) 40") String
      * windowsize
-     */) {
-
+     */)
+    {
         InputSequence inputsequence = new InputSequence();
         inputsequence.setSequence(sequence);
         inputsequence.setResidueNumList(positionList);

@@ -1,5 +1,6 @@
 package org.cbioportal.pdb_annotation.web.controllers;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.cbioportal.pdb_annotation.web.domain.AlignmentRepository;
@@ -48,23 +49,23 @@ public class EnsemblIdAlignmentController {
     private EnsemblRepository ensemblRepository;
     @Autowired
     private SeqIdAlignmentController seqController;
-    
-    // Query from EnsemblId
-    @RequestMapping(value = "/EnsemblStructureMapping/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by EnsemblId")
-    public List<Alignment> getPdbAlignmentByEnsemblId(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000489609.1")
-            @PathVariable String ensemblId) {
-        
-        System.out.println(ensemblId);
-        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
-        System.out.println(ensembllist.size());
-        if (ensembllist.size() == 1) {
-            return alignmentRepository.findBySeqId(ensembllist.get(0).getSeqId());
+
+    @ApiOperation(value = "Retrieves PDB Alignments by Ensembl Id",
+        nickname = "fetchPdbAlignmentsByEnsemblIdGET")
+    @RequestMapping(value = "/EnsemblStructureMapping/{ensemblId:.+}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchPdbAlignmentsByEnsemblIdGET(
+            @ApiParam(required = true, value = "Ensembl Id, e.g. ENSP00000489609.1")
+            @PathVariable String ensemblId)
+    {
+        List<Ensembl> ensemblList = ensemblRepository.findByEnsemblId(ensemblId);
+
+        if (ensemblList.size() > 0) {
+            return alignmentRepository.findBySeqId(ensemblList.get(0).getSeqId());
         } else {
-            return null;
+            return Collections.emptyList();
         }
-        
     }
 
     /*
@@ -86,19 +87,19 @@ public class EnsemblIdAlignmentController {
         }
     }
     */
-    
-    
-    @RequestMapping(value = "/EnsemblRecognition/{ensemblId:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Whether EnsemblId exists")
-    public boolean getExistedEnsemblIdinAlignment(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000489609.1")
+
+    @ApiOperation(value = "Checks whether an Ensembl record exists for a given Ensembl id",
+        nickname = "ensemblExistsByIdGET")
+    @RequestMapping(value = "/EnsemblRecognition/{ensemblId:.+}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean ensemblExistsByIdGET(
+            @ApiParam(required = true, value = "Ensembl Id, e.g. ENSP00000489609.1")
             @PathVariable String ensemblId) {
-        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
-        if (ensembllist.size() == 1) {
-            return geneSequenceRepository.findBySeqId(ensembllist.get(0).getSeqId()).size() != 0;
-        } else {
-            return false;
-        }
+        List<Ensembl> ensemblList = ensemblRepository.findByEnsemblId(ensemblId);
+
+        return ensemblList.size() > 0 &&
+            geneSequenceRepository.findBySeqId(ensemblList.get(0).getSeqId()).size() != 0;
     }
 
     /*
@@ -119,23 +120,26 @@ public class EnsemblIdAlignmentController {
     }
     */
 
-    @RequestMapping(value = "/EnsemblResidueMapping/{ensemblId:.+}/{position}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/EnsemblResidueMapping/{ensemblId:.+}/{position}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get Residue Mapping by EnsemblId and Residue Number")
     public List<Residue> getPdbResidueByEnsemblId(
-            @ApiParam(required = true, value = "Input Ensembl Id e.g. ENSP00000489609.1")
+            @ApiParam(required = true, value = "Ensembl Id, e.g. ENSP00000489609.1")
             @PathVariable String ensemblId,
-            @ApiParam(required = true, value = "Input Residue Position e.g. 300")
-            @PathVariable String position) {
+            @ApiParam(required = true, value = "Residue Position, e.g. 300")
+            @PathVariable String position)
+    {
+        List<Ensembl> ensemblList = ensemblRepository.findByEnsemblId(ensemblId);
 
-        List<Ensembl> ensembllist = ensemblRepository.findByEnsemblId(ensemblId);
-
-        if (ensembllist.size() == 1) {
-            return seqController.getPdbResidueBySeqId(ensembllist.get(0).getSeqId(), position);
+        // TODO use a service method, not a method of another controller
+        if (ensemblList.size() > 0) {
+            return seqController.fetchPdbResiduesBySeqIdGET(ensemblList.get(0).getSeqId(), position);
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
-    
+
     /*
     @ApiOperation(value = "Get Residue Mapping by EnsemblId and Residue Number", nickname = "EnsemblResidueMappingQuery")
     @ApiResponses(value = {

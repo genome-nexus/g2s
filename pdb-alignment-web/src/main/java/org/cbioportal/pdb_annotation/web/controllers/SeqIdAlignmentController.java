@@ -54,16 +54,21 @@ public class SeqIdAlignmentController {
     private UniprotRepository uniprotRepository;
     @Autowired
     private EnsemblRepository ensemblRepository;
-    @Autowired
-    private SeqIdAlignmentController seqController;
 
-    @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by Protein SeqId")
-    public List<Alignment> getPdbAlignmentByGeneSequenceId(
-            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
+    // TODO duplicate (see SeqIdAlignmentController in the pdb-alignment-api module)
+    @ApiOperation(value="Retrieves PDB Alignments by Protein SeqId",
+        nickname = "fetchPdbAlignmentsByProteinSequenceIdGET")
+    @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchPdbAlignmentsByProteinSequenceIdGET(
+        @ApiParam(required = true, value = "SeqId, e.g. 25625")
+        @PathVariable String seqId)
+    {
         return alignmentRepository.findBySeqId(seqId);
     }
 
+    // TODO this endpoint is useless in its current form
     // Query from EnsemblId
     @ApiOperation(value = "Get PDB Alignments by EnsemblId", nickname = "EnsemblStructureMappingQuery")
     @ApiResponses(value = {
@@ -77,23 +82,22 @@ public class SeqIdAlignmentController {
         return ensemblId + "SS";
     }
 
-    @RequestMapping(value = "/GeneSeqStructureMapping/{seqId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by Protein SeqId")
-    public List<Alignment> getPdbAlignmentByGeneSequenceIdPOST(
-            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
-        return alignmentRepository.findBySeqId(seqId);
-    }
-
-    @RequestMapping(value = "/GeneSeqRecognition/{seqId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Whether Protein SeqId Exists")
-    public boolean getExistedSeqIdinAlignment(
-            @ApiParam(required = true, value = "Input SeqId e.g. 25625") @PathVariable String seqId) {
+    // TODO duplicate (see SeqIdAlignmentController in the pdb-alignment-api module)
+    @ApiOperation(value = "Checks if protein sequence exists for a given SeqId",
+        nickname = "proteinSeqExistsByIdGET")
+    @RequestMapping(value = "/GeneSeqRecognition/{seqId}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean proteinSeqExistsByIdGET(
+        @ApiParam(required = true, value = "SeqId, e.g. 25625")
+        @PathVariable String seqId)
+    {
         return geneSequenceRepository.findBySeqId(seqId).size() != 0;
     }
 
     /**
      * "Get All Residue Mapping by Protein SeqId
-     * 
+     *
      * @param seqId
      * @return
      */
@@ -132,9 +136,9 @@ public class SeqIdAlignmentController {
 
     /**
      * "Get Residue Mapping by Protein SeqId and Residue Positions
-     * 
+     *
      * @param seqId
-     * @param positionList
+     * @param position
      * @return
      */
     public List<Alignment> getPdbResidueBySeqId(
@@ -168,7 +172,7 @@ public class SeqIdAlignmentController {
 
     /**
      * "Get Residue Mapping by Protein SeqId and Residue Positions list
-     * 
+     *
      * @param seqId
      * @param positionList
      * @return
@@ -402,7 +406,7 @@ public class SeqIdAlignmentController {
                 // System.out.println("Out:\t" + gr.getEnsembl().getSeqId() +
                 // "\t:"
                 // + Integer.toString(gr.getResidue().getResidueNum()));
-                List<Alignment> list = seqController.getPdbResidueBySeqId(gr.getEnsembl().getSeqId(),
+                List<Alignment> list = this.getPdbResidueBySeqId(gr.getEnsembl().getSeqId(),
                         Integer.toString(gr.getResidue().getResidueNum()));
                 outlist.addAll(list);
             }
@@ -418,7 +422,7 @@ public class SeqIdAlignmentController {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotAccession(uniprotAccession);
         List<Alignment> outList = new ArrayList<Alignment>();
         for (Uniprot entry : uniprotList) {
-            outList.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId()));
+            outList.addAll(this.getPdbResidueBySeqId(entry.getSeqId()));
         }
         return outList;
     }
@@ -429,7 +433,7 @@ public class SeqIdAlignmentController {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotAccession(uniprotAccession);
         List<Alignment> outList = new ArrayList<Alignment>();
         for (Uniprot entry : uniprotList) {
-            outList.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId(), position));
+            outList.addAll(this.getPdbResidueBySeqId(entry.getSeqId(), position));
         }
         return outList;
     }
@@ -440,7 +444,7 @@ public class SeqIdAlignmentController {
         List<Uniprot> uniprotList = uniprotRepository.findByUniprotAccession(uniprotAccession);
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         for (Uniprot entry : uniprotList) {
-            outList.addAll(seqController.getPdbResidueBySeqId(entry.getSeqId(), positionList));
+            outList.addAll(this.getPdbResidueBySeqId(entry.getSeqId(), positionList));
         }
         return outList;
     }
@@ -510,7 +514,7 @@ public class SeqIdAlignmentController {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
         if (uniprotlist.size() == 1) {
-            return seqController.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId());
+            return this.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId());
         } else {
             return new ArrayList<Alignment>();
         }
@@ -522,7 +526,7 @@ public class SeqIdAlignmentController {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
         if (uniprotlist.size() == 1) {
-            return seqController.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId(), position);
+            return this.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId(), position);
         } else {
             return new ArrayList<Alignment>();
         }
@@ -534,7 +538,7 @@ public class SeqIdAlignmentController {
 
         List<Uniprot> uniprotlist = uniprotRepository.findByUniprotAccessionIso(uniprotAccession + "_" + isoform);
         if (uniprotlist.size() == 1) {
-            return seqController.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId(), positionList);
+            return this.getPdbResidueBySeqId(uniprotlist.get(0).getSeqId(), positionList);
         } else {
             return new ArrayList<Alignment>();
         }

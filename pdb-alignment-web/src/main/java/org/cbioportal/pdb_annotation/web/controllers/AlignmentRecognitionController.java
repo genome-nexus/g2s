@@ -28,10 +28,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * 
+ *
  * Recognize whether input alignments is existed in the system, not used for
  * cBioportal, but it still works
- * 
+ *
  * @author Juexin Wang
  *
  */
@@ -39,9 +39,9 @@ import io.swagger.annotations.ApiParam;
 // @CrossOrigin(origins = "*") // allow all cross-domain requests
 // @Api(tags = "RecognizeAlignments", description = "ensembl/uniprot/hgvs")
 // @RequestMapping(value = "/api/")
-public class MainRecognitionAlignments {
+public class AlignmentRecognitionController {
 
-    final static Logger log = Logger.getLogger(MainRecognitionAlignments.class);
+    final static Logger log = Logger.getLogger(AlignmentRecognitionController.class);
 
     @Autowired
     private AlignmentRepository alignmentRepository;
@@ -52,15 +52,19 @@ public class MainRecognitionAlignments {
     @Autowired
     private EnsemblRepository ensemblRepository;
 
-    @RequestMapping(value = "/recognitionAlignments/{id_type}:{id:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Whether Id exists")
-    public boolean getExistsAlignment(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
+    @ApiOperation(value = "Checks if alignment exists for the given id", nickname = "alignmentExistsByIdGET")
+    @RequestMapping(value = "/recognitionAlignments/{id_type}:{id:.+}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean alignmentExistsByIdGET(
+            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38")
+            @PathVariable String id_type,
             @ApiParam(required = true, value = "Input id e.g. \n"
                     + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
                     + "uniprot:P04637/P53_HUMAN; \n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G ") @PathVariable String id) {
-
+                    + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G ")
+            @PathVariable String id)
+    {
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
             if (id.startsWith("ENSP")) {// EnsemblID:

@@ -23,12 +23,7 @@ import org.cbioportal.pdb_annotation.web.models.ResidueMapping;
 import org.cbioportal.pdb_annotation.web.models.Uniprot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,17 +31,17 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * Main controller get ResidueMappings: Get ResidueMappings
- * 
+ *
  * @author wangjue
  *
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "Get ResidueMapping", description = "ensembl/uniprot/hgvs/sequences")
+@Api(tags = "Residue Mapping", description = "ensembl/uniprot/hgvs/sequences")
 @RequestMapping(value = "/api/")
-public class MainGetResidueMappingController {
+public class ResidueMappingController {
 
-    final static Logger log = Logger.getLogger(MainGetResidueMappingController.class);
+    final static Logger log = Logger.getLogger(ResidueMappingController.class);
 
     @Autowired
     private EnsemblRepository ensemblRepository;
@@ -55,19 +50,41 @@ public class MainGetResidueMappingController {
     @Autowired
     private UniprotRepository uniprotRepository;
 
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/residueMapping", method = { RequestMethod.GET,
-            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("POST PDB Residue Mapping by ProteinId")
-    public List<Alignment> postResidueMapping(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot;\n"
-                    + "uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g.\n"
-                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
-                    + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G") @PathVariable String id,
-            @ApiParam(required = false, value = "Input Residue Positions e.g. 10,100; Anynumber for hgvs;\n"
-                    + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
+    @ApiOperation(value = "Retrieves PDB Residue Mapping by protein id",
+        nickname = "fetchResidueMappingByProteinIdGET")
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/residueMapping",
+        method = { RequestMethod.GET },
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchResidueMappingByProteinIdGET(
+        @ApiParam(required = true, value = "id_type: ensembl; uniprot;\n"
+            + "uniprot_isoform; hgvs; hgvs38")
+        @PathVariable String id_type,
+        @ApiParam(required = true, value = "id, e.g.\n"
+            + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
+            + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
+            + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G")
+        @PathVariable String id)
+    {
+        return this.fetchResidueMappingByProteinIdAndPositionsPOST(id_type, id, null);
+    }
 
+    @ApiOperation(value = "Retrieves PDB Residue Mapping by protein id and position list",
+        nickname = "fetchResidueMappingByProteinIdAndPositionsPOST")
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/residueMapping",
+        method = { RequestMethod.POST },
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchResidueMappingByProteinIdAndPositionsPOST(
+        @ApiParam(required = true, value = "id_type: ensembl; uniprot;\n"
+                + "uniprot_isoform; hgvs; hgvs38")
+        @PathVariable String id_type,
+        @ApiParam(required = true, value = "id, e.g.\n"
+                + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
+                + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
+                + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G")
+        @PathVariable String id,
+        @ApiParam(required = true, value = "Residue Positions, e.g. [10, 100]; Any number for hgvs;")
+        @RequestBody List<String> positionList)
+    {
         List<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
             if (id.startsWith("ENSP")) {// EnsemblID:
@@ -190,20 +207,47 @@ public class MainGetResidueMappingController {
         return outList;
     }
 
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}/residueMapping", method = {
-            RequestMethod.GET, RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Post Residue Mapping by ProteinId, PDBId and Chain")
-    public List<Alignment> postResidueMappingByPDB(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g. \n"
-                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
-                    + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
-                    + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G") @PathVariable String id,
-            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdb_id,
-            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id,
-            @ApiParam(required = false, value = "Input Residue Positions e.g. 10,100 (Anynumber for hgvs);\n"
-                    + "Return all residue mappings if none") @RequestParam(required = false) List<String> positionList) {
+    @ApiOperation(value = "Retrieves Residue Mapping by protein id, PDB id, and chain",
+        nickname = "fetchResidueMappingByPdbChainGET")
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}/residueMapping",
+        method = { RequestMethod.GET },
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchResidueMappingByPdbChainGET(
+        @ApiParam(required = true, value = "id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38")
+        @PathVariable String id_type,
+        @ApiParam(required = true, value = "Input id e.g. \n"
+            + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
+            + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
+            + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G")
+        @PathVariable String id,
+        @ApiParam(required = true, value = "PDB id, e.g. 2fej")
+        @PathVariable String pdb_id,
+        @ApiParam(required = true, value = "Chain, e.g. A")
+        @PathVariable String chain_id)
+    {
+        return this.fetchResidueMappingByPdbChainAndPositionsPOST(id_type, id, pdb_id, chain_id, null);
+    }
 
+    @ApiOperation(value = "Retrieves Residue Mapping by protein id, PDB id, chain, and position list",
+        nickname = "fetchResidueMappingByPdbChainAndPositionsPOST")
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}/residueMapping",
+        method = { RequestMethod.POST },
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchResidueMappingByPdbChainAndPositionsPOST(
+        @ApiParam(required = true, value = "id_type: ensembl; uniprot; uniprot_isoform; hgvs; hgvs38")
+        @PathVariable String id_type,
+        @ApiParam(required = true, value = "Input id e.g. \n"
+            + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5;\n"
+            + "uniprot:P04637/P53_HUMAN;\n" + "uniprot_isoform:P04637_9/P53_HUMAN_9;\n"
+            + "hgvs:17:g.79478130C>G;\n" + "hgvs38:17:g.7676594T>G")
+        @PathVariable String id,
+        @ApiParam(required = true, value = "PDB id, e.g. 2fej")
+        @PathVariable String pdb_id,
+        @ApiParam(required = true, value = "Chain, e.g. A")
+        @PathVariable String chain_id,
+        @ApiParam(required = true, value = "Residue Positions, e.g. [10, 100] (Any number for hgvs);")
+        @RequestBody(required = false) List<String> positionList)
+    {
         ArrayList<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
 
@@ -416,37 +460,41 @@ public class MainGetResidueMappingController {
         return outList;
     }
 
-    @RequestMapping(value = "/alignments/residueMapping", method = { RequestMethod.GET,
-            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Residue Mapping by Protein Sequence and Residue position")
-    public List<Alignment> getPdbAlignmentReisudeBySequence(
-            @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP") @RequestParam String sequence,
-            @ApiParam(required = false, value = "Input Residue Positions e.g. 10,20") @RequestParam(required = false) List<String> positionList,
-            @ApiParam(required = false, value = "Default Blast Parameters:\n"
-                    + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
-                    + "Threshold=11,Windowsize=40") @RequestParam(required = false) List<String> paramList
+    @RequestMapping(value = "/alignments/residueMapping",
+        method = { RequestMethod.GET, RequestMethod.POST },
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Retrieves PDB Residue Mapping by Protein Sequence and Residue position")
+    public List<Alignment> fetchPdbAlignmentsBySequence(
+        @ApiParam(required = true, value = "Protein Sequence, e.g. ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP")
+        @RequestParam String sequence,
+        @ApiParam(required = false, value = "Residue Positions, e.g. 10,20")
+        @RequestParam(required = false) List<String> positionList,
+        @ApiParam(required = false, value = "Default Blast Parameters:\n"
+            + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
+            + "Threshold=11,Windowsize=40")
+        @RequestParam(required = false) List<String> paramList
     /*
      * @ApiParam(value = "Blast Parameters Evalue: (Default) 1e-10") String
      * evalue,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Wordsize: (Default) 3") String
      * wordsize,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapopen: (Default) 11") String
      * gapopen,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapextend: (Default) 1") String
      * gapextend,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Matrix: (Default) BLOSUM62") String
      * matrix,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Comp_based_stats: (Default) 2")
      * String compbasedstats,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Threshold: (Default) 11") String
      * threshold,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Windowsize: (Default) 40") String
      * windowsize
      */) {

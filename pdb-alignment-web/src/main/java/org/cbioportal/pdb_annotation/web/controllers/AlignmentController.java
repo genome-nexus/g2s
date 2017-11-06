@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.cbioportal.pdb_annotation.scripts.PdbScriptsPipelineRunCommand;
 import org.cbioportal.pdb_annotation.util.ReadConfig;
@@ -33,18 +31,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * 
+ *
  * Main controller getAlignments: Get Alignments
- * 
+ *
  * @author Juexin Wang
  *
  */
 @RestController // shorthand for @Controller, @ResponseBody
 @CrossOrigin(origins = "*") // allow all cross-domain requests
-@Api(tags = "Get Alignments", description = "ensembl/uniprot/sequences")
+@Api(tags = "Alignments", description = "ensembl/uniprot/sequences")
 @RequestMapping(value = "/api/")
-public class MainGetAlignmentsController {
-    final static Logger log = Logger.getLogger(MainGetAlignmentsController.class);
+public class AlignmentController {
+    final static Logger log = Logger.getLogger(AlignmentController.class);
 
     @Autowired
     private AlignmentRepository alignmentRepository;
@@ -53,13 +51,18 @@ public class MainGetAlignmentsController {
     @Autowired
     private SeqIdAlignmentController seqController;
 
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by ProteinId")
-    public List<Alignment> getAlignment(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g.\n"
-                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
-                    + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ") @PathVariable String id) {
+    @ApiOperation(value = "Retrieves PDB Alignments by Protein id", nickname = "fetchAlignmentsByProteinIdGET")
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchAlignmentsByProteinIdGET(
+        @ApiParam(required = true, value = "id_type: ensembl; uniprot; uniprot_isoform")
+        @PathVariable String id_type,
+        @ApiParam(required = true, value = "id, e.g.\n"
+                + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
+                + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ")
+        @PathVariable String id)
+    {
         List<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
             if (id.startsWith("ENSP")) {// EnsemblID:
@@ -116,16 +119,23 @@ public class MainGetAlignmentsController {
         return outList;
     }
 
-    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Get PDB Alignments by ProteinId, PDBId and Chain")
-    public List<Alignment> getAlignmentByPDB(
-            @ApiParam(required = true, value = "Input id_type: ensembl; uniprot; uniprot_isoform") @PathVariable String id_type,
-            @ApiParam(required = true, value = "Input id e.g.\n"
-                    + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
-                    + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ") @PathVariable String id,
-            @ApiParam(required = true, value = "Input PDB Id e.g. 2fej") @PathVariable String pdb_id,
-            @ApiParam(required = true, value = "Input Chain e.g. A") @PathVariable String chain_id) {
-
+    @ApiOperation(value = "Retrieves PDB Alignments by Protein id, PDB id and Chain",
+        nickname = "fetchAlignmentsByPdbChainGET")
+    @RequestMapping(value = "/alignments/{id_type}/{id:.+}/pdb/{pdb_id}_{chain_id}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<Alignment> fetchAlignmentsByPdbChainGET(
+        @ApiParam(required = true, value = "id_type: ensembl; uniprot; uniprot_isoform")
+        @PathVariable String id_type,
+        @ApiParam(required = true, value = "id, e.g.\n"
+                + "ensembl:ENSP00000484409.1/ENSG00000141510.16/ENST00000504290.5; "
+                + "uniprot:P04637/P53_HUMAN; uniprot_isoform:P04637_9/P53_HUMAN_9 ")
+        @PathVariable String id,
+        @ApiParam(required = true, value = "Input PDB Id e.g. 2fej")
+        @PathVariable String pdb_id,
+        @ApiParam(required = true, value = "Input Chain e.g. A")
+        @PathVariable String chain_id)
+    {
         List<Alignment> outList = new ArrayList<Alignment>();
         if (id_type.equals("ensembl")) {
 
@@ -209,40 +219,47 @@ public class MainGetAlignmentsController {
         return outList;
     }
 
-    @RequestMapping(value = "/alignments", method = { RequestMethod.GET,
-            RequestMethod.POST }, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/alignments",
+        method = { RequestMethod.GET, RequestMethod.POST },
+        produces = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
-    @ApiOperation("Get PDB Alignments by Protein Sequence")
-    public List<Alignment> getPdbAlignmentBySequence(HttpServletRequest request,
-            @ApiParam(required = true, value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP") @RequestParam String sequence,
-            @ApiParam(required = false, value = "Default Blast Parameters:\n"
-                    + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
-                    + "Threshold=11,Windowsize=40") @RequestParam(required = false) List<String> paramList
+    @ApiOperation(value = "Retrieves PDB Alignments by Protein Sequence",
+        nickname = "fetchPdbAlignmentsByProteinSequence")
+    public List<Alignment> fetchPdbAlignmentsByProteinSequence(
+        @ApiParam(required = true,
+            value = "Input Protein Sequence: ETGQSVNDPGNMSFVKETVDKLLKGYDIRLRPDFGGPP")
+        @RequestParam String sequence,
+        // TODO replace paramList with a proper object (e.g: something like BlastFilter)
+        @ApiParam(required = false, value = "Default Blast Parameters:\n"
+                + " Evalue=1e-10,Wordsize=3,Gapopen=11,Gapextend=1,\n" + " Matrix=BLOSUM62,Comp_based_stats=2,\n"
+                + "Threshold=11,Windowsize=40")
+        @RequestParam(required = false) List<String> paramList
     /*
      * @ApiParam(value = "Blast Parameters Evalue: (Default) 1e-10") String
      * evalue,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Wordsize: (Default) 3") String
      * wordsize,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapopen: (Default) 11") String
      * gapopen,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Gapextend: (Default) 1") String
      * gapextend,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Matrix: (Default) BLOSUM62") String
      * matrix,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Comp_based_stats: (Default) 2")
      * String compbasedstats,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Threshold: (Default) 11") String
      * threshold,
-     * 
+     *
      * @ApiParam(value = "Blast Parameters Windowsize: (Default) 40") String
      * windowsize
-     */) {
+     */)
+    {
 
         InputSequence inputsequence = new InputSequence();
         inputsequence.setSequence(sequence);
